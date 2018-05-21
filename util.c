@@ -25,6 +25,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
         char prefix = db_getchr(db_entry(chandb, "prefix"));
 
         /* catch bits */
+        /* TODO: actually test this */
         char *bitstr = strchr(line, ';') + 1;
         if (!strncmp(bitstr, "bits=", 5)) {
             int bits = 0;
@@ -47,10 +48,13 @@ handle_raw(int *sock, bool *reconnect, char *line)
         char user[msglen];
         strcpy(user, raw_msg+1);
         strchr(user, '!')[0] = '\0';
-        /* greeting */
-        if (!db_exists(db_entry(chandb, "greeted", user))) {
-            db_mkitem(db_entry(chandb, "greeted", user));
-            send_raw(sock, 0, "PRIVMSG %s :%s VoHiYo\r\n", DEST, user);
+
+        /* greeting if enabled */
+        if (db_exists(db_entry(chandb, "settings", "greeting"))) {
+            if (!db_exists(db_entry(chandb, "greeted", user))) {
+                db_mkitem(db_entry(chandb, "greeted", user));
+                send_raw(sock, 0, "PRIVMSG %s :%s VoHiYo\r\n", DEST, user);
+            }
         }
 
         /* afk checking */
@@ -81,6 +85,16 @@ handle_raw(int *sock, bool *reconnect, char *line)
                     puts("[ (!) ] reconnect notice received");
                     send_raw(sock, 0, "PRIVMSG %s :received a reconnect notice TehePelo\r\n", CHAN);
                     *reconnect = true;
+                } else if (!strncmp(msg+1, "enable ", 7)) {
+                    db_mkitem(db_entry(chandb, "settings", strchr(msg, ' ') + 1));
+                    send_raw(sock, 0, "PRIVMSG %s :enabled %s\r\n", DEST, strchr(msg, ' ') + 1);
+                } else if (!strncmp(msg+1, "disable ", 8)) {
+                    if (db_exists(db_entry(chandb, "settings", strchr(msg, ' ') + 1))) {
+                        db_del(db_entry(chandb, "settings", strchr(msg, ' ') + 1));
+                        send_raw(sock, 0, "PRIVMSG %s :disabled %s\r\n", DEST, strchr(msg, ' ') + 1);
+                    } else {
+                        send_raw(sock, 0, "PRIVMSG %s :setting not enabled\r\n", DEST);
+                    }
                 }
             } 
 
@@ -201,7 +215,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
 
         /* free db vars */
         free(chandb);
-    } else if (!strncmp(msgtype, "USERNOTICE", 10)) {
+    } else if (!strncmp(msgtype, "USERNOTICE", 10)) { /* TODO: actually test this */
         char channel[msglen];
         strcpy(channel, strchr(msgtype, ' ')+1);
         if (strchr(channel, ' ') != NULL) {
@@ -257,6 +271,7 @@ join_chan(int *sock, char *chan)
         db_init(db_entry(db, "afk"));
         db_init(db_entry(db, "tags"));
         db_init(db_entry(db, "counters"));
+        db_init(db_entry(db, "settings"));
         db_setstr(db_entry(db, "prefix"), ";");
     }
     free(db);

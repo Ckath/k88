@@ -20,23 +20,13 @@ init(int *sock)
     llist *chans = malloc(sizeof(llist));
     db_list(db_entry("db", "channels"), chans);
 
-    llnode *runner = chans->head;
-    while(runner != NULL) {
-        if (strlen(runner->name) > 1) {
-            printf("join channel '%s'\n", runner->name);
-            join_chan(sock, runner->name);
-        }
-        runner = runner->next;
+    while(chans->head != NULL && 
+            strlen(chans->head->name) > 1) {
+        printf("join '%s'\n", chans->head->name);
+        join_chan(sock, chans->head->name);
+        pop(chans, chans->head->name);
     }
-
-    // memory leak but causes segfault otherwise
-    /* free(chans); */
-
-    /* join_chan(sock, CHAN); */
-    /* join_chan(sock, CHAN); */
-    /* join_chan(sock, channels, CHAN); */
-    /* send_raw(sock, 0, "PRIVMSG " CHAN " :VoHiYo\r\n"); */
-    /* join_chan(sock, "#arhdian"); */
+    free(chans);
 }
 
 int

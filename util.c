@@ -180,6 +180,13 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 char quser[msglen];
                 sscanf(msg+9, "%s", quser);
 
+                /* make sure nick is lowercase before looking it up */
+                for (int i = 0; i < strlen(quser); ++i) {
+                    if (quser[i] >= 'A' && quser[i] <= 'Z') {
+                        quser[i] |= 1 << 5;
+                    }
+                }
+
                 if (db_exists(db_entry(chandb, "afk", quser))) {
                     send_raw(sock, 0, "PRIVMSG %s :%s is afk: %s\r\n", DEST, quser,
                             db_getstr(db_entry(chandb, "afk", quser)));

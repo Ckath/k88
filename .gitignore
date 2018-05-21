@@ -1,0 +1,14 @@
+sock
+k88_32
+sock32
+testll
+testnodb
+testutil
+sec.h
+foo
+db/*
+db/**/*.*
+testdb/*
+testdb/**/*.*
+test*.*
+vgcore.*

@@ -21,8 +21,8 @@ init(int *sock)
     db_list(db_entry("db", "channels"), chans);
 
     while(chans->head != NULL && 
-            strlen(chans->head->name) > 1) {
-        printf("join '%s'\n", chans->head->name);
+            strlen(chans->head->name) > 1 &&
+            chans->head->name[0] == '#') {
         join_chan(sock, chans->head->name);
         pop(chans, chans->head->name);
     }
@@ -65,7 +65,7 @@ main(int argc, char *argv[])
         while (!reconnect && (nread = getline(&line_buf, &len, rsock)) != -1) {
             printf("[ <<< ] %s", line_buf);
             if (!strncmp(line_buf, ":tmi.twitch.tv RECONNECT", 24)) {
-                puts("[ (!) ] caught a reconnect in loop WOW, trying to restart");
+                puts("[ (!) ] reconnecting...");
                 break;
             }
 

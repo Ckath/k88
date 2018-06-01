@@ -17,6 +17,7 @@ char *db_entry(char *db, ...);
 char *db_getdb(char *db, ...);
 void db_del(char *path);
 void db_list(char *path, llist *entries);
+char *db_file(char *path);
 
 /* questionable macros to avoid segfault on out of bounds va_arg call */
 #define db_entry(...) db_entry(__VA_ARGS__, "")

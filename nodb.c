@@ -144,3 +144,21 @@ db_list(char *path, llist *entries)
         closedir(d);
     }
 }
+
+char *
+db_file(char *path)
+{
+    DIR *d;
+    struct dirent *dir;
+
+    d = opendir(path);
+    if (d) {
+        while ((dir = readdir(d)) != NULL) {
+            if (dir->d_type != DT_DIR) {
+                closedir(d);
+                return dir->d_name;
+            }
+        }
+    }
+    return "thisisnotavalidnickname";
+}

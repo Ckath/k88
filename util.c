@@ -57,6 +57,21 @@ handle_raw(int *sock, bool *reconnect, char *line)
             }
         }
 
+        /* mail checking */
+        if (db_exists(db_entry("db", "mail", user))) {
+            if (!strcmp(db_file(db_entry("db", "mail", user)), "thisisnotavalidnickname")) {
+                db_del(db_entry("db", "mail", user));
+            } else {
+                send_raw(sock, 0, "PRIVMSG %s :%s: mail from %s: %s\r\n", DEST, user,
+                        db_file(db_entry("db", "mail", user)), 
+                        db_getstr(db_entry("db", "mail", user, 
+                                db_file(db_entry("db", "mail", user)))));
+
+                db_del(db_entry("db", "mail", user, 
+                            db_file(db_entry("db", "mail", user))));
+            }
+        }
+
         /* afk checking */
         if (db_exists(db_entry(chandb, "afk", user))) {
             send_raw(sock, 0, "PRIVMSG %s :%s is no longer afk\r\n", DEST, user);
@@ -83,7 +98,6 @@ handle_raw(int *sock, bool *reconnect, char *line)
                     db_setchr(db_entry(chandb, "prefix"), msg[8]);
                 } else if (!strncmp(msg+1, "reconnect", 9)) {
                     puts("[ (!) ] reconnect notice received");
-                    send_raw(sock, 0, "PRIVMSG %s :received a reconnect notice TehePelo\r\n", CHAN);
                     *reconnect = true;
                 } else if (!strncmp(msg+1, "enable ", 7)) {
                     db_mkitem(db_entry(chandb, "settings", strchr(msg, ' ') + 1));
@@ -95,6 +109,12 @@ handle_raw(int *sock, bool *reconnect, char *line)
                     } else {
                         send_raw(sock, 0, "PRIVMSG %s :setting not enabled\r\n", DEST);
                     }
+                } else if (!strncmp(msg+1, "checkdb", 7)) {
+                    send_raw(sock, 0, "PRIVMSG %s :%s\r\n", DEST, 
+                            check_db(chandb) ? "db fixed" : "db is fine");
+                } else if (!strncmp(msg+1, "names", 5)) {
+                    send_raw(sock, 0, "NAMES %s\r\n", channel);
+                    send_raw(sock, 0, "USERS\r\n");
                 }
             } 
 
@@ -106,7 +126,9 @@ handle_raw(int *sock, bool *reconnect, char *line)
                     send_raw(sock, 0, "PRIVMSG %s :user status: user\r\n", DEST);
                 }
             } else if (!strncmp(msg+1, "vanish", 6)) {
-                send_raw(sock, 0, "PRIVMSG %s :.timeout %s 1\r\n", DEST, user);
+                if (!db_exists(db_entry(chandb, "settings", "novanish"))) {
+                    send_raw(sock, 0, "PRIVMSG %s :.timeout %s 1\r\n", DEST, user);
+                }
             } else if (!strncmp(msg+1, "t ", 2)) {
                 char tag[msglen];
                 sscanf(msg+3, "%s", tag);
@@ -207,6 +229,24 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 } else {
                     send_raw(sock, 0, "PRIVMSG %s :¯\\_(ツ)_/¯\r\n", DEST);
                 }
+            } else if(!strncmp(msg+1, "mail ", 5)) {
+                char muser[msglen];
+                char content[msglen];
+                sscanf(msg+6, "%s", muser);
+                strcpy(content, strchr(strchr(msg+1, ' ')+1, ' ') 
+                        ? strchr(strchr(msg+1, ' ')+1, ' ')+1
+                        : "");
+
+                /* make sure nick is lowercase before storing it */
+                for (int i = 0; i < strlen(muser); ++i) {
+                    if (muser[i] >= 'A' && muser[i] <= 'Z') {
+                        muser[i] |= 1 << 5;
+                    }
+                }
+
+                db_init(db_entry("db", "mail", muser));
+                db_setstr(db_entry("db", "mail", muser, user), content);
+                send_raw(sock, 0, "PRIVMSG %s :sent to %s\r\n", DEST, muser);
             }
 
         } else if (!strncmp(msg, ".bots", 5)) {
@@ -228,11 +268,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
         strchr(user, ';')[0] = '\0';
 
         printf("[ (!) ] %s did a nice thing in %s\n", user, channel);
-    } else if (strpos("RECONNECT", line) > -1) {
-        puts("[ (!) ] reconnect notice received");
-        send_raw(sock, 0, "PRIVMSG %s :received a reconnect notice TehePelo\r\n", CHAN);
-        *reconnect = true;
-    } 
+    }
 }
 
 void
@@ -285,6 +321,32 @@ part_chan(int *sock, char *chan)
 {
     db_del(db_entry("db", "channels", chan));
     send_raw(sock, 0, "PART %s\r\n", chan);
+}
+
+bool
+check_db(char *chandb)
+{
+
+    int fixed = 0;
+    char *dbs[] = {
+        db_entry(chandb, "greeted"), 
+        db_entry(chandb, "bux"), 
+        db_entry(chandb, "afk"), 
+        db_entry(chandb, "tags"), 
+        db_entry(chandb, "counters"), 
+        db_entry(chandb, "settings"),
+        db_entry("db", "mail"),
+        db_entry("db", "channels"),
+        db_entry("db", "mail")
+    };
+    for (int i = 0; i < 6; ++i) {
+        if (!db_exists(dbs[i])) {
+            printf("[ (!) ] added db: %s\n", dbs[i]);
+            db_init(dbs[i]);
+            fixed++;
+        }
+    }
+    return (fixed > 0);
 }
 
 int

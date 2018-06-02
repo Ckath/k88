@@ -1,7 +1,5 @@
-#include "config.h" 
-#include "socks.h"
-#include "util.h"
-#include "nodb.h"
+#include "extern.h"
+#include "intern.h"
 
 static void init(int *sock);
 

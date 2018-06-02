@@ -12,3 +12,4 @@ testdb/*
 testdb/**/*.*
 test*.*
 vgcore.*
+*.o

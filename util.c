@@ -325,7 +325,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 char *pbuser = buser;
                 sscanf(msg+5, "%s", buser);
 
-                if (strlen(buser) > 3) {
+                if (msg[4] == ' ') {
                     if (buser[0] == '@') {
                         buser = buser+1;
                     }

@@ -330,6 +330,13 @@ handle_raw(int *sock, bool *reconnect, char *line)
                         buser = buser+1;
                     }
 
+                    /* make sure nick is lowercase before checking */
+                    for (int i = 0; i < strlen(buser); ++i) {
+                        if (buser[i] >= 'A' && buser[i] <= 'Z') {
+                            buser[i] |= 1 << 5;
+                        }
+                    }
+
                     if (db_exists(db_entry("db", channel, "bux", buser))) {
                         send_raw(sock, 0, "PRIVMSG %s :%s's %sbux: %d\r\n", DEST, 
                                 buser, channel+1, 

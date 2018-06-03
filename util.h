@@ -6,6 +6,7 @@
 
 #define DEST channel[0] == '#' ? channel : sender
 
+void handle_bux();
 void handle_raw(int *sock, bool *reconnect, char *line);
 void send_raw(int *sock, bool silent, char *msgformat, ...);
 void join_chan(int *sock, char *chan);

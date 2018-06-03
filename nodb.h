@@ -17,6 +17,7 @@ char *db_entry(char *db, ...);
 char *db_getdb(char *db, ...);
 void db_del(char *path);
 void db_list(char *path, llist *entries);
+void db_listdbs(char *path, llist *dbs);
 char *db_file(char *path);
 
 /* questionable macros to avoid segfault on out of bounds va_arg call */

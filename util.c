@@ -1,6 +1,42 @@
 #include "util.h"
 
 void
+handle_bux()
+{
+    puts("[ (!) ] awarding bux");
+    llist *chans = malloc(sizeof(llist));
+    db_list(db_entry("db", "channels"), chans);
+
+    while(chans->head != NULL && 
+            strlen(chans->head->name) > 1 &&
+            chans->head->name[0] == '#') {
+
+        while (strcmp(db_file(db_entry("db", chans->head->name, "active")), 
+                    "thisdirectoryisdefinitelyemptyforsure")) {
+
+            /* add bux to active user */
+            int old_bux = db_exists(db_entry("db", chans->head->name, "bux", 
+                        db_file(db_entry("db", chans->head->name, "active")))) ?
+                        db_getnum(db_entry("db", chans->head->name, "bux", 
+                        db_file(db_entry("db", chans->head->name, "active")))) : 0;
+
+            db_setnum(db_entry("db", chans->head->name, "bux", 
+                        db_file(db_entry("db", chans->head->name, "active"))),
+                        old_bux + BUX_AMOUNT);
+
+            /* move on to next user */
+            db_del(db_entry("db", chans->head->name, "active",
+                        db_file(db_entry("db", chans->head->name, "active"))));
+        }
+
+        /* move on to next channel */
+        pop(chans, chans->head->name);
+    }
+    free(chans);
+    alarm(BUX_INTERVAL);
+}
+
+void
 handle_raw(int *sock, bool *reconnect, char *line)
 {
     /* use total msg length for all temporary strings,
@@ -23,6 +59,9 @@ handle_raw(int *sock, bool *reconnect, char *line)
         /* pull chaninfo from db */
         char *chandb = db_getdb("db", channel);
         char prefix = db_getchr(db_entry(chandb, "prefix"));
+
+        /* handle activity */
+        db_mkitem(db_entry(chandb, "active", sender));
 
         /* catch bits */
         /* TODO: actually test this */
@@ -59,7 +98,8 @@ handle_raw(int *sock, bool *reconnect, char *line)
 
         /* mail checking */
         if (db_exists(db_entry("db", "mail", user))) {
-            if (!strcmp(db_file(db_entry("db", "mail", user)), "thisisnotavalidnickname")) {
+            if (!strcmp(db_file(db_entry("db", "mail", user)), 
+                        "thisdirectoryisdefinitelyemptyforsure")) {
                 db_del(db_entry("db", "mail", user));
             } else {
                 send_raw(sock, 0, "PRIVMSG %s :%s: mail from %s: %s\r\n", DEST, user,
@@ -115,6 +155,8 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 } else if (!strncmp(msg+1, "names", 5)) {
                     send_raw(sock, 0, "NAMES %s\r\n", channel);
                     send_raw(sock, 0, "USERS\r\n");
+                } else if (!strncmp(msg+1, "testbux", 6)) {
+                    handle_bux();
                 }
             } 
 
@@ -247,8 +289,62 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 db_init(db_entry("db", "mail", muser));
                 db_setstr(db_entry("db", "mail", muser, user), content);
                 send_raw(sock, 0, "PRIVMSG %s :sent to %s\r\n", DEST, muser);
-            }
+            } else if(!strncmp(msg+1, "8ball ", 6)) {
+                char *ball[] = {
+                    "it is certain",
+                    "it is decidedly so",
+                    "without a doubt",
+                    "yes definitely",
+                    "you may rely on it",
+                    "as I see it, yes",
+                    "most likely",
+                    "outlook good",
+                    "yes",
+                    "signs point to yes",
+                    "reply hazy try again",
+                    "ask again later",
+                    "idk kev 4Head",
+                    "better not tell you now",
+                    "cannot predict now",
+                    "concentrate and ask again later",
+                    "don't count on it",
+                    "my reply is no",
+                    "my sources say no",
+                    "outlook not so good",
+                    "my sources say no",
+                    "very doubtful",
+                    "maybe Kappa",
+                    "like I care LUL",
+                    "asking a scuffed irc bot for advice LUL"
+                };
 
+                srand(time(NULL));
+                send_raw(sock, 0, "PRIVMSG %s :%s\r\n", DEST, ball[rand()%25+1]);
+            } else if(!strncmp(msg+1, "bux", 3)) {
+                char *buser = malloc(msglen * sizeof(char));
+                char *pbuser = buser;
+                sscanf(msg+5, "%s", buser);
+
+                if (strlen(buser) > 3) {
+                    if (buser[0] == '@') {
+                        buser = buser+1;
+                    }
+
+                    if (db_exists(db_entry("db", channel, "bux", buser))) {
+                        send_raw(sock, 0, "PRIVMSG %s :%s's %sbux: %d\r\n", DEST, 
+                                buser, channel+1, 
+                                db_getnum(db_entry("db", channel, "bux", buser)));
+                    }
+                } else {
+                    if (db_exists(db_entry("db", channel, "bux", sender))) {
+                        send_raw(sock, 0, "PRIVMSG %s :%s's %sbux: %d\r\n", DEST, 
+                                sender, channel+1, 
+                                db_getnum(db_entry("db", channel, "bux", sender)));
+                    }
+                }
+                free(pbuser);
+
+            }
         } else if (!strncmp(msg, ".bots", 5)) {
             send_raw(sock, 0, "PRIVMSG %s :Reporting in! [C]\r\n", DEST);
         } 
@@ -299,18 +395,10 @@ void
 join_chan(int *sock, char *chan)
 {
     /* check if db is alright */
-    char *db = db_getdb("db", chan);
-    if (!db_exists(db)) {
-        db_init(db);
-        db_init(db_entry(db, "greeted"));
-        db_init(db_entry(db, "bux"));
-        db_init(db_entry(db, "afk"));
-        db_init(db_entry(db, "tags"));
-        db_init(db_entry(db, "counters"));
-        db_init(db_entry(db, "settings"));
-        db_setstr(db_entry(db, "prefix"), ";");
-    }
-    free(db);
+    char *chandb = db_getdb("db", chan);
+    db_init(chandb);
+    check_db(chandb);
+    free(chandb);
 
     db_mkitem(db_entry("db", "channels", chan));
     send_raw(sock, 0, "JOIN %s\r\n", chan);
@@ -326,25 +414,30 @@ part_chan(int *sock, char *chan)
 bool
 check_db(char *chandb)
 {
-
     int fixed = 0;
     char *dbs[] = {
-        db_entry(chandb, "greeted"), 
-        db_entry(chandb, "bux"), 
-        db_entry(chandb, "afk"), 
-        db_entry(chandb, "tags"), 
-        db_entry(chandb, "counters"), 
-        db_entry(chandb, "settings"),
-        db_entry("db", "mail"),
-        db_entry("db", "channels"),
-        db_entry("db", "mail")
+        db_getdb(chandb, "greeted"), 
+        db_getdb(chandb, "bux"), 
+        db_getdb(chandb, "afk"), 
+        db_getdb(chandb, "tags"), 
+        db_getdb(chandb, "counters"), 
+        db_getdb(chandb, "settings"),
+        db_getdb(chandb, "active"),
+        db_getdb("db", "mail"),
+        db_getdb("db", "channels")
     };
-    for (int i = 0; i < 6; ++i) {
+
+    for (int i = 0; i < 9; ++i) {
         if (!db_exists(dbs[i])) {
             printf("[ (!) ] added db: %s\n", dbs[i]);
             db_init(dbs[i]);
             fixed++;
         }
+        free(dbs[i]);
+    }
+    if (!db_exists(db_entry(chandb, "prefix"))) {
+        db_setchr(db_entry(chandb, "prefix"), ';');
+        fixed++;
     }
     return (fixed > 0);
 }

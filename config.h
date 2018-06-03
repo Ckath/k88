@@ -8,5 +8,7 @@
 #define CHAN "#ck8t"
 #define NICK "k88_desu"
 #define ADMINSTR ":ck8t!ck8t"
+#define BUX_INTERVAL 600
+#define BUX_AMOUNT 100
 
 #endif

@@ -30,6 +30,11 @@ init(int *sock)
 int
 main(int argc, char *argv[])
 {
+    /* start alarm */
+    alarm(BUX_INTERVAL);
+	signal(SIGALRM, (void *) handle_bux);
+
+    /* main loop for connecting/reconnecting everything */
     for (;;) {
         /* make sure dirs exist */
         db_init("./db");

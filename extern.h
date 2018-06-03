@@ -14,5 +14,6 @@
 #include <time.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <signal.h>
 
 #endif

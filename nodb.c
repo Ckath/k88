@@ -145,6 +145,23 @@ db_list(char *path, llist *entries)
     }
 }
 
+void
+db_listdbs(char *path, llist *dbs)
+{
+    DIR *d;
+    struct dirent *dir;
+
+    d = opendir(path);
+    if (d) {
+        while ((dir = readdir(d)) != NULL) {
+            if (dir->d_name[0] == '#') {
+                push(dbs, dir->d_name);
+            }
+        }
+        closedir(d);
+    }
+}
+
 char *
 db_file(char *path)
 {
@@ -160,5 +177,5 @@ db_file(char *path)
             }
         }
     }
-    return "thisisnotavalidnickname";
+    return "thisdirectoryisdefinitelyemptyforsure";
 }

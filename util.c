@@ -288,7 +288,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
 
                 db_init(db_entry("db", "mail", muser));
                 db_setstr(db_entry("db", "mail", muser, user), content);
-                send_raw(sock, 0, "PRIVMSG %s :sent to %s\r\n", DEST, muser);
+                send_raw(sock, 0, "PRIVMSG %s :will pass that on to %s when I spot them\r\n", DEST, muser);
             } else if(!strncmp(msg+1, "8ball ", 6)) {
                 char *ball[] = {
                     "it is certain",

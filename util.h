@@ -4,7 +4,7 @@
 #include "intern.h"
 #include "extern.h"
 
-#define DEST channel[0] == '#' ? channel : sender
+#define DEST channel[0] == '#' ? channel : user
 
 void handle_bux();
 void handle_raw(int *sock, bool *reconnect, char *line);

@@ -1,5 +1,18 @@
 #include "util.h"
 
+/* djb2 string hash function */
+unsigned long
+hash(char *str)
+{
+    unsigned long hash = 5381;
+    int c;
+
+    while (c = *str++)
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+    return hash;
+}
+
 void
 handle_bux()
 {
@@ -49,10 +62,10 @@ handle_raw(int *sock, bool *reconnect, char *line)
     if (!strncmp(msgtype, "PRIVMSG", 7)) {
         /* filter out info from raw PRIVMSG string */        
         char msg[msglen]; 
-        char sender[msglen]; 
+        char user[msglen]; 
         char *channel = strchr(msgtype, ' ') + 1;
-        strcpy(sender, raw_msg+1);
-        strchr(sender, '!')[0] = '\0';
+        strcpy(user, raw_msg+1);
+        strchr(user, '!')[0] = '\0';
         strcpy(msg, strchr(channel, ':')+1);
         strchr(channel, ' ')[0] = '\0';
 
@@ -61,7 +74,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
         char prefix = db_getchr(db_entry(chandb, "prefix"));
 
         /* handle activity */
-        db_mkitem(db_entry(chandb, "active", sender));
+        db_mkitem(db_entry(chandb, "active", user));
 
         /* catch bits */
         /* TODO: actually test this */
@@ -69,7 +82,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
         if (!strncmp(bitstr, "bits=", 5)) {
             int bits = 0;
             sscanf(bitstr, "bits=%d", &bits);
-            printf("[ (!) ] %s gave %d bits in %s\n", sender, bits, channel);
+            printf("[ (!) ] %s gave %d bits in %s\n", user, bits, channel);
         }
 
         /* ctcp */
@@ -83,10 +96,6 @@ handle_raw(int *sock, bool *reconnect, char *line)
             puts("[ (!) ] ctcp time"); 
             send_raw(sock, 0, "NOTICE %s :TIME %u\r\n", DEST, (unsigned)time(NULL));
         }
-
-        char user[msglen];
-        strcpy(user, raw_msg+1);
-        strchr(user, '!')[0] = '\0';
 
         /* greeting if enabled */
         if (db_exists(db_entry(chandb, "settings", "greeting"))) {
@@ -340,18 +349,73 @@ handle_raw(int *sock, bool *reconnect, char *line)
                     if (db_exists(db_entry("db", channel, "bux", buser))) {
                         send_raw(sock, 0, "PRIVMSG %s :%s's %sbux: %d\r\n", DEST, 
                                 buser, channel+1, 
-                                db_getnum(db_entry("db", channel, "bux", buser)));
+                                db_getnum(db_entry(chandb, "bux", buser)));
                     }
                 } else {
-                    if (db_exists(db_entry("db", channel, "bux", sender))) {
+                    if (db_exists(db_entry("db", channel, "bux", user))) {
                         send_raw(sock, 0, "PRIVMSG %s :%s's %sbux: %d\r\n", DEST, 
-                                sender, channel+1, 
-                                db_getnum(db_entry("db", channel, "bux", sender)));
+                                user, channel+1, 
+                                db_getnum(db_entry(chandb, "bux", user)));
                     }
                 }
                 free(pbuser);
 
+            } else if(!strncmp(msg+1, "rate ", 5)) {
+                char *hash_str = malloc(sizeof(char) * 100);
+
+                sprintf(hash_str, "%s%s", user, msg+6);
+
+                srand(hash(hash_str));
+                send_raw(sock, 0, "PRIVMSG %s :%s is %d%% %s\r\n", DEST, user,
+                        rand()%100+1, msg+6);
+
+                free(hash_str);
+            } else if(!strncmp(msg+1, "$timeout ", 9)) {
+                int user_bux = 0;
+                char tuser[msglen];
+                sscanf(msg+10, "%s", tuser);
+
+                /* make sure nick is lowercase before storing it */
+                for (int i = 0; i < strlen(tuser); ++i) {
+                    if (tuser[i] >= 'A' && tuser[i] <= 'Z') {
+                        tuser[i] |= 1 << 5;
+                    }
+                }
+
+                if (db_exists(db_entry(chandb, "bux", user)) &&
+                        (user_bux = db_getnum(db_entry(chandb, "bux", user))) 
+                        > TIMEOUT_COST+1) {
+                    db_setnum(db_entry(chandb, "bux", user), user_bux-TIMEOUT_COST);
+                    send_raw(sock, 0, "PRIVMSG %s :.timeout %s %d\r\n", DEST,
+                            tuser, TIMEOUT_DURATION);
+                }
+            } else if(!strncmp(msg+1, "gamble ", 7)) {
+                int user_bux = 0;
+                int gamble_amount = 0;
+                sscanf(msg+8, "%d", &gamble_amount);
+                printf("amount: %d\n", gamble_amount);
+                
+                srand(time(NULL));
+
+                if (!db_exists(db_entry(chandb, "bux", user)) || 
+                        (user_bux = db_getnum(db_entry(chandb, "bux", user))) 
+                        < gamble_amount) {
+                    send_raw(sock, 0, "PRIVMSG %s :insufficient bux\r\n", DEST);
+                } else if (rand()%2) {
+                    user_bux -= gamble_amount;
+
+                    db_setnum(db_entry(chandb, "bux", user), 
+                            user_bux + (int) (gamble_amount * GAMBLE_PROFIT));
+                    send_raw(sock, 0, "PRIVMSG %s :%s just won %d %sbux \r\n", DEST,
+                            user, (int)(gamble_amount*GAMBLE_PROFIT), channel+1);
+                } else {
+                    db_setnum(db_entry(chandb, "bux", user), 
+                            user_bux - gamble_amount);
+                    send_raw(sock, 0, "PRIVMSG %s :you lost %d %sbux\r\n", DEST, 
+                            gamble_amount, channel+1);
+                }
             }
+
         } else if (!strncmp(msg, ".bots", 5)) {
             send_raw(sock, 0, "PRIVMSG %s :Reporting in! [C]\r\n", DEST);
         } 

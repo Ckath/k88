@@ -4,6 +4,10 @@
 #include "intern.h"
 #include "extern.h"
 
+#define TOLOWER(variable) \
+for (int i = 0; i < strlen(variable); ++i) \
+    if (variable[i] >= 'A' && variable[i] <= 'Z') \
+        variable[i] |= 1 << 5;
 #define DEST channel[0] == '#' ? channel : user
 
 void handle_bux();

@@ -101,7 +101,11 @@ handle_raw(int *sock, bool *reconnect, char *line)
         if (db_exists(db_entry(chandb, "settings", "greeting"))) {
             if (!db_exists(db_entry(chandb, "greeted", user))) {
                 db_mkitem(db_entry(chandb, "greeted", user));
-                send_raw(sock, 0, "PRIVMSG %s :%s VoHiYo\r\n", DEST, user);
+                char *greeting_format = malloc(sizeof(char) *666);
+                strcpy(greeting_format, "PRIVMSG %s :");
+                strcat(greeting_format, db_getstr(db_entry(chandb, "greeting_format")));
+                strcat(greeting_format, "\r\n");
+                send_raw(sock, 0, greeting_format, DEST, user);
             }
         }
 
@@ -166,8 +170,19 @@ handle_raw(int *sock, bool *reconnect, char *line)
                     send_raw(sock, 0, "USERS\r\n");
                 } else if (!strncmp(msg+1, "testbux", 6)) {
                     handle_bux();
+                } else if (!strncmp(msg+1, "regreet", 7)) {
+                    while (strcmp(db_file(db_entry(chandb, "greeted")), 
+                                "thisdirectoryisdefinitelyemptyforsure")) {
+                        db_del(db_entry(chandb, "greeted", db_file(db_entry(chandb, "greeted"))));
+                    }
+                    send_raw(sock, 0, "PRIVMSG %s :greeted cache cleared, regreeting everyone\r\n", 
+                            DEST);
+                } else if (!strncmp(msg+1, "setgreeting ", 12)) {
+                    db_setstr(db_entry(chandb, "greeting_format"), msg+13);
+                    send_raw(sock, 0, "PRIVMSG %s :set greeting in %s to: '%s'\r\n", DEST,
+                            channel, db_getstr(db_entry(chandb, "greeting_format")));
                 }
-            } 
+            }
 
             /* public commands */
             if (!strncmp(msg+1, "checkme", 7)) {
@@ -268,11 +283,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 sscanf(msg+9, "%s", quser);
 
                 /* make sure nick is lowercase before looking it up */
-                for (int i = 0; i < strlen(quser); ++i) {
-                    if (quser[i] >= 'A' && quser[i] <= 'Z') {
-                        quser[i] |= 1 << 5;
-                    }
-                }
+                TOLOWER(quser);
 
                 if (db_exists(db_entry(chandb, "afk", quser))) {
                     send_raw(sock, 0, "PRIVMSG %s :%s is afk: %s\r\n", DEST, quser,
@@ -281,7 +292,8 @@ handle_raw(int *sock, bool *reconnect, char *line)
                     send_raw(sock, 0, "PRIVMSG %s :¯\\_(ツ)_/¯\r\n", DEST);
                 }
             } else if(!strncmp(msg+1, "mail ", 5)) {
-                char muser[msglen];
+                char *muser = malloc(sizeof(char)*msglen);
+                char *pmuser = muser;
                 char content[msglen];
                 sscanf(msg+6, "%s", muser);
                 strcpy(content, strchr(strchr(msg+1, ' ')+1, ' ') 
@@ -289,15 +301,15 @@ handle_raw(int *sock, bool *reconnect, char *line)
                         : "");
 
                 /* make sure nick is lowercase before storing it */
-                for (int i = 0; i < strlen(muser); ++i) {
-                    if (muser[i] >= 'A' && muser[i] <= 'Z') {
-                        muser[i] |= 1 << 5;
-                    }
+                TOLOWER(muser);
+                if (muser[0] == '@') {
+                    muser = muser+1;
                 }
 
                 db_init(db_entry("db", "mail", muser));
                 db_setstr(db_entry("db", "mail", muser, user), content);
                 send_raw(sock, 0, "PRIVMSG %s :will pass that on to %s when I spot them\r\n", DEST, muser);
+                free(pmuser);
             } else if(!strncmp(msg+1, "8ball ", 6)) {
                 char *ball[] = {
                     "it is certain",
@@ -328,7 +340,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 };
 
                 srand(time(NULL));
-                send_raw(sock, 0, "PRIVMSG %s :%s\r\n", DEST, ball[rand()%25+1]);
+                send_raw(sock, 0, "PRIVMSG %s :%s\r\n", DEST, ball[rand()%25]);
             } else if(!strncmp(msg+1, "bux", 3)) {
                 char *buser = malloc(msglen * sizeof(char));
                 char *pbuser = buser;
@@ -340,11 +352,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
                     }
 
                     /* make sure nick is lowercase before checking */
-                    for (int i = 0; i < strlen(buser); ++i) {
-                        if (buser[i] >= 'A' && buser[i] <= 'Z') {
-                            buser[i] |= 1 << 5;
-                        }
-                    }
+                    TOLOWER(buser);
 
                     if (db_exists(db_entry("db", channel, "bux", buser))) {
                         send_raw(sock, 0, "PRIVMSG %s :%s's %sbux: %d\r\n", DEST, 
@@ -375,50 +383,88 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 char tuser[msglen];
                 sscanf(msg+10, "%s", tuser);
 
-                /* make sure nick is lowercase before storing it */
-                for (int i = 0; i < strlen(tuser); ++i) {
-                    if (tuser[i] >= 'A' && tuser[i] <= 'Z') {
-                        tuser[i] |= 1 << 5;
-                    }
-                }
-
                 if (db_exists(db_entry(chandb, "bux", user)) &&
                         (user_bux = db_getnum(db_entry(chandb, "bux", user))) 
                         > TIMEOUT_COST+1) {
                     db_setnum(db_entry(chandb, "bux", user), user_bux-TIMEOUT_COST);
+                    send_raw(sock, 0, "PRIVMSG %s :%s wasted %d %sbux to timeout %s LUL\r\n", DEST,
+                            user, TIMEOUT_COST, channel+1, tuser);
                     send_raw(sock, 0, "PRIVMSG %s :.timeout %s %d\r\n", DEST,
                             tuser, TIMEOUT_DURATION);
                 }
             } else if(!strncmp(msg+1, "gamble ", 7)) {
                 int user_bux = 0;
                 int gamble_amount = 0;
+                char gamble_all[4];
                 sscanf(msg+8, "%d", &gamble_amount);
-                printf("amount: %d\n", gamble_amount);
+                sscanf(msg+8, "%3s", gamble_all);
                 
                 srand(time(NULL));
+                gamble_amount = abs(gamble_amount);
 
-                if (!db_exists(db_entry(chandb, "bux", user)) || 
-                        (user_bux = db_getnum(db_entry(chandb, "bux", user))) 
-                        < gamble_amount) {
+                if ((!db_exists(db_entry(chandb, "bux", user)) || 
+                        (user_bux = db_getnum(db_entry(chandb, "bux", user))) < gamble_amount) 
+                        && strcmp("all", gamble_all)) {
                     send_raw(sock, 0, "PRIVMSG %s :insufficient bux\r\n", DEST);
                 } else if (rand()%2) {
+                    gamble_amount = !strcmp("all", gamble_all) ? user_bux : gamble_amount;
                     user_bux -= gamble_amount;
 
                     db_setnum(db_entry(chandb, "bux", user), 
                             user_bux + (int) (gamble_amount * GAMBLE_PROFIT));
-                    send_raw(sock, 0, "PRIVMSG %s :%s just won %d %sbux \r\n", DEST,
-                            user, (int)(gamble_amount*GAMBLE_PROFIT), channel+1);
+                    send_raw(sock, 0, "PRIVMSG %s :%s just won %d %sbux, now has %d %sbux\r\n", DEST,
+                            user, (int)(gamble_amount*GAMBLE_PROFIT-gamble_amount), channel+1,
+                            db_getnum(db_entry(chandb, "bux", user)), channel+1);
                 } else {
+                    gamble_amount = !strcmp("all", gamble_all) ? user_bux : gamble_amount;
                     db_setnum(db_entry(chandb, "bux", user), 
                             user_bux - gamble_amount);
-                    send_raw(sock, 0, "PRIVMSG %s :you lost %d %sbux\r\n", DEST, 
-                            gamble_amount, channel+1);
+                    send_raw(sock, 0, "PRIVMSG %s :%s just lost %d %sbux, now has %d %sbux\r\n", 
+                            DEST, user, gamble_amount, channel+1,
+                            db_getnum(db_entry(chandb, "bux", user)), channel+1);
                 }
+            } else if(!strncmp(msg+1, "give ", 5)) {
+                char *guser = malloc(msglen * sizeof(char));
+                char *pguser = guser;
+                int user_bux;
+                int give_amount;
+                sscanf(msg+6, "%s %d", guser, &give_amount);
+
+                /* make sure nick is lowercase before storing it */
+                TOLOWER(guser);
+                if (guser[0] == '@') {
+                    guser = guser+1;
+                }
+
+                give_amount = abs(give_amount);
+                
+                if (!db_exists(db_entry(chandb, "bux", guser))) {
+                    send_raw(sock, 0, "PRIVMSG %s :%s hasn't been active enough to deserve bux\r\n", 
+                            DEST, guser);
+                } else if (!db_exists(db_entry(chandb, "bux", user)) || 
+                        (user_bux = db_getnum(db_entry(chandb, "bux", user))) < give_amount) {
+                    send_raw(sock, 0, "PRIVMSG %s :insufficient bux\r\n", DEST);
+                } else {
+                    db_setnum(db_entry(db_entry(chandb, "bux", guser)), 
+                            db_getnum(db_entry(chandb, "bux", guser)) + give_amount);
+                    db_setnum(db_entry(db_entry(chandb, "bux", user)), 
+                            db_getnum(db_entry(chandb, "bux", user)) - give_amount);
+                    send_raw(sock, 0, "PRIVMSG %s :%s gave %s %d %sbux\r\n", DEST,
+                            user, guser, give_amount, channel+1);
+                }
+
+                free(pguser);
             }
 
         } else if (!strncmp(msg, ".bots", 5)) {
             send_raw(sock, 0, "PRIVMSG %s :Reporting in! [C]\r\n", DEST);
         } 
+
+        /* start monad */
+        if (!strncmp(msg, "!enation", 8)) {
+            send_raw(sock, 0, "PRIVMSG %s :weeb nation TehePelo ~ <3\r\n", DEST);
+        }
+        /* end monad */
 
         /* free db vars */
         free(chandb);
@@ -508,6 +554,10 @@ check_db(char *chandb)
     }
     if (!db_exists(db_entry(chandb, "prefix"))) {
         db_setchr(db_entry(chandb, "prefix"), ';');
+        fixed++;
+    }
+    if (!db_exists(db_entry(chandb, "greeting_format"))) {
+        db_setstr(db_entry(chandb, "greeting_format"), "%s VoHiYo");
         fixed++;
     }
     return (fixed > 0);

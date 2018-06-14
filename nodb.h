@@ -3,6 +3,7 @@
 
 #include "intern.h"
 #include "extern.h"
+#define NODB_BUFSIZE BUF_SIZE
 
 void db_init(char *path);
 int db_mkitem(char *path);

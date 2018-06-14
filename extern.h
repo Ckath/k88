@@ -15,5 +15,6 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <signal.h>
+#include <pthread.h>
 
 #endif

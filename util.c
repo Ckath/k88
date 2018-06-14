@@ -1,4 +1,5 @@
 #include "util.h"
+pthread_t t;
 
 /* djb2 string hash function */
 unsigned long
@@ -14,18 +15,31 @@ hash(char *str)
 }
 
 void
+start_handle_bux()
+{
+    int rc;
+    if ((rc = pthread_create(&t, NULL, (void *) handle_bux, NULL))) {
+        printf("[ !!! ] failed to create handle_bux thread: %d\n", rc);
+    } else {
+        pthread_detach(t);
+    }
+}
+
+void
 handle_bux()
 {
-    puts("[ (!) ] awarding bux");
+    puts("[ (!) ] awarding bux...");
     llist *chans = malloc(sizeof(llist));
     db_list(db_entry("db", "channels"), chans);
 
+
+    /* loop over every channel */
     while(chans->head != NULL && 
             strlen(chans->head->name) > 1 &&
             chans->head->name[0] == '#') {
 
-        while (strcmp(db_file(db_entry("db", chans->head->name, "active")), 
-                    "thisdirectoryisdefinitelyemptyforsure")) {
+        /* loop over every active user in channel */
+        while (db_file(db_entry("db", chans->head->name, "active"))) {
 
             /* add bux to active user */
             int old_bux = db_exists(db_entry("db", chans->head->name, "bux", 
@@ -45,8 +59,11 @@ handle_bux()
         /* move on to next channel */
         pop(chans, chans->head->name);
     }
+
+    puts("[ (!) ] done awarding bux");
     free(chans);
     alarm(BUX_INTERVAL);
+    pthread_exit(NULL);
 }
 
 void
@@ -78,7 +95,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
 
         /* catch bits */
         /* TODO: actually test this */
-        char *bitstr = strchr(line, ';') + 1;
+        char *bitstr = line + strpos(line, "bits=")+1;
         if (!strncmp(bitstr, "bits=", 5)) {
             int bits = 0;
             sscanf(bitstr, "bits=%d", &bits);
@@ -91,7 +108,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
             send_raw(sock, 0, "NOTICE %s :VERSION socket.h\r\n", DEST);
         } else if (!strncmp(msg, "PING ", 6)) {
             puts("[ (!) ] ctcp ping"); 
-            send_raw(sock, 0, "NOTICE %s :PING %u\r\n", DEST, 88 );
+            send_raw(sock, 0, "NOTICE %s :PING %u\r\n", DEST, 88);
         } else if (!strncmp(msg, "TIME", 6)) {
             puts("[ (!) ] ctcp time"); 
             send_raw(sock, 0, "NOTICE %s :TIME %u\r\n", DEST, (unsigned)time(NULL));
@@ -101,7 +118,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
         if (db_exists(db_entry(chandb, "settings", "greeting"))) {
             if (!db_exists(db_entry(chandb, "greeted", user))) {
                 db_mkitem(db_entry(chandb, "greeted", user));
-                char *greeting_format = malloc(sizeof(char) *666);
+                char greeting_format[BUF_SIZE];
                 strcpy(greeting_format, "PRIVMSG %s :");
                 strcat(greeting_format, db_getstr(db_entry(chandb, "greeting_format")));
                 strcat(greeting_format, "\r\n");
@@ -111,8 +128,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
 
         /* mail checking */
         if (db_exists(db_entry("db", "mail", user))) {
-            if (!strcmp(db_file(db_entry("db", "mail", user)), 
-                        "thisdirectoryisdefinitelyemptyforsure")) {
+            if (!db_file(db_entry("db", "mail", user))) {
                 db_del(db_entry("db", "mail", user));
             } else {
                 send_raw(sock, 0, "PRIVMSG %s :%s: mail from %s: %s\r\n", DEST, user,
@@ -131,7 +147,10 @@ handle_raw(int *sock, bool *reconnect, char *line)
             db_del(db_entry(chandb, "afk", user));
         }
 
-        /* commands */
+        /* commands 
+         * I'll rewrite it some day to function per command 
+         * and fancy command name check loop I swear
+         */
         if (msg[0] == prefix) {
             printf("[ (!) ] '%c' prefixed command detected\n", prefix);
             strchr(msg, '\r')[0] = '\0';
@@ -169,10 +188,9 @@ handle_raw(int *sock, bool *reconnect, char *line)
                     send_raw(sock, 0, "NAMES %s\r\n", channel);
                     send_raw(sock, 0, "USERS\r\n");
                 } else if (!strncmp(msg+1, "testbux", 6)) {
-                    handle_bux();
+                    start_handle_bux();
                 } else if (!strncmp(msg+1, "regreet", 7)) {
-                    while (strcmp(db_file(db_entry(chandb, "greeted")), 
-                                "thisdirectoryisdefinitelyemptyforsure")) {
+                    while (db_file(db_entry(chandb, "greeted"))) {
                         db_del(db_entry(chandb, "greeted", db_file(db_entry(chandb, "greeted"))));
                     }
                     send_raw(sock, 0, "PRIVMSG %s :greeted cache cleared, regreeting everyone\r\n", 
@@ -180,7 +198,7 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 } else if (!strncmp(msg+1, "setgreeting ", 12)) {
                     db_setstr(db_entry(chandb, "greeting_format"), msg+13);
                     send_raw(sock, 0, "PRIVMSG %s :set greeting in %s to: '%s'\r\n", DEST,
-                            channel, db_getstr(db_entry(chandb, "greeting_format")));
+                    channel, db_getstr(db_entry(chandb, "greeting_format")));
                 }
             }
 
@@ -369,13 +387,36 @@ handle_raw(int *sock, bool *reconnect, char *line)
                 free(pbuser);
 
             } else if(!strncmp(msg+1, "rate ", 5)) {
-                char *hash_str = malloc(sizeof(char) * 100);
+                char *hash_str = malloc(sizeof(char) * BUF_SIZE);
+                int user_bux = 0;
+                char ruser[msglen];
 
-                sprintf(hash_str, "%s%s", user, msg+6);
+                switch(db_exists(db_entry(chandb, "settings", "nospam"))) {
+                    case 0:
+                        sprintf(hash_str, "%s%s", user, msg+6);
+                        srand(hash(hash_str));
 
-                srand(hash(hash_str));
-                send_raw(sock, 0, "PRIVMSG %s :%s is %d%% %s\r\n", DEST, user,
-                        rand()%100+1, msg+6);
+                        send_raw(sock, 0, "PRIVMSG %s :%s is %d%% %s\r\n", DEST, user,
+                                rand()%100+1, msg+6);
+                        break;
+                    case 1:
+                        sscanf(msg+10, "%s", ruser);
+
+                        if (db_exists(db_entry(chandb, "bux", user)) &&
+                                (user_bux = db_getnum(db_entry(chandb, "bux", user))) 
+                                > RATE_COST+1) {
+                            db_setnum(db_entry(chandb, "bux", user), user_bux-RATE_COST);
+
+                            sprintf(hash_str, "%s%s", user, msg+6);
+                            srand(hash(hash_str));
+
+                            send_raw(sock, 0, "PRIVMSG %s :%s is %d%% %s\r\n", DEST, user,
+                                    rand()%100+1, msg+6);
+                        } else {
+                            send_raw(sock, 0, "PRIVMSG %s :.w %s insufficient bux\r\n", DEST, user);
+                        }
+                        break;
+                }
 
                 free(hash_str);
             } else if(!strncmp(msg+1, "$timeout ", 9)) {
@@ -460,11 +501,9 @@ handle_raw(int *sock, bool *reconnect, char *line)
             send_raw(sock, 0, "PRIVMSG %s :Reporting in! [C]\r\n", DEST);
         } 
 
-        /* start monad */
         if (!strncmp(msg, "!enation", 8)) {
             send_raw(sock, 0, "PRIVMSG %s :weeb nation TehePelo ~ <3\r\n", DEST);
         }
-        /* end monad */
 
         /* free db vars */
         free(chandb);
@@ -487,21 +526,13 @@ handle_raw(int *sock, bool *reconnect, char *line)
 void
 send_raw(int *sock, bool silent, char *msgformat, ...)
 {
-    char buf[2000];
+    char buf[BUF_SIZE];
     va_list args;
     va_start(args, msgformat);
-    vsnprintf(buf, 2000, msgformat, args);
+    vsnprintf(buf, BUF_SIZE, msgformat, args);
     va_end(args);
 
-    /* hackishly overwrite PRIVMSG with WHISPER for twitch pms */
-    if (!strncmp(buf, "PRIVMSG", 7) && buf[8] != '#') {
-        char whisper[] = "WHISPER";
-        for (int i = 0; i < 7; ++i) {
-            buf[i] = whisper[i];
-        }
-    }
-
-    if (send(*sock, buf, strlen(buf), 0) == -1 && !silent) {
+    if (send(*sock, buf, strlen(buf), 0) < 0 && !silent) {
         fprintf(stderr, "[ !!! ] failed to send: '%s'", buf);
     } else if (!silent) {
         printf("[ >>> ] %s", buf);

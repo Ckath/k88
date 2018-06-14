@@ -32,7 +32,7 @@ main(int argc, char *argv[])
 {
     /* start alarm */
     alarm(BUX_INTERVAL);
-	signal(SIGALRM, (void *) handle_bux);
+	signal(SIGALRM, (void *) start_handle_bux);
 
     /* main loop for connecting/reconnecting everything */
     for (;;) {
@@ -60,12 +60,10 @@ main(int argc, char *argv[])
         send_raw(&sock, 0, "NICK " NICK "\r\n");
 
         /* main loop */
-        size_t len = 0;
-        char *line_buf = NULL;
-        bool init_flag = 1;
-        ssize_t nread;
+        char line_buf[BUF_SIZE];
+        bool init_flag = true;
         bool reconnect = false;
-        while (!reconnect && (nread = getline(&line_buf, &len, rsock)) != -1) {
+        while (!reconnect && fgets(line_buf, BUF_SIZE, rsock)) {
             printf("[ <<< ] %s", line_buf);
             if (!strncmp(line_buf, ":tmi.twitch.tv RECONNECT", 24)) {
                 puts("[ (!) ] reconnecting...");
@@ -74,7 +72,7 @@ main(int argc, char *argv[])
 
             if (init_flag && !strncmp(line_buf, ":tmi.twitch.tv ", 15)) {
                 init(&sock);
-                init_flag = 0;
+                init_flag = false;
             }
 
             if (!strncmp(line_buf, "PING ", 5)) {
@@ -86,7 +84,6 @@ main(int argc, char *argv[])
             }
         }
 
-        free(line_buf);
         close(sock);
         fclose(rsock);
         puts("[ (!) ] connection terminated");

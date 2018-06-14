@@ -54,10 +54,10 @@ db_getnum(char *path)
 char *
 db_getstr(char *path)
 {
-    static char ret[512];
+    static char ret[NODB_BUFSIZE];
     FILE *f = fopen(path, "r");
 
-    fgets(ret, 512, f);
+    fgets(ret, NODB_BUFSIZE, f);
     fclose(f);
     return ret;
 }
@@ -85,8 +85,8 @@ db_exists(char *path)
 char *
 (db_entry)(char *db, ...)
 {
-    static char db_entry[512];
-    char *buf = malloc(512);
+    static char db_entry[NODB_BUFSIZE];
+    char *buf = malloc(NODB_BUFSIZE);
 
     strcpy(db_entry, db);
 
@@ -105,8 +105,8 @@ char *
 char *
 (db_getdb)(char *db, ...)
 {
-    char *db_ = malloc(512);
-    char *buf = malloc(512);
+    char *db_ = malloc(NODB_BUFSIZE);
+    char *buf = malloc(NODB_BUFSIZE);
 
     strcpy(db_, db);
 
@@ -176,6 +176,7 @@ db_file(char *path)
                 return dir->d_name;
             }
         }
+        closedir(d);
     }
-    return "thisdirectoryisdefinitelyemptyforsure";
+    return NULL;
 }

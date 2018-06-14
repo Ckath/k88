@@ -15,8 +15,7 @@ init_sock(int *sock, char *server, char *port)
         return 1;
     }
 
-    *sock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
-    if (*sock == -1) {
+    if ((*sock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol)) < 0) {
         fprintf(stderr, "[ !!! ] failed to create socket\n");
         return 1;
     }

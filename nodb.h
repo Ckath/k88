@@ -1,9 +1,9 @@
 #ifndef NODB_H
 #define NODB_H
 
-#include "intern.h"
 #include "extern.h"
-#define NODB_BUFSIZE BUF_SIZE
+#include "llist.h"
+#include "config.h"
 
 void db_init(char *path);
 int db_mkitem(char *path);
@@ -20,6 +20,8 @@ void db_del(char *path);
 void db_list(char *path, llist *entries);
 void db_listdbs(char *path, llist *dbs);
 char *db_file(char *path);
+
+#define NODB_BUFSIZE BUF_SIZE
 
 /* questionable macros to avoid segfault on out of bounds va_arg call */
 #define db_entry(...) db_entry(__VA_ARGS__, "")

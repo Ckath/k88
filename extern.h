@@ -1,6 +1,3 @@
-#ifndef EXTERN_H
-#define EXTERN_H
-
 #include <netdb.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -16,5 +13,4 @@
 #include <dirent.h>
 #include <signal.h>
 #include <pthread.h>
-
-#endif
+#include <sys/time.h>

@@ -1,5 +1,5 @@
 NAME = k88_32
-CFLAGS = -m32
+CFLAGS = -g
 LIBS = -lpthread
 SRC = llist.c socks.c util.c nodb.c commands.c irc.c parse.c sockme.c
 OBJ = ${SRC:.c=.o}

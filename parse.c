@@ -7,7 +7,7 @@ handle_raw(irc_conn *conn, char *line)
      * possible to do more efficient but good enough */
     int msglen = strlen(line);
 
-    char *raw_msg = strchr(line, ' ') + 1;
+    char *raw_msg = line;
     char *msgtype = strchr(raw_msg, ' ') + 1;
 
     if (!strncmp(msgtype, "PRIVMSG", 7)) {

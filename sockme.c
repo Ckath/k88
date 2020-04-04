@@ -47,6 +47,11 @@ main(int argc, char *argv[])
                 puts("[ (!) ] pinged");
                 line_buf[1] = 'O';
                 send_raw(bot, 0, line_buf);
+
+				if (init_flag) {
+					rejoin_channels(bot);
+					init_flag = false;
+				}
             } else {
                 handle_raw(bot, line_buf);
             }

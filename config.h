@@ -3,11 +3,11 @@
 
 #include "sec.h"
 
-#define SERV "irc.chat.twitch.tv"
+#define SERV "irc.rizon.net"
 #define PORT "6667"
-#define CHAN "#ck8t"
-#define NICK "k88_desu"
-#define ADMINSTR ":ck8t!ck8t"
+#define CHAN "#kattest"
+#define NICK "catemaid"
+#define ADMINSTR ":ck!ck"
 #define BUF_SIZE 3000
 #define BUX_INTERVAL 600
 #define BUX_AMOUNT 100

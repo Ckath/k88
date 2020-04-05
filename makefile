@@ -1,4 +1,4 @@
-NAME = k88_32
+NAME = k88
 CFLAGS = -g
 LIBS = -lpthread
 SRC = llist.c socks.c util.c nodb.c commands.c irc.c parse.c sockme.c

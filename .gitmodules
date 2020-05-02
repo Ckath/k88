@@ -1,3 +1,3 @@
-[submodule "ini"]
-	path = ini
-	url = https://github.com/rxi/ini
+[submodule "ini_rw"]
+	path = ini_rw
+	url = https://github.com/Ckath/ini_rw

@@ -1,3 +1,6 @@
+#include <netdb.h>
+#include <stdio.h>
+
 #include "socks.h"
 
 int

@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+
 #include "socks.h"
 #include "irc.h"
 

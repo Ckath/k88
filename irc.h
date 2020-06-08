@@ -1,23 +1,29 @@
 #ifndef IRC_H
 #define IRC_H
-
-#include "extern.h"
-#include "nodb.h"
-#include "util.h"
-#include "socks.h"
-#include "config.h"
+/* required for types */
+#include <openssl/ssl.h>
+#include <stdbool.h>
+#include "ini_rw/ini_rw.h"
 
 typedef struct {
+	INI *globalconf;
+	char index[256];
+	char addr[256];
+	char port[6];
     char nick[32];
-    int *send_sock;
-    FILE *read_sock;
+    int *fd;
+	SSL *sock;
+	SSL_CTX *ctx;
+	bool init;
 } irc_conn;
 
 void rejoin_channels(irc_conn *conn);
-int init_conn(irc_conn *conn, char token[100]);
+int init_conn(irc_conn *conn);
 void destroy_conn(irc_conn *conn);
-void join_chan(irc_conn *conn, char *chan);
-void part_chan(irc_conn *conn, char *chan);
-void send_raw(irc_conn *conn, bool silent, char *msgformat, ...);
+void join_chans(irc_conn *conn, char *chans);
+void part_chans(irc_conn *conn, char *chans);
+void send_raw(irc_conn *conn, char silent, char *msgformat, ...);
+
+#define DEST chan[0] == '#' ? chan : user
 
 #endif

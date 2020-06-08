@@ -1,49 +1,65 @@
+#define _GNU_SOURCE
+#include <fcntl.h>
+#include <openssl/bio.h>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdio.h>
+#include <unistd.h>
+#include "socks.h"
 #include "irc.h"
+
+char init_ssl = 0;
 
 void
 rejoin_channels(irc_conn *conn)
 {
     puts("[ (!) ] initializing...");
-    send_raw(conn, 0, "CAP REQ :twitch.tv/membership\r\n");
-    send_raw(conn, 0, "CAP REQ :twitch.tv/tags\r\n");
-    send_raw(conn, 0, "CAP REQ :twitch.tv/commands\r\n");
-
-    puts("[ (!) ] rejoining channels...");
-    llist *chans = malloc(sizeof(llist));
-    db_list(db_entry("db", "channels"), chans);
-
-    while(chans->head != NULL && 
-            strlen(chans->head->name) > 1 &&
-            chans->head->name[0] == '#') {
-        join_chan(conn, chans->head->name);
-        pop(chans, chans->head->name);
-    }
-    free(chans);
 }
 
 int
-init_conn(irc_conn *conn, char token[100])
+init_conn(irc_conn *conn)
 {
-    /* make sure dirs exist */
-    db_init("./db");
-    db_init(db_entry("db", "channels"));
+	/* SSL inits */
+	if (!init_ssl) {
+		SSL_library_init();
+		SSL_load_error_strings();
+		OpenSSL_add_all_algorithms();
+		init_ssl = 1;
+	}
 
     /* create socket for connection */
-    conn->send_sock = malloc(sizeof(int));
-    while(init_sock(conn->send_sock, SERV, PORT)) {
+    conn->fd = malloc(sizeof(int));
+    while(init_sock(conn->fd, conn->addr, conn->port)) {
         puts("[ (!) ] reconnecting...");
         sleep(1);
     }
+	
+	/* setup SSL */
+	conn->ctx = SSL_CTX_new(TLS_client_method());
+	if (!conn->ctx) {
+		ERR_print_errors_fp(stderr);
+	}
+	SSL_CTX_set_mode(conn->ctx, SSL_MODE_AUTO_RETRY|SSL_MODE_ASYNC);
+	conn->sock = SSL_new(conn->ctx);
+	SSL_set_fd(conn->sock, *conn->fd);
+	SSL_set_connect_state(conn->sock);
+	SSL_connect(conn->sock);
+	printf("[ (!) ] connected with %s cipher\n", SSL_get_cipher(conn->sock));
+	/* somethings not right here, bail (for retry) */
+	if (!strcmp(SSL_get_cipher(conn->sock), "(NONE)")) {
+		return 1;
+	}
 
-    /* create file handle from socket for reading */
-    if ((conn->read_sock = fdopen(*conn->send_sock, "r")) == NULL) {
-        fprintf(stderr, "[ !!! ] failed to socks\n");
-        return 1;
-    }
+	/* everything done, configure fd options */
+	fcntl(*conn->fd, F_SETFL, 
+			fcntl(*conn->fd, F_GETFL, 0)|O_ASYNC|O_NONBLOCK);
+	fcntl(*conn->fd, F_SETOWN, getpid());
+	fcntl(*conn->fd, F_SETSIG, SIGPOLL);
 
     puts("[ (!) ] attempting to identify...");
-    send_raw(conn, 1, "PASS %s\r\n", token);
-    send_raw(conn, 0, "USER %s 0 * :%s\r\n", conn->nick, conn->nick);
+    send_raw(conn, 0, "USER %s 0 * :%s\r\n", conn->nick, "k88");
     send_raw(conn, 0, "NICK %s\r\n", conn->nick);
     return 0;
 }
@@ -51,40 +67,49 @@ init_conn(irc_conn *conn, char token[100])
 void
 destroy_conn(irc_conn *conn)
 {
-    free(conn->send_sock);
-    free(conn);
+	SSL_free(conn->sock);
+	SSL_CTX_free(conn->ctx);
+    free(conn->fd);
+	conn->init = 0;
 }
 
 void
-join_chan(irc_conn *conn, char *chan)
+join_chans(irc_conn *conn, char *chans)
 {
-    /* check if db is alright */
-    char *chandb = db_getdb("db", chan);
-    db_init(chandb);
-    check_db(chandb);
-    free(chandb);
-
-    db_mkitem(db_entry("db", "channels", chan));
-    send_raw(conn, 0, "JOIN %s\r\n", chan);
+	char *chanlist = strdup(chans);
+	char *chan = strtok(chanlist, ", ");
+	while (chan) {
+		send_raw(conn, 0, "JOIN %s\r\n", chan);
+		chan = strtok(NULL, ", ");
+	}
+	free(chanlist);
+	free(chan);
 }
 
 void
-part_chan(irc_conn *conn, char *chan)
+part_chans(irc_conn *conn, char *chans)
 {
-    db_del(db_entry("db", "channels", chan));
-    send_raw(conn, 0, "PART %s\r\n", chan);
+	char *chanlist = strdup(chans);
+	char *chan = strtok(chanlist, ", ");
+	while (chan) {
+		send_raw(conn, 0, "PART %s\r\n", chan);
+		chan = strtok(NULL, ", ");
+	}
+	free(chanlist);
+	free(chan);
 }
 
 void
-send_raw(irc_conn *conn, bool silent, char *msgformat, ...)
+send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 {
-    char buf[BUF_SIZE];
+    char buf[2000];
     va_list args;
     va_start(args, msgformat);
-    vsnprintf(buf, BUF_SIZE, msgformat, args);
+    vsnprintf(buf, 2000, msgformat, args);
     va_end(args);
 
-    if (send(*conn->send_sock, buf, strlen(buf), 0) < 0 && !silent) {
+    if (SSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {
+		ERR_print_errors_fp(stderr);
         fprintf(stderr, "[ !!! ] failed to send: '%s'", buf);
     } else if (!silent) {
         printf("[ >>> ] %s", buf);

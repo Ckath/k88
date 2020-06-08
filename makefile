@@ -1,17 +1,21 @@
 NAME = k88
 CFLAGS = -g
-LIBS = -lpthread
-SRC = ini/src/ini.c llist.c socks.c util.c nodb.c commands.c irc.c parse.c sockme.c
+LIBS = -lpthread -lssl -lcrypto 
+SRC = ${NAME}.c ini_rw/ini_rw.c socks.c irc.c modules.c mods/modtape.c $(wildcard mods/**/*.c)
 OBJ = ${SRC:.c=.o}
 CC = gcc
+.PHONY: update_mods
 
 .c.o:
 	@echo CC -c $<
 	@${CC} -c ${CFLAGS} $< ${LIBS} -o ${<:.c=.o}
 
-${NAME}: ${SRC} ${OBJ}
+${NAME}: update_mods ${SRC} ${OBJ}
 	@echo CC -o $@
 	@${CC} -o $@ ${CFLAGS} ${OBJ} ${LIBS}
+
+update_mods:
+	@./modcodegen.sh
 
 clean:
 	@echo cleaning...

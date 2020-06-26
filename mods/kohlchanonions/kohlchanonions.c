@@ -11,6 +11,8 @@
 static void
 handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 {
+	/* TODO: replace this with a 'replace' module
+	 * which takes replacement pairs and stores them ini on command */
 	char *kohl_match = strstr(msg, "://www.kohlchanvwpfx6hthoti5fvqsjxgcwm3tmddvpduph5fqntv5affzfqd.onion");
 	if (kohl_match) {
 		char tmp[2000] = {'\0'};

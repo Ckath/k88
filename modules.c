@@ -17,10 +17,11 @@ int rawmsg_mods_len;
 int privmsg_mods_len;
 int cmdmsg_mods_len;
 INI *modconf;
+char **mods_slist = NULL;
 
 /* these mods_ functions get called from the modules 
  * in order to access/alter module related data in this unit */
-void 
+void
 mods_new(char *name, bool default_enable)
 {
 	all_mods = realloc(all_mods, sizeof(module) * ++all_mods_len);
@@ -68,6 +69,25 @@ int
 mods_set_config(char *index, char *item, char *value)
 {
 	return ini_write(modconf, index, item, value);
+}
+
+char **
+mods_list()
+{
+	/* can get away with only generating this once as mods are only
+	 * loaded on init, once, at least for now */
+	if (mods_slist) {
+		return mods_slist;
+	}
+
+	int i;
+	for (i = 0; i < all_mods_len; ++i) {
+		mods_slist = realloc(mods_slist, sizeof(char *)*(i+2));
+		mods_slist[i] = malloc(256);
+		strcpy(mods_slist[i], all_mods[i].name);
+	}
+	mods_slist[i] = NULL;
+	return mods_slist;
 }
 
 void
@@ -140,6 +160,7 @@ handle_modules(irc_conn *server, char *line)
 		strcpy(user, rawmsg+1);
 		strchr(user, '!')[0] = '\0';
 		strcpy(msg, strchr(chan, ':')+1);
+		strchr(msg, '\r')[0] = '\0';
 		strchr(chan, ' ')[0] = '\0';
 
 		/* call all privmsg handlers */
@@ -152,13 +173,15 @@ handle_modules(irc_conn *server, char *line)
 		/* call all cmdmsg handlers */
 		/* TODO: find out mod status here,
 		 * pass it as argument to cmdmsghndler */
+		char *modmatch = ini_read(server->globalconf, server->index, "modmatch");
+		bool mod = strncmp(modmatch, rawmsg, strlen(modmatch));
 		char *prefix = mods_get_prefix(server, index);
 		if (!strncmp(msg, prefix, strlen(prefix))) {
-			char cmd_msg[2000];
-			strcpy(cmd_msg, msg+strlen(prefix));
+			char cmdmsg[2000];
+			strcpy(cmdmsg, msg+strlen(prefix));
 			for (int i = 0; i < cmdmsg_mods_len; ++i) {
 				if (mod_enabled(&cmdmsg_mods[i], index)) {
-					cmdmsg_mods[i].cmdmsg(server, index, chan, user, cmd_msg);
+					cmdmsg_mods[i].cmdmsg(server, index, chan, user, cmdmsg, mod);
 				}
 			}
 		}

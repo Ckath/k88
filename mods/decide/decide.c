@@ -8,16 +8,18 @@
 #include "../../modules.h"
 #include "../../irc.h"
 
+/* TODO: clean up this mess of arguments, or reformat */
 static void
-handle_cmdmsg(irc_conn *s, char *index, char *chan, char *user, char *cmd_msg)
+handle_cmdmsg(
+		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
 {
-	if (strncmp(cmd_msg, "decide ", 7)) {
+	if (strncmp(msg, "decide ", 7)) {
 		return;
 	}
 
 	/* replace any " or " with a "," for easy tokenizing */
 	char options[2000];
-	strcpy(options, cmd_msg+7);
+	strcpy(options, msg+7);
 	char *orpos = strstr(options, " or ");
 	if (orpos) {
 		strcpy(orpos, ",");

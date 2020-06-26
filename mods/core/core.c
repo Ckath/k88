@@ -33,7 +33,7 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 {
 	/* IBIP */
 	if (!strncmp(msg, ".bots", 5)) {
-		send_raw(s, 0, "PRIVMSG %s :Reporting in! [C] https://github.com/ckath/k88\r\n", DEST); 
+		send_raw(s, 0, "PRIVMSG %s :Reporting in! [C] source: [redacteduntilcleanup™]\r\n", DEST); 
 	}
 
 	/* ctcp */

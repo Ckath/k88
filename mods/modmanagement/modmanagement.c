@@ -23,11 +23,7 @@ static void
 handle_cmdmsg(
 		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
 {
-	/* admin only */
-	if (!mod) {
-		return;
-	}
-
+	/* public commands */
 	if (!strncmp(msg, "listmods", 8)) {
 		char **mods = mods_list();
 		char modlist[2000] = {'\0'};
@@ -41,7 +37,12 @@ handle_cmdmsg(
 			}
 		}
 		send_raw(s, 0, "PRIVMSG %s :mods: %s\r\n", DEST, modlist);
-	} else if (!strncmp(msg, "disable ", 8)) {
+	}
+
+	/* admin only */
+	if (!mod) {
+		return;
+	} if (!strncmp(msg, "disable ", 8)) {
 		char **mods = mods_list();
 		char *mod = strchr(msg, ' ')+1;
 		char *state = mod_state(index, mods, mod);

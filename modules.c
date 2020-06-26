@@ -174,7 +174,7 @@ handle_modules(irc_conn *server, char *line)
 		/* TODO: find out mod status here,
 		 * pass it as argument to cmdmsghndler */
 		char *modmatch = ini_read(server->globalconf, server->index, "modmatch");
-		bool mod = strncmp(modmatch, rawmsg, strlen(modmatch));
+		bool mod = !strncmp(modmatch, rawmsg, strlen(modmatch));
 		char *prefix = mods_get_prefix(server, index);
 		if (!strncmp(msg, prefix, strlen(prefix))) {
 			char cmdmsg[2000];

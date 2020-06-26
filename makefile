@@ -1,5 +1,5 @@
 NAME = k88
-CFLAGS = -g
+CFLAGS = -g -Os
 LIBS = -lpthread -lssl -lcrypto 
 SRC = ${NAME}.c ini_rw/ini_rw.c socks.c irc.c modules.c mods/modtape.c $(wildcard mods/**/*.c)
 OBJ = ${SRC:.c=.o}

@@ -33,7 +33,7 @@ handle_cmdmsg(
 		cp = popen("git rev-parse --short HEAD", "r");
 		char newver[9] = { '\0' };
 		fgets(newver, 8, cp);
-		send_raw(s, 0, "PRIVMSG %s :updated: 7%s -> 7%s\r\n",
+		send_raw(s, 0, "PRIVMSG %s :updated:7 %s ->7 %s\r\n",
 				DEST, oldver, newver);
 		pclose(cp);
 		system("pkill k88");
@@ -41,7 +41,7 @@ handle_cmdmsg(
 		FILE *cp = popen("git rev-parse --short HEAD", "r");
 		char ver[9] = { '\0' };
 		fgets(ver, 8, cp);
-		send_raw(s, 0, "PRIVMSG %s :current version: 7%s\r\n", DEST, ver);
+		send_raw(s, 0, "PRIVMSG %s :current version:7 %s\r\n", DEST, ver);
 		pclose(cp);
 	}
 }

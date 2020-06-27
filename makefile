@@ -19,7 +19,7 @@ update_mods:
 
 clean:
 	@echo cleaning...
-	@rm -f ${NAME} ${OBJ}
+	@rm -f ${NAME} ${OBJ} $(wildcard mods/modtape.*)
 
 run: ${NAME}
 	@echo launching...

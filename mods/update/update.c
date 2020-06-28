@@ -33,8 +33,13 @@ handle_cmdmsg(
 		cp = popen("git rev-parse --short HEAD", "r");
 		char newver[9] = { '\0' };
 		fgets(newver, 8, cp);
-		send_raw(s, 0, "PRIVMSG %s :updated:7 %s ->7 %s\r\n",
-				DEST, oldver, newver);
+		if (!strcmp(oldver, newver)) {
+			send_raw(s, 0, "PRIVMSG %s :git up to date, recompiled anyway\r\n",
+					DEST);
+		} else {
+			send_raw(s, 0, "PRIVMSG %s :updated:7 %s ->7 %s\r\n",
+					DEST, oldver, newver);
+		}
 		pclose(cp);
 		system("pkill k88");
 	} else if (!strncmp(msg, "version", 7)) {

@@ -26,7 +26,7 @@ handle_cmdmsg(
 	/* public commands */
 	if (!strncmp(msg, "listmods", 8)) {
 		char **mods = mods_list();
-		char modlist[2000] = {'\0'};
+		char modlist[BUFSIZE] = {'\0'};
 		for (int i = 0; mods[i]; ++i) {
 			strcat(modlist, strcmp(mods_get_config(index, mods[i]), "enabled") ?
 					"4" : "3");

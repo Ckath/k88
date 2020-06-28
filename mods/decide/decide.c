@@ -18,7 +18,7 @@ handle_cmdmsg(
 	}
 
 	/* replace any " or " with a "," for easy tokenizing */
-	char options[2000];
+	char options[BUFSIZE];
 	strcpy(options, msg+7);
 	char *orpos = strstr(options, " or ");
 	if (orpos) {

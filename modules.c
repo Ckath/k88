@@ -19,7 +19,7 @@ int cmdmsg_mods_len;
 INI *modconf;
 char **mods_slist = NULL;
 
-/* these mods_ functions get called from the modules 
+/* these mods_ functions get called from the modules
  * in order to access/alter module related data in this unit */
 void
 mods_new(char *name, bool default_enable)
@@ -37,13 +37,13 @@ mods_rawmsg_handler(void *handler)
 
 void
 mods_privmsg_handler(void *handler)
-{ 
+{
 	NEWMOD.privmsg = handler;
 }
 
 void
 mods_cmdmsg_handler(void *handler)
-{ 
+{
 	NEWMOD.cmdmsg = handler;
 }
 
@@ -96,15 +96,15 @@ init_modules(void)
 	tape_loadmods();
 	for (int i = 0; i < all_mods_len; ++i) {
 		if (all_mods[i].rawmsg) {
-			rawmsg_mods = realloc(rawmsg_mods, 
+			rawmsg_mods = realloc(rawmsg_mods,
 					sizeof(module) * ++rawmsg_mods_len);
 			rawmsg_mods[rawmsg_mods_len-1] = all_mods[i];
 		} if (all_mods[i].privmsg) {
-			privmsg_mods = realloc(privmsg_mods, 
+			privmsg_mods = realloc(privmsg_mods,
 					sizeof(module) * ++privmsg_mods_len);
 			privmsg_mods[privmsg_mods_len-1] = all_mods[i];
 		} if (all_mods[i].cmdmsg) {
-			cmdmsg_mods = realloc(cmdmsg_mods, 
+			cmdmsg_mods = realloc(cmdmsg_mods,
 					sizeof(module) * ++cmdmsg_mods_len);
 			cmdmsg_mods[cmdmsg_mods_len-1] = all_mods[i];
 		}
@@ -118,7 +118,7 @@ mod_enabled(module *mod, char *index)
 {
 	char *mod_status = ini_read(modconf, index, mod->name);
 	if (!mod_status) { /* first time seeing this index */
-		ini_write(modconf, index, mod->name, 
+		ini_write(modconf, index, mod->name,
 				mod->default_enable ? "enabled" : "disabled");
 		return mod->default_enable;
 	} if (!strcmp(mod_status, "enabled")) {
@@ -127,7 +127,7 @@ mod_enabled(module *mod, char *index)
 	return false;
 }
 
-void 
+void
 handle_modules(irc_conn *server, char *line)
 {
 	/* dup line asap before it gets corrupted by the next call */
@@ -151,11 +151,11 @@ handle_modules(irc_conn *server, char *line)
 		}
 	}
 
-	/* filter out info from raw PRIVMSG string */        
+	/* filter out info from raw PRIVMSG string */
     char *msgtype = strchr(rawmsg, ' ') + 1;
 	if (msgtype != (char *) 0x1 && !strncmp(msgtype, "PRIVMSG", 7)) {
-		char msg[2000]; 
-		char user[2000]; 
+		char msg[BUFSIZE];
+		char user[BUFSIZE];
 		char *chan = strchr(msgtype, ' ') + 1;
 		strcpy(user, rawmsg+1);
 		strchr(user, '!')[0] = '\0';
@@ -177,7 +177,7 @@ handle_modules(irc_conn *server, char *line)
 		bool mod = !strncmp(modmatch, rawmsg, strlen(modmatch));
 		char *prefix = mods_get_prefix(server, index);
 		if (!strncmp(msg, prefix, strlen(prefix))) {
-			char cmdmsg[2000];
+			char cmdmsg[BUFSIZE];
 			strcpy(cmdmsg, msg+strlen(prefix));
 			for (int i = 0; i < cmdmsg_mods_len; ++i) {
 				if (mod_enabled(&cmdmsg_mods[i], index)) {

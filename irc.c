@@ -104,10 +104,10 @@ part_chans(irc_conn *conn, char *chans)
 void
 send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 {
-    char buf[2000];
+    char buf[BUFSIZE];
     va_list args;
     va_start(args, msgformat);
-    vsnprintf(buf, 2000, msgformat, args);
+    vsnprintf(buf, BUFSIZE, msgformat, args);
     va_end(args);
 
     if (SSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {

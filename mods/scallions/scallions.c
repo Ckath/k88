@@ -20,7 +20,7 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 	for (int i = 0; urls[i]; ++i) {
 		char *match = strstr(msg, urls[i]);
 		if (match) {
-			char tmp[2000] = {'\0'};
+			char tmp[BUFSIZE] = {'\0'};
 			strncpy(tmp, msg, match-msg);
 			strcat(tmp, ini_read(lookup, "onions", urls[i]));
 			strcat(tmp, match+strlen(urls[i]));
@@ -31,7 +31,7 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 	/* hardcoded twitter img redirect, pretty useless */
 	char *match = strstr(msg, "https://pbs.twimg.com/media/");
 	if (match) {
-		char tmp[2000] = {'\0'};
+		char tmp[BUFSIZE] = {'\0'};
 		strncpy(tmp, msg, match-msg);
 		strcat(tmp, "https://nitter.net/pic/media/");
 		strcat(tmp, match+28);
@@ -57,13 +57,13 @@ handle_cmdmsg(
 	}
 
 	if (!strncmp(msg, "onion ", 6)) {
-		char onion[2000];
+		char onion[BUFSIZE];
 		strcpy(onion, strchr(msg, ' ')+1);
 		strchr(onion, ' ')[0] = '\0'; 
 
 	    char *clearnet = strchr(strchr(msg, ' ')+1, ' ')+1;
 
-		char tmp[2000];
+		char tmp[BUFSIZE];
 		sprintf(tmp, "http://%s", onion);
 		ini_write(lookup, "onions", tmp, clearnet);
 		sprintf(tmp, "https://%s", onion);

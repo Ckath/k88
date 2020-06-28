@@ -25,5 +25,7 @@ void part_chans(irc_conn *conn, char *chans);
 void send_raw(irc_conn *conn, char silent, char *msgformat, ...);
 
 #define DEST chan[0] == '#' ? chan : user
+/* bufsize is this oversized to deal with twitch's "500 characters" bs */
+#define BUFSIZE 2000
 
 #endif

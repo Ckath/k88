@@ -50,7 +50,7 @@ sock_action(int signo, siginfo_t *info, void *context)
 	for (int i = 0; i < servers_len; ++i) {
 		if (info->si_fd == *servers[i].fd) {
 			int n;
-			char line_buf[2000];
+			char line_buf[BUFSIZE];
 			char file[256];
 			sprintf(file, "/tmp/%s", servers[i].index);
 

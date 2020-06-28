@@ -46,11 +46,38 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 	}
 }
 
+
+static void
+handle_cmdmsg(
+		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
+{
+	/* admin only */
+	if (!mod) {
+		return;
+	}
+
+	if (!strncmp(msg, "onion ", 6)) {
+		char onion[2000];
+		strcpy(onion, strchr(msg, ' ')+1);
+		strchr(onion, ' ')[0] = '\0'; 
+
+	    char *clearnet = strchr(strchr(msg, ' ')+1, ' ')+1;
+
+		char tmp[2000];
+		sprintf(tmp, "http://%s", onion);
+		ini_write(lookup, "onions", tmp, clearnet);
+		sprintf(tmp, "https://%s", onion);
+		ini_write(lookup, "onions", tmp, clearnet);
+		send_raw(s, 0, "PRIVMSG %s :sure\r\n", DEST); 
+	}
+}
+
 void
 scallions_init()
 {
 	mods_new("scallions", true);
 	mods_privmsg_handler(handle_privmsg);
+	mods_cmdmsg_handler(handle_cmdmsg);
 	lookup = ini_load("mods/scallions/lookup.ini");
 	urls = ini_list_items(lookup, "onions");
 }

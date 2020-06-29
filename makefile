@@ -1,7 +1,7 @@
 NAME = k88
 CFLAGS = -g -Os
 LIBS = -lpthread -lssl -lcrypto 
-SRC = ${NAME}.c ini_rw/ini_rw.c socks.c irc.c modules.c mods/modtape.c $(wildcard mods/**/*.c)
+SRC = ${NAME}.c ini_rw/ini_rw.c mods/modtape.c $(wildcard core/*.c mods/**/*.c)
 OBJ = ${SRC:.c=.o}
 CC = gcc
 .PHONY: update_mods
@@ -19,7 +19,7 @@ update_mods:
 
 clean:
 	@echo cleaning...
-	@rm -f ${NAME} ${OBJ} $(wildcard mods/modtape.*)
+	@rm -f ${NAME} ${OBJ} mods/modtape.*
 
 run: ${NAME}
 	@echo launching...

@@ -3,7 +3,7 @@
 /* required for types */
 #include <openssl/ssl.h>
 #include <stdbool.h>
-#include "ini_rw/ini_rw.h"
+#include "../ini_rw/ini_rw.h"
 
 typedef struct {
 	INI *globalconf;

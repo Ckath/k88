@@ -7,9 +7,9 @@
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 
-#include "irc.h"
+#include "core/irc.h"
+#include "core/modules.h"
 #include "ini_rw/ini_rw.h"
-#include "modules.h"
 
 irc_conn *servers;
 int servers_len = 0;

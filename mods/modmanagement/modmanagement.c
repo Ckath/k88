@@ -5,8 +5,8 @@
 
 /* required */
 #include "../modtape.h"
-#include "../../modules.h"
-#include "../../irc.h"
+#include "../../core/modules.h"
+#include "../../core/irc.h"
 
 static char *
 mod_state(char *index, char **mods, char *mod)

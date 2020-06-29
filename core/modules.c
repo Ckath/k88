@@ -5,8 +5,8 @@
 
 #include "irc.h"
 #include "modules.h"
-#include "mods/modtape.h"
-#include "ini_rw/ini_rw.h"
+#include "../mods/modtape.h"
+#include "../ini_rw/ini_rw.h"
 
 module *all_mods;
 module *rawmsg_mods;

@@ -5,8 +5,8 @@
 
 /* required */
 #include "../modtape.h"
-#include "../../modules.h"
-#include "../../irc.h"
+#include "../../core/modules.h"
+#include "../../core/irc.h"
 
 /* TODO: clean up this mess of arguments, or reformat */
 static void

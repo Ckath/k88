@@ -38,7 +38,7 @@ handle_cmdmsg(
 	 * then go through them all until rand()%20 == 8
 	 * this is terrible (on purpose) */
 	char *restore = strdup(options);
-	char *opt;
+	char *opt = strtok(options, ",");
 	int i = 0;
 	while (rand()%20 != 8) {
 		if (!(opt = strtok(NULL, ","))) {

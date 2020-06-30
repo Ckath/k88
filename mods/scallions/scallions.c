@@ -27,23 +27,6 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 			send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, tmp); 
 		}
 	}
-
-	/* hardcoded twitter img redirect, pretty useless */
-	char *match = strstr(msg, "https://pbs.twimg.com/media/");
-	if (match) {
-		char tmp[BUFSIZE] = {'\0'};
-		strncpy(tmp, msg, match-msg);
-		strcat(tmp, "https://nitter.net/pic/media/");
-		strcat(tmp, match+28);
-
-		char *tail = strchr(tmp, '?');
-		if (tail) {
-			strncpy(tail, ".png", 4); 
-			char *leftovermsg = strchr(match, ' ');
-			strcpy(tail+4, leftovermsg ? leftovermsg : "\r\n\0");
-		}
-		send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, tmp); 
-	}
 }
 
 

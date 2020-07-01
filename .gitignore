@@ -18,3 +18,5 @@ mods/modtape.*
 config.ini
 mods/modconf.ini
 run.log
+mods/markov/learndata/*
+!mods/markov/learndata/throw_data_here

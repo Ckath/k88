@@ -1,3 +1,6 @@
 [submodule "ini_rw"]
 	path = ini_rw
 	url = https://github.com/Ckath/ini_rw
+[submodule "mods/markov/chains"]
+	path = mods/markov/chains
+	url = https://github.com/clehner/chains

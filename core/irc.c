@@ -63,6 +63,9 @@ init_conn(irc_conn *conn)
     puts("[ (!) ] attempting to identify...");
     send_raw(conn, 0, "USER %s 0 * :%s\r\n", conn->nick, "k88");
     send_raw(conn, 0, "NICK %s\r\n", conn->nick);
+	if (conn->pass) {
+		send_raw(conn, 1, "PASS %s\r\n", conn->pass);
+	}
     return 0;
 }
 

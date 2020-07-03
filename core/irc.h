@@ -11,6 +11,7 @@ typedef struct {
 	char addr[256];
 	char port[6];
     char nick[32];
+	char pass[32];
     int *fd;
 	SSL *sock;
 	SSL_CTX *ctx;

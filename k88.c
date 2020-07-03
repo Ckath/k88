@@ -28,6 +28,8 @@ parse_conf(INI *conf)
 					server_list[servers_len], "port"));
 		strcpy(servers[servers_len].nick, ini_read(conf,
 					server_list[servers_len], "nick"));
+		strcpy(servers[servers_len].pass, ini_read(conf,
+					server_list[servers_len], "pass"));
 
 		while (init_conn(&servers[servers_len])) {
 			fprintf(stderr, "[ !!! ] failed to init server [%s] %s, retrying\n",
@@ -36,11 +38,6 @@ parse_conf(INI *conf)
 		}
 		printf("[ (!) ] loaded server [%s] %s\n",
 				server_list[servers_len], servers[servers_len].addr);
-		/* sned pass when set for server */
-		char *pass;
-		if ((pass = ini_read(conf, server_list[servers_len], "pass"))) {
-			send_raw(&servers[servers_len], 1, "PASS %s\r\n", pass);
-		}
 	}
 }
 

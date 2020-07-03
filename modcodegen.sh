@@ -39,7 +39,7 @@ EOF
 
 # update files
 for m in mods/*/*.c; do
-	INIT=$(grep -o '.*_init.*' $m)
+	INIT=$(grep -o '.*_init()$' $m)
 	update_h "void $INIT;" 
 	update_c "$INIT;" 
 done

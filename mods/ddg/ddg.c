@@ -33,10 +33,25 @@ write_cb(void *contents, size_t size, size_t nmemb, void *userp)
 }
 
 static void
+json_item(char *dest, char *json, char *item)
+{
+	char *start = strstr(json, item);
+	if (!start || !strncmp(start+strlen(item), "\":\"\"", 4)) {
+		dest[0] = '\0';
+		return;
+	}
+
+	start += strlen(item)+3;
+	strncpy(dest, start, BUFSIZE-1);
+	strchr(dest, '"')[0] = '\0';
+	return;
+}
+
+static void
 handle_cmdmsg(
 		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
 {
-	if (strncmp(msg, "wa ", 3)) {
+	if (strncmp(msg, "ddg ", 4)) {
 		return;
 	}
 
@@ -51,8 +66,7 @@ handle_cmdmsg(
 	char url[BUFSIZE];
 	chunk res = { .memory = malloc(1), .size = 0 };
 	char *req = curl_easy_escape(curl, strchr(msg, ' ')+1, strlen(strchr(msg, ' ')+1));
-	sprintf(url, "http://api.wolframalpha.com/v1/result?appid=%s&i=%s",
-			getenv("WOLFRAM_APPID"), req);
+	sprintf(url, "https://api.duckduckgo.com/?q=%s&format=json&no_html=1", req);
 
 	/* configure curl request */
 	curl_easy_setopt(curl, CURLOPT_URL, url); 
@@ -64,7 +78,27 @@ handle_cmdmsg(
 	if (r != CURLE_OK) {
 		send_raw(s, 0, "PRIVMSG %s :curl error: %s\r\n", DEST, curl_easy_strerror(r)); 
 	} else {
-		send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, res.memory); 
+		char response[BUFSIZE];
+		char redirect[BUFSIZE];
+		json_item(redirect, res.memory, "Redirect");
+		if (redirect[0]) {
+			sprintf(response, "find it yourself -> %s", redirect);
+		} else {
+			char url[BUFSIZE];
+			char text[BUFSIZE];
+			json_item(url, res.memory, "AbstractURL"),
+			json_item(text, res.memory, "AbstractText");
+			if (url[0]) {
+				sprintf(response, text[0] ? "%s | %s" : "%s",
+						url, text);
+			} else {
+				sprintf(response, "ddg's rubbish api did not return anything");
+			}
+			if (strlen(response) > 450) {
+				strcpy(&response[447], "..");
+			}
+		}
+		send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, response); 
 	}
 
 	/* cleanup */
@@ -73,8 +107,8 @@ handle_cmdmsg(
 }
 
 void
-wolfram_init()
+ddg_init()
 {
-	mods_new("wolfram", true);
+	mods_new("ddg", true);
 	mods_cmdmsg_handler(handle_cmdmsg);
 }

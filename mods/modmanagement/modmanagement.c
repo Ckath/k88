@@ -28,8 +28,9 @@ handle_cmdmsg(
 		char **mods = mods_list();
 		char modlist[BUFSIZE] = {'\0'};
 		for (int i = 0; mods[i]; ++i) {
-			strcat(modlist, strcmp(mods_get_config(index, mods[i]), "enabled") ?
-					"4" : "3");
+			char *mod_status = mods_get_config(index, mods[i]);
+			strcat(modlist, mod_status ? strcmp(mod_status, "enabled") ?
+					"4" : "3" : "");
 			strcat(modlist, mods[i]);
 			strcat(modlist, "");
 			if (mods[i+1]) {

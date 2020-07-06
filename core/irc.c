@@ -14,12 +14,6 @@
 
 char init_ssl = 0;
 
-void
-rejoin_channels(irc_conn *conn)
-{
-    puts("[ (!) ] initializing...");
-}
-
 int
 init_conn(irc_conn *conn)
 {

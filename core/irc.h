@@ -19,7 +19,6 @@ typedef struct {
 	time_t heartbeat;
 } irc_conn;
 
-void rejoin_channels(irc_conn *conn);
 int init_conn(irc_conn *conn);
 void destroy_conn(irc_conn *conn);
 void join_chans(irc_conn *conn, char *chans);

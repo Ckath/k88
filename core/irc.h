@@ -16,6 +16,7 @@ typedef struct {
 	SSL *sock;
 	SSL_CTX *ctx;
 	bool init;
+	time_t heartbeat;
 } irc_conn;
 
 void rejoin_channels(irc_conn *conn);

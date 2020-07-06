@@ -12,10 +12,12 @@ module *all_mods;
 module *rawmsg_mods;
 module *privmsg_mods;
 module *cmdmsg_mods;
+module *timed_mods;
 int all_mods_len;
 int rawmsg_mods_len;
 int privmsg_mods_len;
 int cmdmsg_mods_len;
+int timed_mods_len;
 INI *modconf;
 char **mods_slist = NULL;
 
@@ -45,6 +47,12 @@ void
 mods_cmdmsg_handler(void *handler)
 {
 	NEWMOD.cmdmsg = handler;
+}
+
+void
+mods_timed_handler(void *handler)
+{
+	NEWMOD.timed = handler;
 }
 
 char *
@@ -107,6 +115,10 @@ init_modules(void)
 			cmdmsg_mods = realloc(cmdmsg_mods,
 					sizeof(module) * ++cmdmsg_mods_len);
 			cmdmsg_mods[cmdmsg_mods_len-1] = all_mods[i];
+		} if (all_mods[i].timed) {
+			timed_mods = realloc(timed_mods,
+					sizeof(module) * ++timed_mods_len);
+			timed_mods[timed_mods_len-1] = all_mods[i];
 		}
 	}
 
@@ -128,6 +140,24 @@ mod_enabled(module *mod, char *index)
 }
 
 void
+timed_modules(irc_conn *servers, int n)
+{
+	/* time of function call */
+	time_t t = time(NULL);
+
+	for (int s = 0; s < n; ++s) {
+		char index[100];
+		strcpy(index, "timed@");
+		strcat(index, servers[s].index);
+		for (int i = 0; i < timed_mods_len; ++i) {
+			if (mod_enabled(&timed_mods[i], index)) {
+				timed_mods[i].timed(&servers[s], index, t);
+			}
+		}
+	}
+}
+
+void
 handle_modules(irc_conn *server, char *line)
 {
 	/* dup line asap before it gets corrupted by the next call */
@@ -141,7 +171,8 @@ handle_modules(irc_conn *server, char *line)
 		strpbrk(index, " \r")[0] = '@';
 		strcpy(strchr(index, '@')+1, server->index);
 	} else {
-		strcpy(index, "misc");
+		strcpy(index, "misc@");
+		strcat(index, server->index);
 	}
 
 	/* call all raw handlers */
@@ -171,8 +202,6 @@ handle_modules(irc_conn *server, char *line)
 		}
 
 		/* call all cmdmsg handlers */
-		/* TODO: find out mod status here,
-		 * pass it as argument to cmdmsghndler */
 		char *modmatch = ini_read(server->globalconf, server->index, "modmatch");
 		bool mod = !strncmp(modmatch, rawmsg, strlen(modmatch));
 		char *prefix = mods_get_prefix(server, index);

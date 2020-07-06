@@ -93,7 +93,11 @@ main(int argc, char *argv[])
 	INI *conf = ini_load("config.ini");
 	parse_conf(conf);
 
-	for(;;pause());
+	/* loop calling timed modules, will get interrupted to handle others */
+	for (;;) {
+		timed_modules(servers, servers_len);
+		sleep(1);
+	}
 
 	/* should never get here */
 	ini_free(conf);

@@ -37,6 +37,7 @@ init_conn(irc_conn *conn)
         puts("[ (!) ] reconnecting...");
         sleep(1);
     }
+	conn->init = 0; /* ensure we init it again */
 	
 	/* setup SSL */
 	conn->ctx = SSL_CTX_new(TLS_client_method());
@@ -75,7 +76,6 @@ destroy_conn(irc_conn *conn)
 	SSL_free(conn->sock);
 	SSL_CTX_free(conn->ctx);
     free(conn->fd);
-	conn->init = 0;
 }
 
 void

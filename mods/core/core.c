@@ -8,12 +8,21 @@
 #include "../../core/modules.h"
 #include "../../core/irc.h"
 
-#include "../../ini_rw/ini_rw.h"
+static void
+handle_timed(irc_conn *s, char *index, time_t time)
+{
+	if (s->init && time - s->heartbeat > 300) {
+		fputs("[ !!! ] connection timed out, resetting", stderr);
+		destroy_conn(s);
+		init_conn(s);
+	}
+}
 
 static void
 handle_rawmsg(irc_conn *s, char *index, char *line)
 {
 	if (!strncmp(line, "PING ", 5)) {
+		s->heartbeat = time(NULL);
 		line[1] = 'O';
 		send_raw(s, 0, line);
 	} else if(!strncmp(line, "ERROR", 5)) {
@@ -21,10 +30,9 @@ handle_rawmsg(irc_conn *s, char *index, char *line)
 		destroy_conn(s);
 		init_conn(s);
 	} else if (!s->init && strstr(line, " MODE ")) {
-		INI *conf = ini_load("config.ini");
-		join_chans(s, ini_read(conf, s->index, "chans"));
-		ini_free(conf);
+		join_chans(s, ini_read(s->globalconf, s->index, "chans"));
 		s->init = 1;
+		s->heartbeat = time(NULL);
 	}
 }
 
@@ -53,6 +61,7 @@ void
 core_init()
 {
 	mods_new("core", true);
+	mods_timed_handler(handle_timed);
 	mods_rawmsg_handler(handle_rawmsg);
 	mods_privmsg_handler(handle_privmsg);
 }

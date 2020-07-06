@@ -87,6 +87,10 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 				if (strchr(url, '(')) {
 					break;
 				}
+			case ']':
+				if (strchr(url, '[')) {
+					break;
+				}
 			case '.':
 			case ',':
 			case ':':

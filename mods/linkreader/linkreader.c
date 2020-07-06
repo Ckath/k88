@@ -37,20 +37,28 @@ static void
 find_title(char *dest, char *html)
 {
 	/* find valid */
-	char *start = strcasestr(html, "<title>");
-	char *end;
-	if (!start || !(end = strcasestr(start, "</title>"))) {
+	char start_match[33];
+	strcpy(start_match, "<meta name=\"title\" content=\"");
+	char *start = strcasestr(html, start_match);
+	if (!start) {
+		strcpy(start_match, "<title>");
+		start = strcasestr(html, start_match);
+	}
+	if (!start) {
 		dest[0] = '\0';
 		return;
 	}
 
-	start += 7;
+	start += strlen(start_match);
 	strncpy(dest, start, BUFSIZE-1);
 
-	/* end title, end might be outside the string */
-	char *title_end = strcasestr(dest, "</title>");
-	if (title_end) {
-		title_end[0] = '\0';
+	/* end title, lots of these exist sadly enough */
+	char *end_match[] = { "</title>", "\">", "\"\\>", "\" >", "\" \\>", NULL };
+	for (int i = 0; end_match[i]; ++i) {
+		char *title_end = strcasestr(dest, end_match[i]);
+		if (title_end) {
+			title_end[0] = '\0';
+		}
 	}
 	return;
 }

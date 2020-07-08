@@ -16,18 +16,19 @@ char **urls;
 static void
 handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 {
+	/* copy msg */
+	bool url_fixed = false;
+	char buf[BUFSIZE] = {'\0'};
+	strcpy(buf, msg);
+
 	/* handle all the onions */
 	for (int i = 0; urls[i]; ++i) {
 		/* check match */
-		char buf[BUFSIZE] = {'\0'};
-		strcpy(buf, msg);
 		char *match = strstr(buf, urls[i]);
-		if (!match) {
-			continue;
-		}
 
 		/* replace occurrences and send fixed result */
 		while (match) {
+			url_fixed = true;
 			char tmp[BUFSIZE] = {'\0'};
 			strncpy(tmp, buf, match-buf);
 			strcat(tmp, ini_read(lookup, "onions", urls[i]));
@@ -35,6 +36,10 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 			strcpy(buf, tmp);
 			match = strstr(buf, urls[i]);
 		}
+	}
+
+	/* send if altered */
+	if (url_fixed) {
 		send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, buf); 
 	}
 }

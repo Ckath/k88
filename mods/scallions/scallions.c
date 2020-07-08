@@ -18,14 +18,24 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 {
 	/* handle all the onions */
 	for (int i = 0; urls[i]; ++i) {
-		char *match = strstr(msg, urls[i]);
-		if (match) {
+		/* check match */
+		char buf[BUFSIZE] = {'\0'};
+		strcpy(buf, msg);
+		char *match = strstr(buf, urls[i]);
+		if (!match) {
+			continue;
+		}
+
+		/* replace occurrences and send fixed result */
+		while (match) {
 			char tmp[BUFSIZE] = {'\0'};
-			strncpy(tmp, msg, match-msg);
+			strncpy(tmp, buf, match-buf);
 			strcat(tmp, ini_read(lookup, "onions", urls[i]));
 			strcat(tmp, match+strlen(urls[i]));
-			send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, tmp); 
+			strcpy(buf, tmp);
+			match = strstr(buf, urls[i]);
 		}
+		send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, buf); 
 	}
 }
 

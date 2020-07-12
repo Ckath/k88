@@ -8,7 +8,6 @@
 #include "../../core/modules.h"
 #include "../../core/irc.h"
 
-/* TODO: clean up this mess of arguments, or reformat */
 static void
 handle_cmdmsg(
 		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
@@ -29,8 +28,7 @@ handle_cmdmsg(
 	srand(time(NULL));
 	/* case where only one choice was given */
 	if (!strchr(options, ',')) {
-		send_raw(s, 0, 
-				"PRIVMSG %s :%s\r\n", DEST, rand()%2 ? "yes" : "no"); 
+		send_fprivmsg("%s\r\n", rand()%2 ? "yes" : "no");
 		return;
 	} 
 
@@ -46,8 +44,7 @@ handle_cmdmsg(
 			opt = strtok(options, ",");
 		}
 	}
-	send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, 
-			opt[0] == ' ' ? opt+1 : opt); 
+	send_fprivmsg("%s\r\n", opt[0] == ' ' ? opt+1 : opt);
 	free(restore);
 }
 

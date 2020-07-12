@@ -24,7 +24,7 @@ handle_cmdmsg(
 		char output[500] = { '\0' };
 		fgets(output, 499, cp);
 		if (output[0]) {
-			send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, output);
+			send_fprivmsg("%s\r\n", output);
 		}
 		pclose(cp);
 	}

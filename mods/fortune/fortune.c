@@ -32,7 +32,7 @@ handle_cmdmsg(
 		return;
 	}
 	srand(time(NULL));
-	send_raw(s, 0, "PRIVMSG %s :%s's fortune: %s\r\n", DEST, user, fortunes[rand()%13]); 
+	send_fprivmsg("%s's fortune: %s\r\n", user, fortunes[rand()%13]); 
 }
 
 void

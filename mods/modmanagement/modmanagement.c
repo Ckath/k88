@@ -37,7 +37,7 @@ handle_cmdmsg(
 				strcat(modlist, ", ");
 			}
 		}
-		send_raw(s, 0, "PRIVMSG %s :mods: %s\r\n", DEST, modlist);
+		send_fprivmsg("mods: %s\r\n", modlist);
 	}
 
 	/* admin only */
@@ -48,26 +48,26 @@ handle_cmdmsg(
 		char *mod = strchr(msg, ' ')+1;
 		char *state = mod_state(index, mods, mod);
 		if (!state) {
-			send_raw(s, 0, "PRIVMSG %s :%s was not found\r\n", DEST, mod);
+			send_fprivmsg("%s was not found\r\n", mod);
 			return;
 		} if (!strcmp(state, "disabled")) {
-			send_raw(s, 0, "PRIVMSG %s :%s was already disabled\r\n", DEST, mod);
+			send_fprivmsg("%s was already disabled\r\n", mod);
 		} else {
 			mods_set_config(index, mod, "disabled");
-			send_raw(s, 0, "PRIVMSG %s :%s is now4 disabled\r\n", DEST, mod);
+			send_fprivmsg("%s is now4 disabled\r\n", mod);
 		}
 	} else if (!strncmp(msg, "enable ", 7)) {
 		char **mods = mods_list();
 		char *mod = strchr(msg, ' ')+1;
 		char *state = mod_state(index, mods, mod);
 		if (!state) {
-			send_raw(s, 0, "PRIVMSG %s :%s was not found in available mods\r\n", DEST, mod);
+			send_fprivmsg("%s was not found in available mods\r\n", mod);
 			return;
 		} if (!strcmp(state, "enabled")) {
-			send_raw(s, 0, "PRIVMSG %s :%s was already enabled\r\n", DEST, mod);
+			send_fprivmsg("%s was already enabled\r\n", mod);
 		} else {
 			mods_set_config(index, mod, "enabled");
-			send_raw(s, 0, "PRIVMSG %s :%s is now3 enabled\r\n", DEST, mod);
+			send_fprivmsg("%s is now3 enabled\r\n", mod);
 		}
 	}
 }

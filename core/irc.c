@@ -25,14 +25,14 @@ init_conn(irc_conn *conn)
 		init_ssl = 1;
 	}
 
-    /* create socket for connection */
-    conn->fd = malloc(sizeof(int));
-    while(init_sock(conn->fd, conn->addr, conn->port)) {
-        puts("[ (!) ] reconnecting...");
-        sleep(1);
-    }
+	/* create socket for connection */
+	conn->fd = malloc(sizeof(int));
+	while(init_sock(conn->fd, conn->addr, conn->port)) {
+		puts("[ (!) ] reconnecting...");
+		sleep(1);
+	}
 	conn->init = 0; /* ensure we init it again */
-	
+
 	/* setup SSL */
 	conn->ctx = SSL_CTX_new(TLS_client_method());
 	if (!conn->ctx) {
@@ -55,13 +55,13 @@ init_conn(irc_conn *conn)
 	fcntl(*conn->fd, F_SETOWN, getpid());
 	fcntl(*conn->fd, F_SETSIG, SIGPOLL);
 
-    puts("[ (!) ] attempting to identify...");
-    send_raw(conn, 0, "USER %s 0 * :%s\r\n", conn->nick, "k88");
-    send_raw(conn, 0, "NICK %s\r\n", conn->nick);
+	puts("[ (!) ] attempting to identify...");
+	send_raw(conn, 0, "USER %s 0 * :%s\r\n", conn->nick, "k88");
+	send_raw(conn, 0, "NICK %s\r\n", conn->nick);
 	if (conn->pass) {
 		send_raw(conn, 1, "PASS %s\r\n", conn->pass);
 	}
-    return 0;
+	return 0;
 }
 
 void
@@ -69,7 +69,7 @@ destroy_conn(irc_conn *conn)
 {
 	SSL_free(conn->sock);
 	SSL_CTX_free(conn->ctx);
-    free(conn->fd);
+	free(conn->fd);
 }
 
 void
@@ -101,16 +101,16 @@ part_chans(irc_conn *conn, char *chans)
 void
 send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 {
-    char buf[BUFSIZE];
-    va_list args;
-    va_start(args, msgformat);
-    vsnprintf(buf, BUFSIZE, msgformat, args);
-    va_end(args);
+	char buf[BUFSIZE];
+	va_list args;
+	va_start(args, msgformat);
+	vsnprintf(buf, BUFSIZE, msgformat, args);
+	va_end(args);
 
-    if (SSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {
+	if (SSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {
 		ERR_print_errors_fp(stderr);
-        fprintf(stderr, "[ !!! ] failed to send: '%s'", buf);
-    } else if (!silent) {
-        printf("[ >>> ] %s", buf);
-    }
+		fprintf(stderr, "[ !!! ] failed to send: '%s'", buf);
+	} else if (!silent) {
+		printf("[ >>> ] %s", buf);
+	}
 }

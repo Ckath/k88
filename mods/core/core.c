@@ -41,19 +41,19 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 {
 	/* IBIP */
 	if (!strncmp(msg, ".bots", 5)) {
-		send_raw(s, 0, "PRIVMSG %s :Reporting in! [C] source: [redacteduntilcleanup™]\r\n", DEST); 
+		send_privmsg("Reporting in! [C] source: https://github.com/ckath/k88\r\n");
 	}
 
 	/* ctcp */
 	if (!strncmp(msg, "VERSION", 9)) {
 		puts("[ (!) ] ctcp version"); 
-		send_raw(s, 0, "NOTICE %s :VERSION socket.h\r\n", DEST);
+		send_notice("VERSION socket.h\r\n");
 	} else if (!strncmp(msg, "PING ", 6)) {
 		puts("[ (!) ] ctcp ping"); 
-		send_raw(s, 0, "NOTICE %s :PING %u\r\n", DEST, 88);
+		send_fnotice("PING %u\r\n", 88);
 	} else if (!strncmp(msg, "TIME", 6)) {
 		puts("[ (!) ] ctcp time"); 
-		send_raw(s, 0, "NOTICE %s :TIME %u\r\n", DEST, (unsigned)time(NULL));
+		send_fnotice("TIME %u\r\n", (unsigned)time(NULL));
 	}
 }
 

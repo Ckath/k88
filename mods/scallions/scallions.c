@@ -40,10 +40,9 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 
 	/* send if altered */
 	if (url_fixed) {
-		send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, buf); 
+		send_fprivmsg("%s\r\n", buf); 
 	}
 }
-
 
 static void
 handle_cmdmsg(
@@ -59,14 +58,14 @@ handle_cmdmsg(
 		strcpy(onion, strchr(msg, ' ')+1);
 		strchr(onion, ' ')[0] = '\0'; 
 
-	    char *clearnet = strchr(strchr(msg, ' ')+1, ' ')+1;
+		char *clearnet = strchr(strchr(msg, ' ')+1, ' ')+1;
 
 		char tmp[BUFSIZE];
 		sprintf(tmp, "http://%s", onion);
 		ini_write(lookup, "onions", tmp, clearnet);
 		sprintf(tmp, "https://%s", onion);
 		ini_write(lookup, "onions", tmp, clearnet);
-		send_raw(s, 0, "PRIVMSG %s :sure\r\n", DEST); 
+		send_privmsg("sure\r\n"); 
 	}
 }
 

@@ -137,7 +137,7 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 		if (strlen(title) > 450) {
 			strcpy(&title[447], "..");
 		}
-		send_raw(s, 0, "PRIVMSG %s :[ %s ]\r\n", DEST, title); 
+		send_fprivmsg("[ %s ]\r\n", title); 
 	}
 }
 

@@ -87,11 +87,11 @@ int
 main(int argc, char *argv[])
 {
 	/* init signal handling */
-    struct sigaction act;
-    memset(&act, 0, sizeof(act));
+	struct sigaction act;
+	memset(&act, 0, sizeof(act));
 	act.sa_flags = SA_SIGINFO;
-    act.sa_sigaction = sock_action;
-    sigaction(SIGIO, &act, 0);
+	act.sa_sigaction = sock_action;
+	sigaction(SIGIO, &act, 0);
 
 	init_modules();
 	INI *conf = ini_load("config.ini");

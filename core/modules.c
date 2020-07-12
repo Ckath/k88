@@ -191,7 +191,7 @@ handle_modules(mod_arg *args)
 	}
 
 	/* filter out info from raw PRIVMSG string */
-    char *msgtype = strchr(args->line, ' ') + 1;
+	char *msgtype = strchr(args->line, ' ') + 1;
 	if (msgtype != (char *) 0x1 && !strncmp(msgtype, "PRIVMSG", 7)) {
 		char msg[BUFSIZE];
 		char user[BUFSIZE];

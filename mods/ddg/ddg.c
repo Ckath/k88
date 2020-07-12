@@ -76,7 +76,7 @@ handle_cmdmsg(
 	/* handle result */
 	CURLcode r = curl_easy_perform(curl);
 	if (r != CURLE_OK) {
-		send_raw(s, 0, "PRIVMSG %s :curl error: %s\r\n", DEST, curl_easy_strerror(r)); 
+		send_fprivmsg("curl error: %s\r\n", curl_easy_strerror(r)); 
 	} else {
 		char response[BUFSIZE];
 		char redirect[BUFSIZE];
@@ -98,7 +98,7 @@ handle_cmdmsg(
 				strcpy(&response[447], "..");
 			}
 		}
-		send_raw(s, 0, "PRIVMSG %s :%s\r\n", DEST, response); 
+		send_fprivmsg("%s\r\n", response);
 	}
 
 	/* cleanup */

@@ -33,3 +33,7 @@ while everything is made to minimize having to look at the core bot code, a few 
 - the arguments in all `handle_` functions are to be copied **1:1**, they're used by macros
 - do not alter any strings your module is passed, these are reused by other modules
 - it shouldnt matter too much, but your module code should be (mostly) threadsafe
+
+# FAQ
+- why is this written so poorly?/why is x done like y when z makes more sense?\
+I have given up. this is a combination of many dead bot projects I had laying around. I may or may not slowly clean up the most terrible parts over time. feel free to do it for me in PRs as well

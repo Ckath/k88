@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <pthread.h>
 
 #include "irc.h"
 #include "modules.h"
@@ -140,55 +141,62 @@ mod_enabled(module *mod, char *index)
 }
 
 void
-timed_modules(irc_conn *servers, int n)
+timed_modules(timed_arg *args)
 {
+	/* this isnt going to be cleaned up, detach it */
+	pthread_detach(pthread_self());
+
 	/* time of function call */
 	time_t t = time(NULL);
 
-	for (int s = 0; s < n; ++s) {
+	for (int s = 0; s < args->n; ++s) {
 		char index[100];
 		strcpy(index, "timed@");
-		strcat(index, servers[s].index);
+		strcat(index, args->conn[s].index);
 		for (int i = 0; i < timed_mods_len; ++i) {
 			if (mod_enabled(&timed_mods[i], index)) {
-				timed_mods[i].timed(&servers[s], index, t);
+				timed_mods[i].timed(&args->conn[s], index, t);
 			}
 		}
 	}
+
+	/* cleanup thread, probably */
+	pthread_exit(NULL);
+	free(args);
 }
 
 void
-handle_modules(irc_conn *server, char *line)
+handle_modules(mod_arg *args)
 {
-	/* dup line asap before it gets corrupted by the next call */
-	char *rawmsg = strdup(line);
+	/* this isnt going to be cleaned up, detach it */
+	pthread_detach(pthread_self());
 
 	/* figure out current index(channel+server) for config logic */
 	char index[100] = { '\0' };
-	char *chan_start = strchr(rawmsg, '#');
+	char *chan_start = strchr(args->line, '#');
 	if (chan_start && chan_start[1] != ' ') {
 		strcpy(index, chan_start);
 		strpbrk(index, " \r")[0] = '@';
-		strcpy(strchr(index, '@')+1, server->index);
+		strcpy(strchr(index, '@')+1, args->conn->index);
 	} else {
 		strcpy(index, "misc@");
-		strcat(index, server->index);
+		strcat(index, args->conn->index);
 	}
 
 	/* call all raw handlers */
 	for (int i = 0; i < rawmsg_mods_len; ++i) {
 		if (mod_enabled(&rawmsg_mods[i], index)) {
-			rawmsg_mods[i].rawmsg(server, index, rawmsg);
+			rawmsg_mods[i].rawmsg(args->conn, index, args->line);
 		}
 	}
 
 	/* filter out info from raw PRIVMSG string */
-    char *msgtype = strchr(rawmsg, ' ') + 1;
+    char *msgtype = strchr(args->line, ' ') + 1;
 	if (msgtype != (char *) 0x1 && !strncmp(msgtype, "PRIVMSG", 7)) {
 		char msg[BUFSIZE];
 		char user[BUFSIZE];
 		char *chan = strchr(msgtype, ' ') + 1;
-		strcpy(user, rawmsg+1);
+		strcpy(user, args->line+1);
 		strchr(user, '!')[0] = '\0';
 		strcpy(msg, strchr(chan, ':')+1);
 		strchr(msg, '\r')[0] = '\0';
@@ -197,23 +205,26 @@ handle_modules(irc_conn *server, char *line)
 		/* call all privmsg handlers */
 		for (int i = 0; i < privmsg_mods_len; ++i) {
 			if (mod_enabled(&privmsg_mods[i], index)) {
-				privmsg_mods[i].privmsg(server, index, chan, user, msg);
+				privmsg_mods[i].privmsg(args->conn, index, chan, user, msg);
 			}
 		}
 
 		/* call all cmdmsg handlers */
-		char *modmatch = ini_read(server->globalconf, server->index, "modmatch");
-		bool mod = !strncmp(modmatch, rawmsg, strlen(modmatch));
-		char *prefix = mods_get_prefix(server, index);
+		char *modmatch = ini_read(args->conn->globalconf, args->conn->index, "modmatch");
+		bool mod = !strncmp(modmatch, args->line, strlen(modmatch));
+		char *prefix = mods_get_prefix(args->conn, index);
 		if (!strncmp(msg, prefix, strlen(prefix))) {
 			char cmdmsg[BUFSIZE];
 			strcpy(cmdmsg, msg+strlen(prefix));
 			for (int i = 0; i < cmdmsg_mods_len; ++i) {
 				if (mod_enabled(&cmdmsg_mods[i], index)) {
-					cmdmsg_mods[i].cmdmsg(server, index, chan, user, cmdmsg, mod);
+					cmdmsg_mods[i].cmdmsg(args->conn, index, chan, user, cmdmsg, mod);
 				}
 			}
 		}
 	}
-	free(rawmsg);
+
+	/* cleanup thread, probably */
+	pthread_exit(NULL);
+	free(args);
 }

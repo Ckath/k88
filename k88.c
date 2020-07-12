@@ -6,6 +6,7 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
+#include <pthread.h>
 
 #include "core/irc.h"
 #include "core/modules.h"
@@ -72,7 +73,10 @@ sock_action(int signo, siginfo_t *info, void *context)
 			memset(line_buf, 0, sizeof(line_buf));
 			while(fgets(line_buf, sizeof(line_buf)-1, file_buf)) {
 				printf("[ <<< ] %s", line_buf);
-				handle_modules(&servers[i], line_buf);
+				mod_arg *args = malloc(sizeof(mod_arg));
+				args->conn = &servers[i];
+				strcpy(args->line, line_buf);
+				pthread_create(&args->thr, NULL, (void *)handle_modules, args);
 			}
 			fclose(file_buf);
 		}
@@ -95,7 +99,10 @@ main(int argc, char *argv[])
 
 	/* loop calling timed modules, will get interrupted to handle others */
 	for (;;) {
-		timed_modules(servers, servers_len);
+		timed_arg *args = malloc(sizeof(timed_arg));
+		args->conn = servers;
+		args->n = servers_len;
+		pthread_create(&args->thr, NULL, (void *)timed_modules, args);
 		sleep(1);
 	}
 

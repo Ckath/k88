@@ -13,39 +13,39 @@
 #include "ini_rw/ini_rw.h"
 
 irc_conn *servers;
-int servers_len = 0;
+size_t nservers = 0;
 
 static void
 parse_conf(INI *conf)
 {
 	char **server_list = ini_list_sections(conf);
-	for (; server_list[servers_len]; ++servers_len) {
-		servers = realloc(servers, sizeof(irc_conn)*(servers_len+1));
-		servers[servers_len].globalconf = conf;
-		strcpy(servers[servers_len].index, server_list[servers_len]);
-		strcpy(servers[servers_len].addr, ini_read(conf,
-					server_list[servers_len], "addr"));
-		strcpy(servers[servers_len].port, ini_read(conf,
-					server_list[servers_len], "port"));
-		strcpy(servers[servers_len].nick, ini_read(conf,
-					server_list[servers_len], "nick"));
-		servers[servers_len].pass = ini_read(conf, server_list[servers_len],
+	for (; server_list[nservers]; ++nservers) {
+		servers = realloc(servers, sizeof(irc_conn)*(nservers+1));
+		servers[nservers].globalconf = conf;
+		strcpy(servers[nservers].index, server_list[nservers]);
+		strcpy(servers[nservers].addr, ini_read(conf,
+					server_list[nservers], "addr"));
+		strcpy(servers[nservers].port, ini_read(conf,
+					server_list[nservers], "port"));
+		strcpy(servers[nservers].nick, ini_read(conf,
+					server_list[nservers], "nick"));
+		servers[nservers].pass = ini_read(conf, server_list[nservers],
 				"pass");
 
-		while (init_conn(&servers[servers_len])) {
+		while (init_conn(&servers[nservers])) {
 			fprintf(stderr, "[ !!! ] failed to init server [%s] %s, retrying\n",
-					server_list[servers_len], servers[servers_len].addr);
-			destroy_conn(&servers[servers_len]);
+					server_list[nservers], servers[nservers].addr);
+			destroy_conn(&servers[nservers]);
 		}
 		printf("[ (!) ] loaded server [%s] %s\n",
-				server_list[servers_len], servers[servers_len].addr);
+				server_list[nservers], servers[nservers].addr);
 	}
 }
 
 static void
 sock_action(int signo, siginfo_t *info, void *context)
 {
-	for (int i = 0; i < servers_len; ++i) {
+	for (int i = 0; i < nservers; ++i) {
 		if (info->si_fd == *servers[i].fd) {
 			int n;
 			char line_buf[BUFSIZE];
@@ -101,7 +101,7 @@ main(int argc, char *argv[])
 	for (;;) {
 		timed_arg *args = malloc(sizeof(timed_arg));
 		args->conn = servers;
-		args->n = servers_len;
+		args->n = nservers;
 		pthread_create(&args->thr, NULL, (void *)timed_modules, args);
 		sleep(1);
 	}

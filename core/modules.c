@@ -9,16 +9,12 @@
 #include "../mods/modtape.h"
 #include "../ini_rw/ini_rw.h"
 
-module *all_mods;
-module *rawmsg_mods;
-module *privmsg_mods;
-module *cmdmsg_mods;
-module *timed_mods;
-int all_mods_len;
-int rawmsg_mods_len;
-int privmsg_mods_len;
-int cmdmsg_mods_len;
-int timed_mods_len;
+modlist all;
+modlist rawmsg;
+modlist privmsg;
+modlist cmdmsg;
+modlist timed;
+
 INI *modconf;
 char **mods_slist = NULL;
 
@@ -27,7 +23,7 @@ char **mods_slist = NULL;
 void
 mods_new(char *name, bool default_enable)
 {
-	all_mods = realloc(all_mods, sizeof(module) * ++all_mods_len);
+	all.mods = realloc(all.mods, sizeof(module) * ++all.n);
 	strcpy(NEWMOD.name, name);
 	NEWMOD.default_enable = default_enable;
 }
@@ -90,10 +86,10 @@ mods_list()
 	}
 
 	int i;
-	for (i = 0; i < all_mods_len; ++i) {
+	for (i = 0; i < all.n; ++i) {
 		mods_slist = realloc(mods_slist, sizeof(char *)*(i+2));
 		mods_slist[i] = malloc(256);
-		strcpy(mods_slist[i], all_mods[i].name);
+		strcpy(mods_slist[i], all.mods[i].name);
 	}
 	mods_slist[i] = NULL;
 	return mods_slist;
@@ -103,23 +99,23 @@ void
 init_modules(void)
 {
 	tape_loadmods();
-	for (int i = 0; i < all_mods_len; ++i) {
-		if (all_mods[i].rawmsg) {
-			rawmsg_mods = realloc(rawmsg_mods,
-					sizeof(module) * ++rawmsg_mods_len);
-			rawmsg_mods[rawmsg_mods_len-1] = all_mods[i];
-		} if (all_mods[i].privmsg) {
-			privmsg_mods = realloc(privmsg_mods,
-					sizeof(module) * ++privmsg_mods_len);
-			privmsg_mods[privmsg_mods_len-1] = all_mods[i];
-		} if (all_mods[i].cmdmsg) {
-			cmdmsg_mods = realloc(cmdmsg_mods,
-					sizeof(module) * ++cmdmsg_mods_len);
-			cmdmsg_mods[cmdmsg_mods_len-1] = all_mods[i];
-		} if (all_mods[i].timed) {
-			timed_mods = realloc(timed_mods,
-					sizeof(module) * ++timed_mods_len);
-			timed_mods[timed_mods_len-1] = all_mods[i];
+	for (int i = 0; i < all.n; ++i) {
+		if (all.mods[i].rawmsg) {
+			rawmsg.mods = realloc(rawmsg.mods,
+					sizeof(module) * ++rawmsg.n);
+			rawmsg.mods[rawmsg.n-1] = all.mods[i];
+		} if (all.mods[i].privmsg) {
+			privmsg.mods = realloc(privmsg.mods,
+					sizeof(module) * ++privmsg.n);
+			privmsg.mods[privmsg.n-1] = all.mods[i];
+		} if (all.mods[i].cmdmsg) {
+			cmdmsg.mods = realloc(cmdmsg.mods,
+					sizeof(module) * ++cmdmsg.n);
+			cmdmsg.mods[cmdmsg.n-1] = all.mods[i];
+		} if (all.mods[i].timed) {
+			timed.mods = realloc(timed.mods,
+					sizeof(module) * ++timed.n);
+			timed.mods[timed.n-1] = all.mods[i];
 		}
 	}
 
@@ -153,9 +149,9 @@ timed_modules(timed_arg *args)
 		char index[100];
 		strcpy(index, "timed@");
 		strcat(index, args->conn[s].index);
-		for (int i = 0; i < timed_mods_len; ++i) {
-			if (mod_enabled(&timed_mods[i], index)) {
-				timed_mods[i].timed(&args->conn[s], index, t);
+		for (int i = 0; i < timed.n; ++i) {
+			if (mod_enabled(&timed.mods[i], index)) {
+				timed.mods[i].timed(&args->conn[s], index, t);
 			}
 		}
 	}
@@ -184,9 +180,9 @@ handle_modules(mod_arg *args)
 	}
 
 	/* call all raw handlers */
-	for (int i = 0; i < rawmsg_mods_len; ++i) {
-		if (mod_enabled(&rawmsg_mods[i], index)) {
-			rawmsg_mods[i].rawmsg(args->conn, index, args->line);
+	for (int i = 0; i < rawmsg.n; ++i) {
+		if (mod_enabled(&rawmsg.mods[i], index)) {
+			rawmsg.mods[i].rawmsg(args->conn, index, args->line);
 		}
 	}
 
@@ -203,9 +199,9 @@ handle_modules(mod_arg *args)
 		strchr(chan, ' ')[0] = '\0';
 
 		/* call all privmsg handlers */
-		for (int i = 0; i < privmsg_mods_len; ++i) {
-			if (mod_enabled(&privmsg_mods[i], index)) {
-				privmsg_mods[i].privmsg(args->conn, index, chan, user, msg);
+		for (int i = 0; i < privmsg.n; ++i) {
+			if (mod_enabled(&privmsg.mods[i], index)) {
+				privmsg.mods[i].privmsg(args->conn, index, chan, user, msg);
 			}
 		}
 
@@ -214,11 +210,11 @@ handle_modules(mod_arg *args)
 		bool mod = !strncmp(modmatch, args->line, strlen(modmatch));
 		char *prefix = mods_get_prefix(args->conn, index);
 		if (!strncmp(msg, prefix, strlen(prefix))) {
-			char cmdmsg[BUFSIZE];
-			strcpy(cmdmsg, msg+strlen(prefix));
-			for (int i = 0; i < cmdmsg_mods_len; ++i) {
-				if (mod_enabled(&cmdmsg_mods[i], index)) {
-					cmdmsg_mods[i].cmdmsg(args->conn, index, chan, user, cmdmsg, mod);
+			char cmd_msg[BUFSIZE];
+			strcpy(cmd_msg, msg+strlen(prefix));
+			for (int i = 0; i < cmdmsg.n; ++i) {
+				if (mod_enabled(&cmdmsg.mods[i], index)) {
+					cmdmsg.mods[i].cmdmsg(args->conn, index, chan, user, cmd_msg, mod);
 				}
 			}
 		}

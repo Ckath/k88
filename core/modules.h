@@ -14,6 +14,11 @@ typedef struct {
 } module;
 
 typedef struct {
+	module *mods;
+	size_t n;
+} modlist;
+
+typedef struct {
 	irc_conn *conn;
 	char line[BUFSIZE];
 	pthread_t thr;
@@ -39,6 +44,6 @@ void timed_modules(timed_arg *args);
 void handle_modules(mod_arg *args);
 
 /* terrible macro bodging to hide how bad the module system is */
-#define NEWMOD all_mods[all_mods_len-1]
+#define NEWMOD all.mods[all.n-1]
 
 #endif

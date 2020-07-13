@@ -11,7 +11,7 @@ at the core, its another attempt at a somewhat maintainable (for me) bot system 
 - SSL (and only SSL connections will work)
 
 ### modules
-an ever incomplete list of the funcitonality provided through modules:
+an ever incomplete list of the functionality provided through modules:
 - ddg search (shoddy instant result api)
 - wolfram alpha
 - markov posting (learns on every channel its enabled on)
@@ -23,7 +23,7 @@ an ever incomplete list of the funcitonality provided through modules:
 module boilerplating is generated at `make` through the shellscript, all thats needed to add a new module is create a new directory under `mods/` with a `.c` file. see the other modules on how this is formatted.
 
 ### module contents
-a module is structured as a bunch of `handle_` functions, and an `_init` function. inside the `_init` the module is anmed and the used functions are added to the module system, again refer to all other mods on how this is structured.
+a module is structured as a bunch of `handle_` functions, and an `_init` function. inside the `_init` the module is added to the module system with its name and handler functions, any other initialisation the module might need should also be done here. again refer to all other mods on how this is structured.
 
 ### module 'api'
 while everything is made to minimize having to look at the core bot code, a few things have to be known:

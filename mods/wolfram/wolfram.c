@@ -3,34 +3,12 @@
 #include <time.h>
 #include <stdio.h>
 #include <curl/curl.h>
+#include "../../utils/curl.h"
 
 /* required */
 #include "../modtape.h"
 #include "../../core/modules.h"
 #include "../../core/irc.h"
-
-static CURL *curl;
-static bool curl_init = 0;
-
-typedef struct chunk {
-  char *memory;
-  size_t size;
-} chunk;
-
-static size_t
-write_cb(void *contents, size_t size, size_t nmemb, void *userp)
-{
-	size_t realsize = size * nmemb;
-	chunk *mem = (chunk *)userp;
-
-	char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-	mem->memory = ptr;
-	memcpy(&(mem->memory[mem->size]), contents, realsize);
-	mem->size += realsize;
-	mem->memory[mem->size] = 0;
-
-	return realsize;
-}
 
 static void
 handle_cmdmsg(
@@ -41,11 +19,8 @@ handle_cmdmsg(
 	}
 
 	/* curl is stupid and breaks my sockets if I init it any sooner */
-	if (!curl_init) {
-		curl_global_init(CURL_GLOBAL_ALL);
-		curl = curl_easy_init();
-		curl_init = 1;
-	}
+	curl_init();
+	CURL *curl = curl_easy_init();
 
 	/* build url */
 	char url[BUFSIZE];
@@ -55,19 +30,20 @@ handle_cmdmsg(
 			getenv("WOLFRAM_APPID"), req);
 
 	/* configure curl request */
-	curl_easy_setopt(curl, CURLOPT_URL, url); 
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb); 
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res); 
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_wrcb);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res);
 
 	/* handle result */
 	CURLcode r = curl_easy_perform(curl);
 	if (r != CURLE_OK) {
-		send_fprivmsg("curl error: %s\r\n", curl_easy_strerror(r)); 
+		send_fprivmsg("curl error: %s\r\n", curl_easy_strerror(r));
 	} else {
-		send_fprivmsg("%s\r\n", res.memory); 
+		send_fprivmsg("%s\r\n", res.memory);
 	}
 
 	/* cleanup */
+	curl_easy_cleanup(curl);
 	curl_free(req);
 	free(res.memory);
 }

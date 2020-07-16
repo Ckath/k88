@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <curl/curl.h>
 #include "../../utils/curl.h"
+#include "../../utils/strutils.h"
 
 /* required */
 #include "../modtape.h"
@@ -38,7 +39,10 @@ find_title(char *dest, char *html)
 			title_end[0] = '\0';
 		}
 	}
-	return;
+
+	/* title cleanup */
+	strrplc(dest, "\n", "");
+	strrplc(dest, "&quot;", "\"");
 }
 
 static void
@@ -89,6 +93,9 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 		break;
 	}
 
+	/* twitter workaround */
+	bool twitter_bs = strrplc(url, "twitter.com", "nitter.net");
+
 	/* configure curl request */
 	chunk res = { .memory = malloc(1), .size = 0 };
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
@@ -105,7 +112,9 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 		find_title(title, res.memory);
 
 		if (title[0]) {
-			if (strlen(title) > 450) {
+			if (twitter_bs) { /* hide the twitter -> nitter workaround */
+				strrplc(title, " | nitter", "");
+			} if (strlen(title) > 450) {
 				strcpy(&title[447], "..");
 			}
 			send_fprivmsg("[ %s ]\r\n", title);

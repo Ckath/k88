@@ -34,6 +34,7 @@ while everything is made to minimize having to look at the core bot code, a few 
 - the arguments in all `handle_` functions are to be copied **1:1**, they're used by macros
 - do not alter any strings your module is passed, these are reused by other modules
 - it shouldnt matter too much, but your module code should be (mostly) threadsafe
+- utils that will be reused over multiple modules are to be implemented in `utils/`
 
 # FAQ
 - why is this written so poorly?/why is x done like y when z makes more sense?\

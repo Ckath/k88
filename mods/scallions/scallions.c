@@ -9,6 +9,7 @@
 #include "../../core/irc.h"
 
 #include "../../ini_rw/ini_rw.h"
+#include "../../utils/strutils.h"
 
 INI *lookup;
 char **urls;
@@ -21,20 +22,10 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 	char buf[BUFSIZE] = {'\0'};
 	strcpy(buf, msg);
 
-	/* handle all the onions */
+	/* replace all known onions */
 	for (int i = 0; urls[i]; ++i) {
-		/* check match */
-		char *match = strstr(buf, urls[i]);
-
-		/* replace occurrences and send fixed result */
-		while (match) {
+		if (strrplc(buf, urls[i], ini_read(lookup, "onions", urls[i]))) {
 			url_fixed = true;
-			char tmp[BUFSIZE] = {'\0'};
-			strncpy(tmp, buf, match-buf);
-			strcat(tmp, ini_read(lookup, "onions", urls[i]));
-			strcat(tmp, match+strlen(urls[i]));
-			strcpy(buf, tmp);
-			match = strstr(buf, urls[i]);
 		}
 	}
 

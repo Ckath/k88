@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include "curl.h"
 
-static CURL *curl;
 static bool curl_active = false;
 
 size_t

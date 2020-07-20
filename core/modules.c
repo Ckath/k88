@@ -26,6 +26,10 @@ mods_new(char *name, bool default_enable)
 	all.mods = realloc(all.mods, sizeof(module) * ++all.n);
 	strcpy(NEWMOD.name, name);
 	NEWMOD.default_enable = default_enable;
+	NEWMOD.rawmsg = NULL;
+	NEWMOD.privmsg = NULL;
+	NEWMOD.cmdmsg = NULL;
+	NEWMOD.timed = NULL;
 }
 
 void

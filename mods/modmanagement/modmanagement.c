@@ -69,6 +69,12 @@ handle_cmdmsg(
 			mods_set_config(index, mod, "enabled");
 			send_fprivmsg("%s is now3 enabled\r\n", mod);
 		}
+	} else if (!strncmp(msg, "prefix ", 7)) {
+		char *oldprefix = strdup(mods_get_prefix(s, index));
+		char *newprefix = strchr(msg, ' ')+1;
+		mods_set_config(index, "prefix", newprefix);
+		send_fprivmsg("prefix: '%s' -> '%s'\r\n", oldprefix, newprefix);
+		free(oldprefix);
 	}
 }
 

@@ -226,6 +226,44 @@ handle_cmdmsg(
 		int feelpick = rand()%feelcount;
 		send_fprivmsg("%s\r\n", ini_read(feels, board_sec, feellist[feelpick]));
 		mods_set_config(index, "lastfeel", feellist[feelpick]);
+	} else if (!strncmp(msg, "findfeel ", 9)) {
+		/* check if theres something to search at all */
+		char *search = strchr(msg, ' ')+1;
+		if (!search) {
+			return;
+		}
+
+		/* bodge in a structure to hold feels and their origin */
+		typedef struct {
+			char *tfw;
+			char *post;
+		} tfw_struct;
+		int results = 0;
+		tfw_struct *tfws = NULL;
+
+		/* collect list of results */
+		char **boardlist = ini_list_sections(feels);
+		for (int i = 1; boardlist[i]; ++i) {
+			char **postlist = ini_list_items(feels, boardlist[i]);
+			for (int ii = 0; postlist[ii]; ++ii) {
+				char *post = ini_read(feels, boardlist[i], postlist[ii]);
+				if (strstr(post, search)) {
+					tfws = realloc(tfws, sizeof(tfw_struct)*++results);
+					tfws[results-1].tfw = post;
+					tfws[results-1].post = postlist[ii];
+				}
+			}
+		}
+
+		/* pick a random one */
+		if (results) {
+			srand(time(NULL));
+			send_fprivmsg("%s\r\n", tfws[rand()%results]);
+			free(tfws);
+		} else {
+			send_privmsg("404 no feels found\r\n");
+		}
+
 	} else if (!strncmp(msg, "scrapedebug", 11)) {
 		time_t now = time(NULL);
 		if (started < finished) {

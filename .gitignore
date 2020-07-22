@@ -21,3 +21,4 @@ run.log
 mods/markov/learndata/*
 !mods/markov/learndata/throw_data_here
 mods/lastseen/seen.ini
+mods/chanscraper/feels.ini

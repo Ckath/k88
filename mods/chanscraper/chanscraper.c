@@ -79,6 +79,7 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 			strrplc(tfw, "&#039;", "'");
 			strrplc(tfw, "\\u2019", "'");
 			strrplc(tfw, "\\u20ac", "€");
+			strrplc(tfw, "&quot;", "\"");
 			strrplc(tfw, "\\/", "/");
 			char url[100];
 			sprintf(url, ws ? "https://boards.4channel.org/%s/thread/%s#p%s" :

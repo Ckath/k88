@@ -78,6 +78,7 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 			strrplc(tfw, ">&gt;", "3>");
 			strrplc(tfw, "&#039;", "'");
 			strrplc(tfw, "\\u2019", "'");
+			strrplc(tfw, "\\u20ac", "€");
 			strrplc(tfw, "\\/", "/");
 			char url[100];
 			sprintf(url, ws ? "https://boards.4channel.org/%s/thread/%s#p%s" :
@@ -87,7 +88,6 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 		}
 	}
 }
-
 
 static void
 parse_board(char *board, bool ws)
@@ -188,7 +188,7 @@ update_cache()
 static void
 handle_timed(irc_conn *s, char *index, time_t time)
 {
-	if (s->init && time-started > 60*60*3/* 3 hours */) {
+	if (s->init && time-started > 60*60*4/* 4 hours */) {
 		printf("[ (!) ] updating chanscraper cache\n");
 		update_cache();
 	}
@@ -198,7 +198,9 @@ static void
 handle_cmdmsg(
 		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
 {
-	if (!strncmp(msg, "feel", 4)) {
+	if (!strncmp(msg, "feellast", 8) || !strncmp(msg, "lastfeel", 8)) {
+		send_fprivmsg("%s\r\n", mods_get_config(index, "lastfeel"));
+	} else if (!strncmp(msg, "feel", 4)) {
 		srand(time(NULL));
 		char *board = strchr(msg, ' ');
 		char board_sec[20];
@@ -223,8 +225,6 @@ handle_cmdmsg(
 		int feelpick = rand()%feelcount;
 		send_fprivmsg("%s\r\n", ini_read(feels, board_sec, feellist[feelpick]));
 		mods_set_config(index, "lastfeel", feellist[feelpick]);
-	} else if (!strncmp(msg, "feellast", 8) || !strncmp(msg, "lastfeel", 8)) {
-		send_fprivmsg("%s\r\n", mods_get_config(index, "lastfeel"));
 	} else if (!strncmp(msg, "scrapedebug", 11)) {
 		time_t now = time(NULL);
 		if (started < finished) {

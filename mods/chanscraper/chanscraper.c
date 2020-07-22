@@ -235,8 +235,8 @@ handle_cmdmsg(
 
 		/* bodge in a structure to hold feels and their origin */
 		typedef struct {
-			char *tfw;
-			char *post;
+			char tfw[BUFSIZE];
+			char post[100];
 		} tfw_struct;
 		int results = 0;
 		tfw_struct *tfws = NULL;
@@ -249,8 +249,8 @@ handle_cmdmsg(
 				char *post = ini_read(feels, boardlist[i], postlist[ii]);
 				if (strstr(post, search)) {
 					tfws = realloc(tfws, sizeof(tfw_struct)*++results);
-					tfws[results-1].tfw = post;
-					tfws[results-1].post = postlist[ii];
+					strcpy(tfws[results-1].tfw, post);
+					strcpy(tfws[results-1].post, postlist[ii]);
 				}
 			}
 		}
@@ -258,7 +258,9 @@ handle_cmdmsg(
 		/* pick a random one */
 		if (results) {
 			srand(time(NULL));
-			send_fprivmsg("%s\r\n", tfws[rand()%results]);
+			int pick = rand()%results;
+			send_fprivmsg("%s\r\n", tfws[pick].tfw);
+			mods_set_config(index, "lastfeel", tfws[pick].post);
 			free(tfws);
 		} else {
 			send_privmsg("404 no feels found\r\n");

@@ -247,6 +247,9 @@ handle_cmdmsg(
 		char **boardlist = ini_list_sections(feels);
 		for (int i = 1; boardlist[i]; ++i) {
 			char **postlist = ini_list_items(feels, boardlist[i]);
+			if (!postlist) {
+				continue;
+			}
 			for (int ii = 0; postlist[ii]; ++ii) {
 				char *post = ini_read(feels, boardlist[i], postlist[ii]);
 				if (strstr(post, search)) {

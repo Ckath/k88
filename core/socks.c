@@ -24,7 +24,7 @@ init_sock(int *sock, char *server, char *port)
 	}
 
 	if (connect(*sock, ai->ai_addr, ai->ai_addrlen)) {
-		fprintf(stderr, "[ !!! ] failed to connect");
+		fputs("[ !!! ] failed to connect\n", stderr);
 		return 1;
 	}
 

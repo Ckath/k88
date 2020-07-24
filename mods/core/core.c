@@ -11,7 +11,8 @@
 static void
 handle_timed(irc_conn *s, char *index, time_t time)
 {
-	if (s->init && time - s->heartbeat > 300) {
+	if (time - s->heartbeat > 300) {
+		s->heartbeat = time;
 		fputs("[ !!! ] connection timed out, resetting\n", stderr);
 		reconnect_conn(s);
 	}

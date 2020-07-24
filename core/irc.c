@@ -81,9 +81,15 @@ reconnect_conn(irc_conn *conn)
 void
 destroy_conn(irc_conn *conn)
 {
-	SSL_free(conn->sock);
-	SSL_CTX_free(conn->ctx);
-	free(conn->fd);
+	if (conn->sock) {
+		SSL_free(conn->sock);
+	}
+	if (conn->ctx) {
+		SSL_CTX_free(conn->ctx);
+	}
+	if (conn->fd) {
+		free(conn->fd);
+	}
 }
 
 void

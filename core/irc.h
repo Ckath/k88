@@ -20,6 +20,7 @@ typedef struct {
 } irc_conn;
 
 int init_conn(irc_conn *conn);
+void reconnect_conn(irc_conn *conn);
 void destroy_conn(irc_conn *conn);
 void join_chans(irc_conn *conn, char *chans);
 void part_chans(irc_conn *conn, char *chans);

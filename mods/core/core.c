@@ -11,24 +11,22 @@
 static void
 handle_timed(irc_conn *s, char *index, time_t time)
 {
-	if (s->init && time - s->heartbeat > 666) {
-		fputs("[ !!! ] connection timed out, resetting", stderr);
-		destroy_conn(s);
-		init_conn(s);
+	if (s->init && time - s->heartbeat > 300) {
+		fputs("[ !!! ] connection timed out, resetting\n", stderr);
+		reconnect_conn(s);
 	}
 }
 
 static void
 handle_rawmsg(irc_conn *s, char *index, char *line)
 {
+	s->heartbeat = time(NULL);
 	if (!strncmp(line, "PING ", 5)) {
-		s->heartbeat = time(NULL);
 		line[1] = 'O';
 		send_raw(s, 0, line);
 	} else if(!strncmp(line, "ERROR", 5)) {
 		fputs("[ !!! ] recieved ERROR, resetting connection", stderr);
-		destroy_conn(s);
-		init_conn(s);
+		reconnect_conn(s);
 	} else if (!s->init && strstr(line, " MODE ")) {
 		join_chans(s, ini_read(s->globalconf, s->index, "chans"));
 		s->init = 1;

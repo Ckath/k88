@@ -65,6 +65,20 @@ init_conn(irc_conn *conn)
 }
 
 void
+reconnect_conn(irc_conn *conn)
+{
+	destroy_conn(conn);
+	init_conn(conn);
+	while (init_conn(conn)) {
+		fprintf(stderr, "[ !!! ] failed to reconnect server [%s] %s, retrying\n",
+				conn->index, conn->addr);
+		destroy_conn(conn);
+	}
+	printf("[ (!) ] reconnected server [%s] %s\n",
+			conn->index, conn->addr);
+}
+
+void
 destroy_conn(irc_conn *conn)
 {
 	SSL_free(conn->sock);

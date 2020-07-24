@@ -228,11 +228,13 @@ handle_cmdmsg(
 		int feelpick = rand()%feelcount;
 		send_fprivmsg("%s\r\n", ini_read(feels, board_sec, feellist[feelpick]));
 		mods_set_config(index, "lastfeel", feellist[feelpick]);
-	} else if (!strncmp(msg, "findfeel ", 9)) {
+	} else if (!strncmp(msg, "findfeel", 8)) {
 		/* check if theres something to search at all */
-		char *search = strchr(msg, ' ')+1;
+		char *search = strchr(msg, ' ');
 		if (!search) {
 			return;
+		} else {
+			search+=1;
 		}
 
 		/* bodge in a structure to hold feels and their origin */

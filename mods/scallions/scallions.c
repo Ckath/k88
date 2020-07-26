@@ -56,6 +56,7 @@ handle_cmdmsg(
 		ini_write(lookup, "onions", tmp, clearnet);
 		sprintf(tmp, "https://%s", onion);
 		ini_write(lookup, "onions", tmp, clearnet);
+		urls = ini_list_items(lookup, "onions");
 		send_privmsg("sure\r\n"); 
 	}
 }

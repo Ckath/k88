@@ -29,8 +29,13 @@ parse_conf(INI *conf)
 					server_list[nservers], "port"));
 		strcpy(servers[nservers].nick, ini_read(conf,
 					server_list[nservers], "nick"));
-		servers[nservers].pass = ini_read(conf, server_list[nservers],
-				"pass");
+		char *pass = ini_read(conf, server_list[nservers], "pass");
+		if (pass) {
+			servers[nservers].pass = malloc(strlen(pass)+1);
+			strcpy(servers[nservers].pass, pass);
+		} else {
+			servers[nservers].pass = NULL;
+		}
 
 		while (init_conn(&servers[nservers])) {
 			fprintf(stderr, "[ !!! ] failed to init server [%s] %s, retrying\n",

@@ -16,6 +16,11 @@ handle_timed(irc_conn *s, char *index, time_t time)
 		fputs("[ !!! ] connection timed out, resetting\n", stderr);
 		reconnect_conn(s);
 	}
+
+	/* touch file for watchdog lockup check */
+	if (!(time%60)) {
+		fclose(fopen("/tmp/k88_alive", "w+"));
+	}
 }
 
 static void

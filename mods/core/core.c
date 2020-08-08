@@ -24,24 +24,25 @@ handle_timed(irc_conn *s, char *index, time_t time)
 }
 
 static void
-handle_rawmsg(irc_conn *s, char *index, char *line)
+handle_rawmsg(msg_info *mi, char *line)
 {
-	s->heartbeat = time(NULL);
+	mi->conn->heartbeat = time(NULL);
 	if (!strncmp(line, "PING ", 5)) {
 		line[1] = 'O';
-		send_raw(s, 0, line);
+		send_raw(mi->conn, 0, line);
 	} else if(!strncmp(line, "ERROR", 5)) {
 		fputs("[ !!! ] recieved ERROR, resetting connection", stderr);
-		reconnect_conn(s);
-	} else if (!s->init && strstr(line, " MODE ")) {
-		join_chans(s, ini_read(s->globalconf, s->index, "chans"));
-		s->init = 1;
-		s->heartbeat = time(NULL);
+		reconnect_conn(mi->conn);
+	} else if (!mi->conn->init && strstr(line, " MODE ")) {
+		join_chans(mi->conn, ini_read(mi->conn->globalconf,
+					mi->conn->index, "chans"));
+		mi->conn->init = 1;
+		mi->conn->heartbeat = time(NULL);
 	}
 }
 
 static void
-handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
+handle_privmsg(msg_info *mi, char *msg)
 {
 	/* IBIP */
 	if (!strncmp(msg, ".bots", 5)) {

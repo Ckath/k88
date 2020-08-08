@@ -20,15 +20,14 @@ mod_state(char *index, char **mods, char *mod)
 }
 
 static void
-handle_cmdmsg(
-		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
+handle_cmdmsg(msg_info *mi, char *msg)
 {
 	/* public commands */
 	if (!strncmp(msg, "listmods", 8)) {
 		char **mods = mods_list();
 		char modlist[BUFSIZE] = {'\0'};
 		for (int i = 0; mods[i]; ++i) {
-			char *mod_status = mods_get_config(index, mods[i]);
+			char *mod_status = mods_get_config(mi->index, mods[i]);
 			strcat(modlist, mod_status ? strcmp(mod_status, "enabled") ?
 					"4" : "3" : "");
 			strcat(modlist, mods[i]);
@@ -41,38 +40,38 @@ handle_cmdmsg(
 	}
 
 	/* admin only */
-	if (!mod) {
+	if (!mi->mod) {
 		return;
 	} if (!strncmp(msg, "disable ", 8)) {
 		char **mods = mods_list();
 		char *mod = strchr(msg, ' ')+1;
-		char *state = mod_state(index, mods, mod);
+		char *state = mod_state(mi->index, mods, mod);
 		if (!state) {
 			send_fprivmsg("%s was not found\r\n", mod);
 			return;
 		} if (!strcmp(state, "disabled")) {
 			send_fprivmsg("%s was already disabled\r\n", mod);
 		} else {
-			mods_set_config(index, mod, "disabled");
+			mods_set_config(mi->index, mod, "disabled");
 			send_fprivmsg("%s is now4 disabled\r\n", mod);
 		}
 	} else if (!strncmp(msg, "enable ", 7)) {
 		char **mods = mods_list();
 		char *mod = strchr(msg, ' ')+1;
-		char *state = mod_state(index, mods, mod);
+		char *state = mod_state(mi->index, mods, mod);
 		if (!state) {
 			send_fprivmsg("%s was not found in available mods\r\n", mod);
 			return;
 		} if (!strcmp(state, "enabled")) {
 			send_fprivmsg("%s was already enabled\r\n", mod);
 		} else {
-			mods_set_config(index, mod, "enabled");
+			mods_set_config(mi->index, mod, "enabled");
 			send_fprivmsg("%s is now3 enabled\r\n", mod);
 		}
 	} else if (!strncmp(msg, "prefix ", 7)) {
-		char *oldprefix = strdup(mods_get_prefix(s, index));
+		char *oldprefix = strdup(mods_get_prefix(mi->conn, mi->index));
 		char *newprefix = strchr(msg, ' ')+1;
-		mods_set_config(index, "prefix", newprefix);
+		mods_set_config(mi->index, "prefix", newprefix);
 		send_fprivmsg("prefix: '%s' -> '%s'\r\n", oldprefix, newprefix);
 		free(oldprefix);
 	}

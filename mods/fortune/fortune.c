@@ -25,14 +25,13 @@ char *fortunes[] = {
 };
 
 static void
-handle_cmdmsg(
-		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
+handle_cmdmsg(msg_info *mi, char *msg)
 {
 	if (strncmp(msg, "fortune", 7)) {
 		return;
 	}
 	srand(time(NULL));
-	send_fprivmsg("%s's fortune: %s\r\n", user, fortunes[rand()%13]); 
+	send_fprivmsg("%s's fortune: %s\r\n", mi->user, fortunes[rand()%13]); 
 }
 
 void

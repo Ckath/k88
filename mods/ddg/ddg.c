@@ -26,8 +26,7 @@ json_item(char *dest, char *json, char *item)
 }
 
 static void
-handle_cmdmsg(
-		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
+handle_cmdmsg(msg_info *mi, char *msg)
 {
 	if (strncmp(msg, "ddg ", 4)) {
 		return;

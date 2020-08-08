@@ -34,10 +34,10 @@ markov_learnall(char *dir)
 }
 
 static void
-handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
+handle_privmsg(msg_info *mi, char *msg)
 {
 	/* dont log own commands to markov learncache */
-	char *prefix = mods_get_prefix(s, index);
+	char *prefix = mods_get_prefix(mi->conn, mi->index);
 	if (!strncmp(prefix, msg, strlen(prefix))) {
 		return;
 	}
@@ -48,8 +48,7 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 }
 
 static void
-handle_cmdmsg(
-		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
+handle_cmdmsg(msg_info *mi, char *msg)
 {
 	if (strncmp(msg, "markov", 6)) {
 		return;

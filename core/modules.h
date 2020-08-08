@@ -5,10 +5,18 @@
 #include <pthread.h>
 
 typedef struct {
+	irc_conn *conn;
+	char *index;
+	char *chan;
+	char *user;
+	bool mod;
+} msg_info;
+
+typedef struct {
 	char name[256];
-	void (*rawmsg)(irc_conn *, char *, char *);
-	void (*privmsg)(irc_conn *, char *, char *, char *, char *);
-	void (*cmdmsg)(irc_conn *, char *, char *, char *, char *, bool);
+	void (*rawmsg)(msg_info *, char *);
+	void (*privmsg)(msg_info *, char *);
+	void (*cmdmsg)(msg_info *, char *);
 	void (*timed)(irc_conn *, char *, time_t);
 	bool default_enable;
 } module;

@@ -46,7 +46,7 @@ find_title(char *dest, char *html)
 }
 
 static void
-handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
+handle_privmsg(msg_info *mi, char *msg)
 {
 	/* check if theres any url at all */
 	char *http = strstr(msg, "http://");

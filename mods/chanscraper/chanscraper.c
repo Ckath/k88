@@ -200,11 +200,10 @@ handle_timed(irc_conn *s, char *index, time_t time)
 }
 
 static void
-handle_cmdmsg(
-		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
+handle_cmdmsg(msg_info *mi, char *msg)
 {
 	if (!strncmp(msg, "feellast", 8) || !strncmp(msg, "lastfeel", 8)) {
-		send_fprivmsg("%s\r\n", mods_get_config(index, "lastfeel"));
+		send_fprivmsg("%s\r\n", mods_get_config(mi->index, "lastfeel"));
 	} else if (!strncmp(msg, "feel", 4)) {
 		srand(time(NULL));
 		char *board = strchr(msg, ' ');
@@ -229,7 +228,7 @@ handle_cmdmsg(
 		while(feellist[++feelcount]);
 		int feelpick = rand()%feelcount;
 		send_fprivmsg("%s\r\n", ini_read(feels, board_sec, feellist[feelpick]));
-		mods_set_config(index, "lastfeel", feellist[feelpick]);
+		mods_set_config(mi->index, "lastfeel", feellist[feelpick]);
 	} else if (!strncmp(msg, "findfeel", 8)) {
 		/* check if theres something to search at all */
 		char *search = strchr(msg, ' ');
@@ -269,7 +268,7 @@ handle_cmdmsg(
 			srand(time(NULL));
 			int pick = rand()%results;
 			send_fprivmsg("%s\r\n", tfws[pick].tfw);
-			mods_set_config(index, "lastfeel", tfws[pick].post);
+			mods_set_config(mi->index, "lastfeel", tfws[pick].post);
 			free(tfws);
 		} else {
 			send_privmsg("404 no feels found\r\n");
@@ -285,7 +284,7 @@ handle_cmdmsg(
 			send_fprivmsg("still updating, duration: %dm %ds\r\n",
 					(now-started)/60, (now-started)%60);
 		}
-	} else if (mod && !strncmp(msg, "scrapeupdate", 12)) {
+	} else if (mi->mod && !strncmp(msg, "scrapeupdate", 12)) {
 		send_privmsg("updating cache again, this will take a while\r\n");
 		printf("[ (!) ] updating chanscraper cache, manually triggered\n");
 		update_cache();

@@ -183,10 +183,19 @@ handle_modules(mod_arg *args)
 		strcat(index, args->conn->index);
 	}
 
+	/* prepare the msg_info structure */
+	msg_info msginfo = {
+		.conn = args->conn,
+		.index = index,
+		.chan = NULL,
+		.user = NULL,
+		.mod = NULL
+	};
+
 	/* call all raw handlers */
 	for (int i = 0; i < rawmsg.n; ++i) {
 		if (mod_enabled(&rawmsg.mods[i], index)) {
-			rawmsg.mods[i].rawmsg(args->conn, index, args->line);
+			rawmsg.mods[i].rawmsg(&msginfo, args->line);
 		}
 	}
 
@@ -195,30 +204,32 @@ handle_modules(mod_arg *args)
 	if (msgtype != (char *) 0x1 && !strncmp(msgtype, "PRIVMSG", 7)) {
 		char msg[BUFSIZE];
 		char user[BUFSIZE];
-		char *chan = strchr(msgtype, ' ') + 1;
+		msginfo.chan = strchr(msgtype, ' ') + 1;
 		strcpy(user, args->line+1);
 		strchr(user, '!')[0] = '\0';
-		strcpy(msg, strchr(chan, ':')+1);
+		msginfo.user = user;
+		strcpy(msg, strchr(msginfo.chan, ':')+1);
 		strchr(msg, '\r')[0] = '\0';
-		strchr(chan, ' ')[0] = '\0';
+		strchr(msginfo.chan, ' ')[0] = '\0';
 
 		/* call all privmsg handlers */
 		for (int i = 0; i < privmsg.n; ++i) {
 			if (mod_enabled(&privmsg.mods[i], index)) {
-				privmsg.mods[i].privmsg(args->conn, index, chan, user, msg);
+				privmsg.mods[i].privmsg(&msginfo, msg);
 			}
 		}
 
 		/* call all cmdmsg handlers */
-		char *modmatch = ini_read(args->conn->globalconf, args->conn->index, "modmatch");
-		bool mod = !strncmp(modmatch, args->line, strlen(modmatch));
 		char *prefix = mods_get_prefix(args->conn, index);
 		if (!strncmp(msg, prefix, strlen(prefix))) {
+			char *modmatch = ini_read(args->conn->globalconf,
+					args->conn->index, "modmatch");
+			msginfo.mod = !strncmp(modmatch, args->line, strlen(modmatch));
 			char cmd_msg[BUFSIZE];
 			strcpy(cmd_msg, msg+strlen(prefix));
 			for (int i = 0; i < cmdmsg.n; ++i) {
 				if (mod_enabled(&cmdmsg.mods[i], index)) {
-					cmdmsg.mods[i].cmdmsg(args->conn, index, chan, user, cmd_msg, mod);
+					cmdmsg.mods[i].cmdmsg(&msginfo, cmd_msg);
 				}
 			}
 		}

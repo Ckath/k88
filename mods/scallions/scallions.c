@@ -15,7 +15,7 @@ INI *lookup;
 char **urls;
 
 static void
-handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
+handle_privmsg(msg_info *mi, char *msg)
 {
 	/* copy msg */
 	bool url_fixed = false;
@@ -36,11 +36,10 @@ handle_privmsg(irc_conn *s, char *index, char *chan, char *user, char *msg)
 }
 
 static void
-handle_cmdmsg(
-		irc_conn *s, char *index, char *chan, char *user, char *msg, bool mod)
+handle_cmdmsg(msg_info *mi, char *msg)
 {
 	/* admin only */
-	if (!mod) {
+	if (!mi->mod) {
 		return;
 	}
 

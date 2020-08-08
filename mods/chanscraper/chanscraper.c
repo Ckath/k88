@@ -13,7 +13,7 @@
 #include "../../utils/strutils.h"
 
 static INI *feels;
-static CURL *curl;
+static CURL *curl = NULL;
 time_t started = 0;
 time_t finished = 0;
 bool store_index = 0;
@@ -136,8 +136,10 @@ static void
 update_cache()
 {
 	/* curl is stupid and breaks my sockets if I init it any sooner */
-	curl_init();
-	curl = curl_easy_init();
+	if (!curl) {
+		curl_init();
+		curl = curl_easy_init();
+	}
 
 	/* set start time */
 	started = time(NULL);

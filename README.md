@@ -17,6 +17,7 @@ an ever incomplete list of the functionality provided through modules:
 - markov posting (learns on every channel its enabled on)
 - onion link translating
 - link reader
+- 4chan scraper
 - typical irc nonsense (decide, IBIP, fortunes, modulemanagement etc)
 
 ## incomplete guide to writing modules
@@ -31,8 +32,8 @@ while everything is made to minimize having to look at the core bot code, a few 
 - use `send_fprivmsg` for a privmsg with formatted(as in printf like) privmsg
 - similar for `send_notice`/`send_fnotice`
 - for interfacing with api endpoints, see the `ddg` or `wolfram` module for how I (ab)use curl
-- the arguments in all `handle_` functions are to be copied **1:1**, they're used by macros
-- do not alter any strings your module is passed, these are reused by other modules
+- the signature of all `handle_` functions are to be copied **1:1**, they're used by macros
+- **do not** alter any strings your module is passed, these are reused by other modules
 - it shouldnt matter too much, but your module code should be (mostly) threadsafe
 - utils that will be reused over multiple modules are to be implemented in `utils/`
 

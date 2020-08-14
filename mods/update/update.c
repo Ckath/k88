@@ -22,7 +22,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char oldver[9] = { '\0' };
 		fgets(oldver, 8, cp);
 
-		if(system("git pull -r") || system("make")) {
+		if(system("git pull -r") ||
+				system("git submodule update --recursive") ||
+				system("make")) {
 			send_privmsg("something terrible happened trying to update, " \
 					"please ssh in to fix it\r\n");
 			pclose(cp);

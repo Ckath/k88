@@ -31,7 +31,15 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 	/* TODO: add a way to check other servers as well,
 	 * or merge all into one entry and dont keep track which server it is */
-	char *lastseen = ini_read(seen, mi->conn->index, strchr(msg, ' ')+1);
+
+	/* strip spaces */
+	char name[256] = { '\0' };
+	strcpy(name, strchr(msg, ' ')+1);
+	if (strchr(name, ' ')) {
+		strchr(name, ' ')[0] = '\0';
+	}
+
+	char *lastseen = ini_read(seen, mi->conn->index, name);
 	if (lastseen) {
 		send_fprivmsg("last msg: %s\r\n", lastseen);
 	} else {

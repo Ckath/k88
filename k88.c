@@ -61,9 +61,9 @@ sock_action(int signo, siginfo_t *info, void *context)
 			 * into separate programs for easier restarts:
 			 * - irc client program  buffers into file
 			 * - parser program reads from file and handles messages
-			 * - ??? parser sends message to client program, not sure how yet 
+			 * - ??? parser sends message to client program, not sure how yet
 			 *
-			 * for now it works out fine as is, for the most, 
+			 * for now it works out fine as is, for the most,
 			 * some stuff is missed with this abomination of a signal handler */
 
 			/* buffer available data into file */

@@ -31,7 +31,7 @@ handle_privmsg(msg_info *mi, char *msg)
 
 	/* send if altered */
 	if (url_fixed) {
-		send_fprivmsg("%s\r\n", buf); 
+		send_fprivmsg("%s\r\n", buf);
 	}
 }
 
@@ -46,7 +46,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	if (!strncmp(msg, "onion ", 6)) {
 		char onion[BUFSIZE];
 		strcpy(onion, strchr(msg, ' ')+1);
-		strchr(onion, ' ')[0] = '\0'; 
+		strchr(onion, ' ')[0] = '\0';
 
 		char *clearnet = strchr(strchr(msg, ' ')+1, ' ')+1;
 
@@ -56,7 +56,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		sprintf(tmp, "https://%s", onion);
 		ini_write(lookup, "onions", tmp, clearnet);
 		urls = ini_list_items(lookup, "onions");
-		send_privmsg("sure\r\n"); 
+		send_privmsg("sure\r\n");
 	}
 }
 

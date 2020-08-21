@@ -55,7 +55,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	}
 
 	/* maybe needed? thanks lack of documentation */
-	srand(time(NULL)); 
+	srand(time(NULL));
 
 	char input[MAX_LINE_LENGTH];
 	char *arg = strchr(msg, ' ');

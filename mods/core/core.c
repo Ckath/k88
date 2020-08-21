@@ -51,13 +51,13 @@ handle_privmsg(msg_info *mi, char *msg)
 
 	/* ctcp */
 	if (!strncmp(msg, "VERSION", 9)) {
-		puts("[ (!) ] ctcp version"); 
+		puts("[ (!) ] ctcp version");
 		send_notice("VERSION socket.h\r\n");
 	} else if (!strncmp(msg, "PING ", 6)) {
-		puts("[ (!) ] ctcp ping"); 
+		puts("[ (!) ] ctcp ping");
 		send_fnotice("PING %u\r\n", 88);
 	} else if (!strncmp(msg, "TIME", 6)) {
-		puts("[ (!) ] ctcp time"); 
+		puts("[ (!) ] ctcp time");
 		send_fnotice("TIME %u\r\n", (unsigned)time(NULL));
 	}
 }

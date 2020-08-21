@@ -31,7 +31,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		return;
 	}
 	srand(time(NULL));
-	send_fprivmsg("%s's fortune: %s\r\n", mi->user, fortunes[rand()%13]); 
+	send_fprivmsg("%s's fortune: %s\r\n", mi->user, fortunes[rand()%13]);
 }
 
 void

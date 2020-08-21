@@ -33,15 +33,15 @@ EOF
 void
 tape_loadmods()
 {
-	/* MODS */	
+	/* MODS */
 }
 EOF
 
 # update files
 for m in mods/*/*.c; do
 	INIT=$(grep -o '.*_init()$' $m)
-	update_h "void $INIT;" 
-	update_c "$INIT;" 
+	update_h "void $INIT;"
+	update_c "$INIT;"
 done
 
 (( $UPDATED > 0 )) && echo "mod tape loading: added $UPDATED mods"

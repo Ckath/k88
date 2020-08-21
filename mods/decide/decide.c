@@ -29,7 +29,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	if (!strchr(options, ',')) {
 		send_fprivmsg("%s\r\n", rand()%2 ? "yes" : "no");
 		return;
-	} 
+	}
 
 	/* save an unfucked string of options,
 	 * then go through them all until rand()%20 == 8

@@ -50,7 +50,7 @@ init_conn(irc_conn *conn)
 	}
 
 	/* everything done, configure fd options */
-	fcntl(*conn->fd, F_SETFL, 
+	fcntl(*conn->fd, F_SETFL,
 			fcntl(*conn->fd, F_GETFL, 0)|O_ASYNC|O_NONBLOCK);
 	fcntl(*conn->fd, F_SETOWN, getpid());
 	fcntl(*conn->fd, F_SETSIG, SIGPOLL);

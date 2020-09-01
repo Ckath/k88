@@ -8,4 +8,3 @@ while true; do
 	[ $(($(date +%s)-$(stat -c %Y /tmp/k88_alive))) -gt 180 ] && pkill k88
 	sleep 1
 done
-:

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 
-typedef struct {
+typedef struct msg_info {
 	irc_conn *conn;
 	char *index;
 	char *chan;
@@ -12,7 +12,7 @@ typedef struct {
 	bool mod;
 } msg_info;
 
-typedef struct {
+typedef struct module {
 	char name[256];
 	void (*rawmsg)(msg_info *, char *);
 	void (*privmsg)(msg_info *, char *);
@@ -21,18 +21,18 @@ typedef struct {
 	bool default_enable;
 } module;
 
-typedef struct {
+typedef struct modlist {
 	module *mods;
 	size_t n;
 } modlist;
 
-typedef struct {
+typedef struct mod_arg {
 	irc_conn *conn;
 	char line[BUFSIZE];
 	pthread_t thr;
 } mod_arg;
 
-typedef struct {
+typedef struct timed_arg {
 	irc_conn *conn;
 	int n;
 	pthread_t thr;

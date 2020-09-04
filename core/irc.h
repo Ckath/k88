@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "../ini_rw/ini_rw.h"
 
-typedef struct {
+typedef struct irc_conn {
 	INI *globalconf;
 	char index[256];
 	char addr[256];

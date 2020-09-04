@@ -239,7 +239,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		}
 
 		/* bodge in a structure to hold feels and their origin */
-		typedef struct {
+		typedef struct tfw_struct{
 			char tfw[BUFSIZE];
 			char post[100];
 		} tfw_struct;

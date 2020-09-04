@@ -11,8 +11,8 @@
 #include "../../ini_rw/ini_rw.h"
 #include "../../utils/strutils.h"
 
-INI *lookup;
-char **urls;
+static INI *lookup;
+static char **urls;
 
 static void
 handle_privmsg(msg_info *mi, char *msg)

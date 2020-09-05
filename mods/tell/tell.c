@@ -13,13 +13,6 @@
 
 static INI *tell;
 static char **nicks;
-/* high int drunk programming plans:
- * storage example:  eg: (12:13:55 09/05/20 CEST) = <ck> benis
- * send example: notCK: 12:13:55 05/09/20 CEST <ck> benis
- * - structure ini with time being the key
- * - put sender nick inside item value
- * - put receiver nick as section header
- * - lower receiver nick on storage, as well as on attempted match, but not for ping */
 
 static void
 handle_privmsg(msg_info *mi, char *msg)

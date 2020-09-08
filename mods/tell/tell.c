@@ -55,7 +55,6 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	if (strchr(name, ' ')) {
 		strchr(name, ' ')[0] = '\0';
 	}
-	strlower(name);
 
 	char timestr[80];
 	time_t t = time(NULL);

@@ -74,7 +74,12 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 			}
 
 			/* cleanup and store >tfw */
-			strstr(tfw, "<\\/")[0] = '\0';
+			char *tfw_end = strstr(tfw, "<\\/");
+			if (!tfw_end) {
+				fprintf(stderr, "[ !!! ] feel: '%s' lacks ending, skipping\n", tfw);
+				continue;
+			}
+			tfw_end[0] = '\0';
 			strrplc(tfw, ">&gt;", "3>");
 			strrplc(tfw, "&#039;", "'");
 			strrplc(tfw, "\\u2019", "'");

@@ -18,7 +18,7 @@ handle_timed(irc_conn *s, char *index, time_t time)
 	}
 
 	/* touch file for watchdog lockup check */
-	if (!(time%60)) {
+	if (!(time%20)) {
 		fclose(fopen("/tmp/k88_alive", "w+"));
 	}
 }
@@ -37,7 +37,6 @@ handle_rawmsg(msg_info *mi, char *line)
 		join_chans(mi->conn, ini_read(mi->conn->globalconf,
 					mi->conn->index, "chans"));
 		mi->conn->init = 1;
-		mi->conn->heartbeat = time(NULL);
 	}
 }
 

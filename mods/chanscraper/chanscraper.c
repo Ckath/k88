@@ -67,7 +67,7 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 		char feel[BUFSIZE];
 		json_item(feel, json_ptr, "\"com\":", "\",\"");
 		char *tfw = strstr(feel, ">&gt;tfw ");
-		if (tfw) {
+		while (tfw) {
 			/* false hit on post without comment */
 			if (strstr(json_ptr, "\"com\":") > strchr(json_ptr, '}')) {
 				continue;
@@ -93,6 +93,7 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 					"https://boards.4chan.org/%s/thread/%s#p%s",
 					board, thread, id);
 			ini_write(feels, board_sec, url, tfw);
+			tfw = strstr(feel+1, ">&gt;tfw ");
 		}
 	}
 }
@@ -156,7 +157,6 @@ update_cache()
 	chunk res = { .memory = malloc(1), .size = 0 };
 	CURLcode r = api_request(&res, "https://a.4cdn.org/boards.json");
 	if (r != CURLE_OK) {
-		free(res.memory);
 		fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
 	} else {
 		char *json_ptr = res.memory;

@@ -64,36 +64,44 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 			break;
 		}
 
-		char feel[BUFSIZE];
-		json_item(feel, json_ptr, "\"com\":", "\",\"");
-		char *tfw = strstr(feel, ">&gt;tfw ");
-		while (tfw) {
+		char post[BUFSIZE];
+		json_item(post, json_ptr, "\"com\":", "\",\"");
+		char *feel = post;
+		int tfws = 0;
+		while ((feel = strstr(feel+1, "&gt;tfw "))) {
 			/* false hit on post without comment */
 			if (strstr(json_ptr, "\"com\":") > strchr(json_ptr, '}')) {
 				continue;
 			}
 
-			/* cleanup and store >tfw */
+			/* cleanup >tfw */
+			char tfw[BUFSIZE];
+			strcpy(tfw, feel);
 			char *tfw_end = strstr(tfw, "<\\/");
-			if (!tfw_end) {
-				fprintf(stderr, "[ !!! ] feel: '%s' lacks ending, skipping\n", tfw);
-				continue;
+			if (tfw_end) {
+				tfw_end[0] = '\0';
 			}
-			tfw_end[0] = '\0';
-			strrplc(tfw, ">&gt;", "3>");
+			strrplc(tfw, "&gt;", "3>");
 			strrplc(tfw, "&#039;", "'");
 			strrplc(tfw, "\\u2019", "'");
 			strrplc(tfw, "\\u20ac", "€");
 			strrplc(tfw, "\\u00dc", "Ü");
 			strrplc(tfw, "\\u00fc", "ü");
 			strrplc(tfw, "&quot;", "\"");
+			strrplc(tfw, "<br>", "");
 			strrplc(tfw, "\\/", "/");
+
+			/* create urlindex and store */
 			char url[100];
 			sprintf(url, ws ? "https://boards.4channel.org/%s/thread/%s#p%s" :
 					"https://boards.4chan.org/%s/thread/%s#p%s",
 					board, thread, id);
+			if (tfws++) { /* workaround keep a unique url index */
+				char numbering[5];
+				sprintf(numbering, " #%d", tfws);
+				strcat(url, numbering);
+			}
 			ini_write(feels, board_sec, url, tfw);
-			tfw = strstr(feel+1, ">&gt;tfw ");
 		}
 	}
 }

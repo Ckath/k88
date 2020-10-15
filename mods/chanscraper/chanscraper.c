@@ -87,6 +87,7 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 			strrplc(tfw, "\\u20ac", "€");
 			strrplc(tfw, "\\u00dc", "Ü");
 			strrplc(tfw, "\\u00fc", "ü");
+			strrplc(tfw, "\\u004e", "ä");
 			strrplc(tfw, "&quot;", "\"");
 			strrplc(tfw, "<br>", "");
 			strrplc(tfw, "\\/", "/");
@@ -201,6 +202,7 @@ update_cache()
 	finished = time(NULL);
 	sprintf(timestr, "%lld", (long long) finished);
 	ini_write(feels, "updated", "finished", timestr);
+	printf("[ (!) ] finished updating chanscraper cache\n");
 }
 
 static void

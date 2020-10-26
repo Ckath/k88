@@ -82,6 +82,7 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 				tfw_end[0] = '\0';
 			}
 			strrplc(tfw, "&gt;", "3>");
+			strrplc(tfw, "&lt;", "<");
 			strrplc(tfw, "&#039;", "'");
 			strrplc(tfw, "\\u2019", "'");
 			strrplc(tfw, "\\u20ac", "€");

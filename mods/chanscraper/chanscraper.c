@@ -168,6 +168,7 @@ update_cache()
 	CURLcode r = api_request(&res, "https://a.4cdn.org/boards.json");
 	if (r != CURLE_OK) {
 		fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
+		curl_reset();
 	} else {
 		char *json_ptr = res.memory;
 		char board[BUFSIZE];

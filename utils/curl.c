@@ -23,6 +23,13 @@ curl_wrcb(void *contents, size_t size, size_t nmemb, void *userp)
 }
 
 void
+curl_reset()
+{
+	curl_active = false;
+	curl_global_cleanup();
+}
+
+void
 curl_init()
 {
 	if (!curl_active) {

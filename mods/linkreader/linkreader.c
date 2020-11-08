@@ -107,6 +107,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	CURLcode r = curl_easy_perform(curl);
 	if (r != CURLE_OK) {
 		fprintf(stderr, "[ !!! ] curl error: %s\r\n", curl_easy_strerror(r));
+		curl_reset();
 	} else {
 		char title[BUFSIZE] = {'\0'};
 		find_title(title, res.memory);

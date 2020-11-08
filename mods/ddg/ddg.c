@@ -51,6 +51,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	CURLcode r = curl_easy_perform(curl);
 	if (r != CURLE_OK) {
 		send_fprivmsg("curl error: %s\r\n", curl_easy_strerror(r));
+		curl_reset();
 	} else {
 		char response[BUFSIZE];
 		char redirect[BUFSIZE];

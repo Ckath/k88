@@ -121,6 +121,7 @@ parse_board(char *board, bool ws)
 	if (r != CURLE_OK) {
 		free(res.memory);
 		fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
+		curl_reset();
 		return;
 	}
 
@@ -140,6 +141,7 @@ parse_board(char *board, bool ws)
 		if (r != CURLE_OK) {
 			free(rres.memory);
 			fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
+			curl_reset();
 			continue;
 		}
 		parse_thread(board, id, ws, rres.memory);

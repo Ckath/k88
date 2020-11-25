@@ -121,6 +121,8 @@ parse_board(char *board, bool ws)
 	if (r != CURLE_OK) {
 		free(res.memory);
 		fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
+		fprintf(stderr, "[ (!) ] parse_board: trying to recovery by resetting started\n");
+		started = 0;
 		curl_reset();
 		return;
 	}
@@ -141,6 +143,8 @@ parse_board(char *board, bool ws)
 		if (r != CURLE_OK) {
 			free(rres.memory);
 			fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
+			fprintf(stderr, "[ (!) ] parse_thread_call: trying to recovery by resetting started\n");
+			started = 0;
 			curl_reset();
 			continue;
 		}
@@ -170,6 +174,8 @@ update_cache()
 	CURLcode r = api_request(&res, "https://a.4cdn.org/boards.json");
 	if (r != CURLE_OK) {
 		fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
+		fprintf(stderr, "[ (!) ] update_cache: trying to recovery by resetting started\n");
+		started = 0;
 		curl_reset();
 	} else {
 		char *json_ptr = res.memory;

@@ -92,6 +92,8 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 			strrplc(tfw, "&quot;", "\"");
 			strrplc(tfw, "<br>", "");
 			strrplc(tfw, "\\/", "/");
+			strrplc(tfw, "\\u00f3", "ó");
+
 
 			/* create urlindex and store */
 			char url[100];

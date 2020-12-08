@@ -90,6 +90,8 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 			strrplc(tfw, "\\u00fc", "ü");
 			strrplc(tfw, "\\u004e", "ä");
 			strrplc(tfw, "&quot;", "\"");
+			strrplc(tfw, "&amp;", "&");
+			strrplc(tfw, "&apos;", "'");
 			strrplc(tfw, "<br>", "");
 			strrplc(tfw, "\\/", "/");
 			strrplc(tfw, "\\u00f3", "ó");

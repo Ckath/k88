@@ -236,8 +236,8 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		strcpy(feelboard, mods_get_config(mi->index, "lastfeel"));
 		char *feelboardp = strstr(feelboard, "org/");
 		feelboardp += 3;
-		strchr(feelboardp, 't')[0] = '\0';
-		send_fprivmsg("%s\r\n", feelboardp);
+		strchr(feelboardp+1, '/')[0] = '\0';
+		send_fprivmsg("%s/\r\n", feelboardp);
 	} else if (!strncmp(msg, "feellast", 8) || !strncmp(msg, "lastfeel", 8)) {
 		send_fprivmsg("%s\r\n", mods_get_config(mi->index, "lastfeel"));
 	} else if (!strncmp(msg, "feel", 4)) {

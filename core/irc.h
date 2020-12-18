@@ -17,6 +17,7 @@ typedef struct irc_conn {
 	SSL_CTX *ctx;
 	bool init;
 	time_t heartbeat;
+	time_t init_time;
 } irc_conn;
 
 int init_conn(irc_conn *conn);

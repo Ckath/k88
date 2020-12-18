@@ -146,16 +146,13 @@ timed_modules(timed_arg *args)
 	/* this isnt going to be cleaned up, detach it */
 	pthread_detach(pthread_self());
 
-	/* time of function call */
-	time_t t = time(NULL);
-
 	for (int s = 0; s < args->n; ++s) {
 		char index[100];
 		strcpy(index, "timed@");
 		strcat(index, args->conn[s].index);
 		for (int i = 0; i < timed.n; ++i) {
 			if (mod_enabled(&timed.mods[i], index)) {
-				timed.mods[i].timed(&args->conn[s], index, t);
+				timed.mods[i].timed(&args->conn[s], index, args->t);
 			}
 		}
 	}

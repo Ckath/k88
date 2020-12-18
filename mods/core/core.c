@@ -79,11 +79,12 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		time_t now = time(NULL);
 		send_fprivmsg("bot uptime: %dh %dm, " \
 				"connection uptime: %dh %dm, " \
+				"reconnects: %d, " \
 				"module desyncs: %d, " \
 				"last crash/restart reason: %s\r\n",
 				(now-self_init)/60/60, ((now-self_init)/60)%60,
 				(now-mi->conn->init_time)/60/60, ((now-mi->conn->init_time)/60)%60,
-				mistimes, crash_data);
+				mi->conn->reconns, mistimes, crash_data);
 	}
 }
 

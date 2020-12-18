@@ -40,6 +40,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			send_fprivmsg("updated:7 %s ->7 %s\r\n", oldver, newver);
 		}
 		pclose(cp);
+		FILE *crashf = fopen("/tmp/k88_crash", "w+");
+		fputs("updated", crashf);
+		fclose(crashf);
 		system("pkill k88");
 	} else if (!strncmp(msg, "version", 7)) {
 		FILE *cp = popen("git rev-parse --short HEAD", "r");

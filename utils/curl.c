@@ -27,6 +27,12 @@ curl_reset()
 {
 	curl_active = false;
 	curl_global_cleanup();
+
+	/* I cant figure out how to fix curl when its fucked here so restart bot instead */
+	FILE *crashf = fopen("/tmp/k88_crash", "w+");
+	fputs("restarted to unfuck curl", crashf);
+	fclose(crashf);
+	system("pkill k88");
 }
 
 void

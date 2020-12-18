@@ -37,6 +37,7 @@ parse_conf(INI *conf)
 			servers[nservers].pass = NULL;
 		}
 
+		servers[nservers].reconns = 0;
 		while (init_conn(&servers[nservers])) {
 			fprintf(stderr, "[ !!! ] failed to init server [%s] %s, retrying\n",
 					server_list[nservers], servers[nservers].addr);

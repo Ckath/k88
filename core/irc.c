@@ -32,6 +32,7 @@ init_conn(irc_conn *conn)
 		sleep(1);
 	}
 	conn->init = 0; /* ensure we init it again */
+	conn->reconns++;
 
 	/* setup SSL */
 	conn->ctx = SSL_CTX_new(TLS_client_method());

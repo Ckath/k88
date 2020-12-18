@@ -35,6 +35,7 @@ typedef struct mod_arg {
 typedef struct timed_arg {
 	irc_conn *conn;
 	int n;
+	time_t t;
 	pthread_t thr;
 } timed_arg;
 

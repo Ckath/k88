@@ -107,6 +107,7 @@ main(int argc, char *argv[])
 		timed_arg *args = malloc(sizeof(timed_arg));
 		args->conn = servers;
 		args->n = nservers;
+		args->t = time(NULL);
 		pthread_create(&args->thr, NULL, (void *)timed_modules, args);
 		sleep(1);
 	}

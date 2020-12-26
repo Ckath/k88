@@ -186,6 +186,7 @@ handle_modules(mod_arg *args)
 		.index = index,
 		.chan = NULL,
 		.user = NULL,
+		.userid = NULL,
 		.mod = NULL
 	};
 
@@ -201,10 +202,14 @@ handle_modules(mod_arg *args)
 	if (msgtype != (char *) 0x1 && !strncmp(msgtype, "PRIVMSG", 7)) {
 		char msg[BUFSIZE];
 		char user[BUFSIZE];
+		char userid[BUFSIZE];
 		msginfo.chan = strchr(msgtype, ' ') + 1;
 		strcpy(user, args->line+1);
+		strcpy(userid, user);
 		strchr(user, '!')[0] = '\0';
 		msginfo.user = user;
+		strchr(userid, ' ')[0] = '\0';
+		msginfo.userid = userid;
 		strcpy(msg, strchr(msginfo.chan, ':')+1);
 		strchr(msg, '\r')[0] = '\0';
 		strchr(msginfo.chan, ' ')[0] = '\0';
@@ -221,7 +226,8 @@ handle_modules(mod_arg *args)
 		if (!strncmp(msg, prefix, strlen(prefix))) {
 			char *modmatch = ini_read(args->conn->globalconf,
 					args->conn->index, "modmatch");
-			msginfo.mod = !strncmp(modmatch, args->line, strlen(modmatch));
+			msginfo.mod = !strncmp(modmatch, msginfo.userid,
+					strlen(msginfo.userid));
 			char cmd_msg[BUFSIZE];
 			strcpy(cmd_msg, msg+strlen(prefix));
 			for (int i = 0; i < cmdmsg.n; ++i) {

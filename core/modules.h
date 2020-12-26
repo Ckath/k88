@@ -9,6 +9,7 @@ typedef struct msg_info {
 	char *index;
 	char *chan;
 	char *user;
+	char *userid;
 	bool mod;
 } msg_info;
 

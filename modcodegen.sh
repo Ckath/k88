@@ -1,14 +1,14 @@
 #!/bin/bash
 UPDATED=0
 update_h() {
-	if ! grep -o "$1" mods/modtape.h &> /dev/null; then
-		((UPDATED++))
-		sed -i "s:/\* MODS \*/:/\* MODS \*/\n$1:" mods/modtape.h
+	if ! grep -o "$1" mods/modtape.h > /dev/null 2>&1; then
+		UPDATED="$((${UPDATED} + 1))"	
+		sed -i "s:/\* MODS \*/:/\* MODS \*/\n${1}:" mods/modtape.h
 	fi
 }
 update_c() {
-	grep -o "$1" mods/modtape.c &> /dev/null ||
-		sed -i "s:/\* MODS \*/:/\* MODS \*/\n\t$1:" mods/modtape.c
+	grep -o "$1" mods/modtape.c > /dev/null 2>&1 ||
+		sed -i "s:/\* MODS \*/:/\* MODS \*/\n\t${1}:" mods/modtape.c
 }
 
 # make sure h file exists
@@ -39,10 +39,10 @@ EOF
 
 # update files
 for m in mods/*/*.c; do
-	INIT=$(grep -o '.*_init()$' $m)
+	INIT="$(grep -o '.*_init()$' $m)"
 	update_h "void $INIT;"
 	update_c "$INIT;"
 done
 
-(( $UPDATED > 0 )) && echo "mod tape loading: added $UPDATED mods"
+[ "$UPDATED" -gt 0 ] && echo "mod tape loading: added $UPDATED mods"
 exit 0

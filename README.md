@@ -20,6 +20,13 @@ an ever incomplete list of the functionality provided through modules:
 - 4chan scraper
 - typical irc nonsense (decide, IBIP, fortunes, modulemanagement etc)
 
+## building
+```
+git submodule init
+git submodule update
+make
+```
+
 ## incomplete guide to writing modules
 module boilerplating is generated at `make` through the shellscript, all thats needed to add a new module is create a new directory under `mods/` with a `.c` file. see the other modules on how this is formatted.
 

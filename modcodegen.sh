@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 UPDATED=0
 update_h() {
 	if ! grep -o "$1" mods/modtape.h > /dev/null 2>&1; then

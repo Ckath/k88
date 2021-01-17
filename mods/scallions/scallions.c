@@ -29,6 +29,35 @@ handle_privmsg(msg_info *mi, char *msg)
 		}
 	}
 
+	/* if an onion remains, mirror it to tmphost, only works for 1 */
+	if ((strstr(buf, "http://") || strstr(buf, "https://"))
+			&& strstr(buf, ".onion")) {
+		/* filter url out */
+		char *onion = strstr(buf, ".onion");
+		while(--onion != buf && strncmp("http", onion, 4));
+		char url[BUFSIZE] = {'\0'};
+		strcpy(url, onion);
+		char *url_end = strpbrk(url, " ⟨⟩<>{}\\^\"\0,:;?!(['|&");
+		if (url_end) {
+			url_end[0] = '\0';
+		}
+
+		/* awful check for direct file link (strlen extension) */
+		if (strlen(url)-(strrchr(url, '.')-url) < 5) {
+			char cmd[BUFSIZE] = {'\0'};
+			sprintf(cmd, "torsocks curl -so /tmp/$(basename '%s') '%s'" \
+					" && ~/tmpupload.sh /tmp/$(basename '%s')",
+					url, url, url);
+			FILE *cp = popen(cmd, "r");
+			char tmpurl[BUFSIZE] = {'\0'};
+			fgets(tmpurl, BUFSIZE-1, cp);
+			pclose(cp);
+			strrplc(tmpurl, "\n", "");
+			strrplc(buf, url, tmpurl);
+			url_fixed = true;
+		}
+	}
+
 	/* send if altered */
 	if (url_fixed) {
 		send_fprivmsg("%s\r\n", buf);

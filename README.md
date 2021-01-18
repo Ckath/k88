@@ -20,12 +20,14 @@ an ever incomplete list of the functionality provided through modules:
 - 4chan scraper
 - typical irc nonsense (decide, IBIP, fortunes, modulemanagement etc)
 
-## building
+## building and running\*
 ```
 git submodule init
 git submodule update
 make
+./k88 # this is fine for testing, dont bother with the helper scripts
 ```
+\*: it is not recommended to actually use this bot, the source is only public so other people can fix issues for me. if you, for whatever reason, want the bot in your channel contact me instead and I'll join my instance.
 
 ## incomplete guide to writing modules
 module boilerplating is generated at `make` through the shellscript, all thats needed to add a new module is create a new directory under `mods/` with a `.c` file. see the other modules on how this is formatted.

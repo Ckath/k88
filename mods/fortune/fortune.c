@@ -8,7 +8,7 @@
 #include "../../core/modules.h"
 #include "../../core/irc.h"
 
-char *fortunes[] = {
+static char *fortunes[] = {
 	"13Reply hazy, try again",
 	"7Excellent Luck",
 	"7Good Luck",

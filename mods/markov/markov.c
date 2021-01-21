@@ -64,9 +64,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 	char response[MAX_LINE_LENGTH];
 	if (mm_respond_and_learn(mm, input, response, 0)) {
-		send_fprivmsg("%s\r\n", response);
+		send_privmsg("%s", response);
 	} else {
-		send_privmsg("failed to markov\r\n");
+		send_privmsg("failed to markov");
 	}
 }
 

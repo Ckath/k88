@@ -33,9 +33,7 @@ void send_raw(irc_conn *conn, char silent, char *msgformat, ...);
 
 /* terrible macro wrappers to hide how bad the send function works */
 #define DEST mi->chan[0] == '#' ? mi->chan : mi->user
-#define send_privmsg(msgformat) send_raw(mi->conn, 0, "PRIVMSG %s :" msgformat, DEST)
-#define send_fprivmsg(msgformat, ...) send_raw(mi->conn, 0, "PRIVMSG %s :" msgformat, DEST, __VA_ARGS__)
-#define send_notice(msgformat) send_raw(mi->conn, 0, "NOTICE %s :" msgformat, DEST)
-#define send_fnotice(msgformat, ...) send_raw(mi->conn, 0, "NOTICE %s :" msgformat, DEST, __VA_ARGS__)
+#define send_privmsg(msgformat, ...) send_raw(mi->conn, 0, "PRIVMSG %s :" msgformat "\r\n", DEST, ##__VA_ARGS__)
+#define send_notice(msgformat, ...) send_raw(mi->conn, 0, "NOTICE %s :" msgformat "\r\n", DEST, ##__VA_ARGS__)
 
 #endif

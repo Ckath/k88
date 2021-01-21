@@ -107,7 +107,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	/* handle result */
 	CURLcode r = curl_easy_perform(curl);
 	if (r != CURLE_OK) {
-		log_err("curl error: %s\r\n", curl_easy_strerror(r));
+		log_err("curl error: %s", curl_easy_strerror(r));
 	} else {
 		char title[BUFSIZE] = {'\0'};
 		find_title(title, res.memory);
@@ -118,7 +118,7 @@ handle_privmsg(msg_info *mi, char *msg)
 			} if (strlen(title) > 450) {
 				strcpy(&title[447], "..");
 			}
-			send_fprivmsg("[ %s ]\r\n", title);
+			send_privmsg("[ %s ]", title);
 		}
 	}
 

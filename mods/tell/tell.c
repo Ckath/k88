@@ -30,7 +30,7 @@ handle_privmsg(msg_info *mi, char *msg)
 		if (!strcasecmp(nicks[n], mi->user)) {
 			char **msgs = ini_list_items(tell, nicks[n]);
 			for (int m = 0; msgs[m]; ++m) {
-				send_fprivmsg("%s: %s %s\r\n", mi->user, msgs[m],
+				send_privmsg("%s: %s %s", mi->user, msgs[m],
 						ini_read(tell, nicks[n], msgs[m]));
 				ini_remove(tell, nicks[n], msgs[m]);
 			}
@@ -65,7 +65,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	ini_write(tell, name, timestr, tellmsg);
 
 	nicks = ini_list_sections(tell);
-	send_privmsg("might do\r\n");
+	send_privmsg("might do");
 }
 
 void

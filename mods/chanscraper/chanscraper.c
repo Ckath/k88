@@ -239,9 +239,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char *feelboardp = strstr(feelboard, "org/");
 		feelboardp += 3;
 		strchr(feelboardp+1, '/')[0] = '\0';
-		send_fprivmsg("%s/\r\n", feelboardp);
+		send_privmsg("%s/", feelboardp);
 	} else if (!strncmp(msg, "feellast", 8) || !strncmp(msg, "lastfeel", 8)) {
-		send_fprivmsg("%s\r\n", mods_get_config(mi->index, "lastfeel"));
+		send_privmsg("%s", mods_get_config(mi->index, "lastfeel"));
 	} else if (!strncmp(msg, "feel", 4)) {
 		srand(time(NULL));
 		char *board = strchr(msg, ' ');
@@ -259,13 +259,13 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 		char **feellist = ini_list_items(feels, board_sec);
 		if (!feellist) {
-			send_privmsg("404 no feels found\r\n");
+			send_privmsg("404 no feels found");
 			return;
 		}
 		int feelcount = 0;
 		while(feellist[++feelcount]);
 		int feelpick = rand()%feelcount;
-		send_fprivmsg("%s\r\n", ini_read(feels, board_sec, feellist[feelpick]));
+		send_privmsg("%s", ini_read(feels, board_sec, feellist[feelpick]));
 		mods_set_config(mi->index, "lastfeel", feellist[feelpick]);
 	} else if (!strncmp(msg, "findfeel", 8)) {
 		/* check if theres something to search at all */
@@ -305,25 +305,25 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		if (results) {
 			srand(time(NULL));
 			int pick = rand()%results;
-			send_fprivmsg("%s\r\n", tfws[pick].tfw);
+			send_privmsg("%s", tfws[pick].tfw);
 			mods_set_config(mi->index, "lastfeel", tfws[pick].post);
 			free(tfws);
 		} else {
-			send_privmsg("404 no feels found\r\n");
+			send_privmsg("404 no feels found");
 		}
 
 	} else if (!strncmp(msg, "scrapedebug", 11)) {
 		time_t now = time(NULL);
 		if (started < finished) {
-			send_fprivmsg("last updated: %dh %dm %ds ago, duration: %dm %ds\r\n",
+			send_privmsg("last updated: %dh %dm %ds ago, duration: %dm %ds",
 					(now-started)/60/60, ((now-started)/60)%60, (now-started)%60,
 					(finished-started)/60, (finished-started)%60);
 		} else {
-			send_fprivmsg("still updating, duration: %dm %ds\r\n",
+			send_privmsg("still updating, duration: %dm %ds",
 					(now-started)/60, (now-started)%60);
 		}
 	} else if (mi->mod && !strncmp(msg, "scrapeupdate", 12)) {
-		send_privmsg("updating cache again, this will take a while\r\n");
+		send_privmsg("updating cache again, this will take a while");
 		log_info("updating chanscraper cache, manually triggered\n");
 		update_cache();
 	}

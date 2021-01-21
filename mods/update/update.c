@@ -27,7 +27,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 				system("git submodule update --recursive") ||
 				system("make")) {
 			send_privmsg("something terrible happened trying to update, " \
-					"please ssh in to fix it\r\n");
+					"please ssh in to fix it");
 			pclose(cp);
 			return;
 		}
@@ -36,9 +36,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char newver[9] = { '\0' };
 		fgets(newver, 8, cp);
 		if (!strcmp(oldver, newver)) {
-			send_privmsg("git up to date, recompiled anyway\r\n");
+			send_privmsg("git up to date, recompiled anyway");
 		} else {
-			send_fprivmsg("updated:7 %s ->7 %s\r\n", oldver, newver);
+			send_privmsg("updated:7 %s ->7 %s", oldver, newver);
 		}
 		pclose(cp);
 		FILE *crashf = fopen("/tmp/k88_crash", "w+");
@@ -49,7 +49,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		FILE *cp = popen("git rev-parse --short HEAD", "r");
 		char ver[9] = { '\0' };
 		fgets(ver, 8, cp);
-		send_fprivmsg("current version:7 %s\r\n", ver);
+		send_privmsg("current version:7 %s", ver);
 		pclose(cp);
 	}
 }

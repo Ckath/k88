@@ -37,11 +37,12 @@ a module is structured as a bunch of `handle_` functions, and an `_init` functio
 
 ### module 'api'
 while everything is made to minimize having to look at the core bot code, a few things have to be known:
-- use `send_privmsg` for unformatted privmsgs
-- use `send_fprivmsg` for a privmsg with formatted(as in printf like) privmsg
-- similar for `send_notice`/`send_fnotice`
+- `send_privmsg` for privmsgs
+- `send_notice` for notices
+- `log_info`, `log_err` for anything you want to log to console
+- all of the above take printf like formatting, log functions expect a `\n` at the end
 - for interfacing with api endpoints, see the `ddg` or `wolfram` module for how I (ab)use curl
-- the signature of all `handle_` functions are to be copied **1:1**, they're used by macros
+- the signatures of all `handle_` functions are to be copied **1:1**, they're used by macros
 - **do not** alter any strings your module is passed, these are reused by other modules
 - it shouldnt matter too much, but your module code should be (mostly) threadsafe
 - utils that will be reused over multiple modules are to be implemented in `utils/`

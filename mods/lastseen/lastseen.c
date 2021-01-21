@@ -42,9 +42,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 	char *lastseen = ini_read(seen, mi->conn->index, name);
 	if (lastseen) {
-		send_fprivmsg("last msg: %s\r\n", lastseen);
+		send_privmsg("last msg: %s", lastseen);
 	} else {
-		send_fprivmsg("no data\r\n", lastseen);
+		send_privmsg("no data", lastseen);
 	}
 }
 

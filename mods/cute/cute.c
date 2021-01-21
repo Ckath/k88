@@ -44,13 +44,13 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	if (!target) {
 		strrplc(cute_pick, "{sender}", "");
 		strrplc(cute_pick, "{target}", "");
-		send_fprivmsg("%s\r\n", cute_pick);
+		send_privmsg("%s", cute_pick);
 		return;
 	}
 
 	strrplc(cute_pick, "{sender}", mi->user);
 	strrplc(cute_pick, "{target}", target+1);
-	send_fprivmsg("%s\r\n", cute_pick);
+	send_privmsg("%s", cute_pick);
 }
 
 void

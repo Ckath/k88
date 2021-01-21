@@ -51,7 +51,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	/* handle result */
 	CURLcode r = curl_easy_perform(curl);
 	if (r != CURLE_OK) {
-		send_fprivmsg("curl error: %s\r\n", curl_easy_strerror(r));
+		send_privmsg("curl error: %s", curl_easy_strerror(r));
 		curl_reset();
 	} else {
 		char response[BUFSIZE];
@@ -74,7 +74,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 				strcpy(&response[447], "..");
 			}
 		}
-		send_fprivmsg("%s\r\n", response);
+		send_privmsg("%s", response);
 	}
 
 	/* cleanup */

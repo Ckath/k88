@@ -9,6 +9,7 @@
 #include <pthread.h>
 
 #include "core/irc.h"
+#include "core/log.h"
 #include "core/modules.h"
 #include "ini_rw/ini_rw.h"
 
@@ -39,11 +40,11 @@ parse_conf(INI *conf)
 
 		servers[nservers].reconns = 0;
 		while (init_conn(&servers[nservers])) {
-			fprintf(stderr, "[ !!! ] failed to init server [%s] %s, retrying\n",
+			log_err("failed to init server [%s] %s, retrying\n",
 					server_list[nservers], servers[nservers].addr);
 			destroy_conn(&servers[nservers]);
 		}
-		printf("[ (!) ] loaded server [%s] %s\n",
+		log_info("loaded server [%s] %s\n",
 				server_list[nservers], servers[nservers].addr);
 	}
 }
@@ -78,7 +79,7 @@ sock_action(int signo, siginfo_t *info, void *context)
 			fseek(file_buf, 0, SEEK_SET);
 			memset(line_buf, 0, sizeof(line_buf));
 			while(fgets(line_buf, sizeof(line_buf)-1, file_buf)) {
-				printf("[ <<< ] %s", line_buf);
+				log_recv("%s", line_buf);
 				mod_arg *args = malloc(sizeof(mod_arg));
 				args->conn = &servers[i];
 				strcpy(args->line, line_buf);

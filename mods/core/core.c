@@ -6,8 +6,9 @@
 
 /* required */
 #include "../modtape.h"
-#include "../../core/modules.h"
 #include "../../core/irc.h"
+#include "../../core/log.h"
+#include "../../core/modules.h"
 
 static char crash_data[BUFSIZE];
 static time_t self_init;
@@ -19,7 +20,7 @@ handle_timed(irc_conn *s, char *index, time_t t)
 {
 	if (t - s->heartbeat > 300) {
 		s->heartbeat = t;
-		fputs("[ !!! ] connection timed out, resetting\n", stderr);
+		log_err("connection timed out, resetting\n");
 		reconnect_conn(s);
 	}
 
@@ -42,7 +43,7 @@ handle_rawmsg(msg_info *mi, char *line)
 		line[1] = 'O';
 		send_raw(mi->conn, 0, line);
 	} else if(!strncmp(line, "ERROR", 5)) {
-		fputs("[ !!! ] recieved ERROR, resetting connection", stderr);
+		log_err("recieved ERROR, resetting connection\n");
 		reconnect_conn(mi->conn);
 	} else if (!mi->conn->init && strstr(line, " MODE ")) {
 		join_chans(mi->conn, ini_read(mi->conn->globalconf,
@@ -62,13 +63,13 @@ handle_privmsg(msg_info *mi, char *msg)
 
 	/* ctcp */
 	if (!strncmp(msg, "VERSION", 9)) {
-		puts("[ (!) ] ctcp version");
+		log_info("ctcp version\n");
 		send_notice("VERSION socket.h\r\n");
 	} else if (!strncmp(msg, "PING ", 6)) {
-		puts("[ (!) ] ctcp ping");
+		log_info("ctcp ping\n");
 		send_fnotice("PING %u\r\n", 88);
 	} else if (!strncmp(msg, "TIME", 6)) {
-		puts("[ (!) ] ctcp time");
+		log_info("ctcp time\n");
 		send_fnotice("TIME %u\r\n", (unsigned)time(NULL));
 	}
 

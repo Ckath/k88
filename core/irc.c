@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "log.h"
 #include "socks.h"
 #include "irc.h"
 
@@ -28,7 +29,7 @@ init_conn(irc_conn *conn)
 	/* create socket for connection */
 	conn->fd = malloc(sizeof(int));
 	while(init_sock(conn->fd, conn->addr, conn->port)) {
-		puts("[ (!) ] reconnecting...");
+		log_info("reconnecting...");
 		sleep(1);
 	}
 	conn->init = 0; /* ensure we init it again */
@@ -44,7 +45,7 @@ init_conn(irc_conn *conn)
 	SSL_set_fd(conn->sock, *conn->fd);
 	SSL_set_connect_state(conn->sock);
 	SSL_connect(conn->sock);
-	printf("[ (!) ] connected with %s cipher\n", SSL_get_cipher(conn->sock));
+	log_info("connected with %s cipher\n", SSL_get_cipher(conn->sock));
 	/* somethings not right here, bail (for retry) */
 	if (!strcmp(SSL_get_cipher(conn->sock), "(NONE)")) {
 		return 1;
@@ -56,7 +57,7 @@ init_conn(irc_conn *conn)
 	fcntl(*conn->fd, F_SETOWN, getpid());
 	fcntl(*conn->fd, F_SETSIG, SIGPOLL);
 
-	puts("[ (!) ] attempting to identify...");
+	log_info("attempting to identify...\n");
 	send_raw(conn, 0, "USER %s 0 * :%s\r\n", conn->nick, "k88");
 	send_raw(conn, 0, "NICK %s\r\n", conn->nick);
 	if (conn->pass) {
@@ -71,11 +72,11 @@ reconnect_conn(irc_conn *conn)
 	destroy_conn(conn);
 	init_conn(conn);
 	while (init_conn(conn)) {
-		fprintf(stderr, "[ !!! ] failed to reconnect server [%s] %s, retrying\n",
+		log_err("failed to reconnect server [%s] %s, retrying\n",
 				conn->index, conn->addr);
 		destroy_conn(conn);
 	}
-	printf("[ (!) ] reconnected server [%s] %s\n",
+	log_info("reconnected server [%s] %s\n",
 			conn->index, conn->addr);
 }
 
@@ -129,9 +130,9 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 	va_end(args);
 
 	if (SSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {
+		log_err("failed to send: '%s'", buf);
 		ERR_print_errors_fp(stderr);
-		fprintf(stderr, "[ !!! ] failed to send: '%s'", buf);
 	} else if (!silent) {
-		printf("[ >>> ] %s", buf);
+		log_send("%s", buf);
 	}
 }

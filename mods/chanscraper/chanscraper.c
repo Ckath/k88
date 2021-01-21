@@ -8,6 +8,7 @@
 /* required */
 #include "../modtape.h"
 #include "../../core/modules.h"
+#include "../../core/log.h"
 #include "../../core/irc.h"
 
 #include "../../utils/strutils.h"
@@ -125,8 +126,8 @@ parse_board(char *board, bool ws)
 	CURLcode r = api_request(&res, url);
 	if (r != CURLE_OK) {
 		free(res.memory);
-		fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
-		fprintf(stderr, "[ (!) ] parse_board: trying to recovery by resetting started\n");
+		log_err("curl error: %s\n", curl_easy_strerror(r));
+		log_info("parse_board: trying to recovery by resetting started\n");
 		started = 0;
 		curl_reset();
 		return;
@@ -147,8 +148,8 @@ parse_board(char *board, bool ws)
 		r = api_request(&rres, url);
 		if (r != CURLE_OK) {
 			free(rres.memory);
-			fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
-			fprintf(stderr, "[ (!) ] parse_thread_call: trying to recovery by resetting started\n");
+			log_err("curl error: %s\n", curl_easy_strerror(r));
+			log_info("parse_thread_call: trying to recovery by resetting started\n");
 			started = 0;
 			curl_reset();
 			continue;
@@ -178,8 +179,8 @@ update_cache()
 	chunk res = { .memory = malloc(1), .size = 0 };
 	CURLcode r = api_request(&res, "https://a.4cdn.org/boards.json");
 	if (r != CURLE_OK) {
-		fprintf(stderr, "[ !!! ] curl error: %s\n", curl_easy_strerror(r));
-		fprintf(stderr, "[ (!) ] update_cache: trying to recovery by resetting started\n");
+		log_err("curl error: %s\n", curl_easy_strerror(r));
+		log_info("update_cache: trying to recovery by resetting started\n");
 		started = 0;
 		curl_reset();
 	} else {
@@ -217,14 +218,14 @@ update_cache()
 	finished = time(NULL);
 	sprintf(timestr, "%lld", (long long) finished);
 	ini_write(feels, "updated", "finished", timestr);
-	printf("[ (!) ] finished updating chanscraper cache\n");
+	log_info("finished updating chanscraper cache\n");
 }
 
 static void
 handle_timed(irc_conn *s, char *index, time_t time)
 {
 	if (s->init && time-started > 60*60*4/* 4 hours */) {
-		printf("[ (!) ] updating chanscraper cache\n");
+		log_info("updating chanscraper cache\n");
 		update_cache();
 	}
 }
@@ -323,7 +324,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		}
 	} else if (mi->mod && !strncmp(msg, "scrapeupdate", 12)) {
 		send_privmsg("updating cache again, this will take a while\r\n");
-		printf("[ (!) ] updating chanscraper cache, manually triggered\n");
+		log_info("updating chanscraper cache, manually triggered\n");
 		update_cache();
 	}
 }

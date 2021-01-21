@@ -10,6 +10,7 @@
 /* required */
 #include "../modtape.h"
 #include "../../core/modules.h"
+#include "../../core/log.h"
 #include "../../core/irc.h"
 
 static void
@@ -106,7 +107,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	/* handle result */
 	CURLcode r = curl_easy_perform(curl);
 	if (r != CURLE_OK) {
-		fprintf(stderr, "[ !!! ] curl error: %s\r\n", curl_easy_strerror(r));
+		log_err("curl error: %s\r\n", curl_easy_strerror(r));
 	} else {
 		char title[BUFSIZE] = {'\0'};
 		find_title(title, res.memory);

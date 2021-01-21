@@ -8,6 +8,7 @@
 /* required */
 #include "../modtape.h"
 #include "../../core/modules.h"
+#include "../../core/log.h"
 #include "../../core/irc.h"
 
 static void

@@ -44,6 +44,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		FILE *crashf = fopen("/tmp/k88_crash", "w+");
 		fputs("updated", crashf);
 		fclose(crashf);
+		FILE *msgf = fopen("/tmp/k88_death", "w+");
+		fprintf(msgf, "%s PRIVMSG %s :back\r\n", mi->conn->index, mi->chan);
+		fclose(msgf);
 		exit(1);
 	} else if (!strncmp(msg, "version", 7)) {
 		FILE *cp = popen("git rev-parse --short HEAD", "r");

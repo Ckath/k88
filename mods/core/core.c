@@ -12,6 +12,7 @@
 #include "../../core/modules.h"
 
 static char crash_data[BUFSIZE];
+static char startupmsg[BUFSIZE] = { '\0' };
 static time_t self_init;
 static int mistimes = 0;
 static uint64_t watchdog_interval = 0;
@@ -50,6 +51,11 @@ handle_rawmsg(msg_info *mi, char *line)
 	} else if (!mi->conn->init && strstr(line, " MODE ")) {
 		join_chans(mi->conn, ini_read(mi->conn->globalconf,
 					mi->conn->index, "chans"));
+		if (startupmsg[0] &&
+				!strncmp(mi->conn->index, startupmsg, strlen(mi->conn->index))) {
+			send_raw(mi->conn, 0, strchr(startupmsg, ' ')+1);
+			startupmsg[0] = '\0';
+		}
 		mi->conn->init = 1;
 		mi->conn->init_time = time(NULL);
 	}
@@ -106,6 +112,14 @@ core_init()
 		strcpy(crash_data, "unknown fault");
 	}
 	self_init = time(NULL);
+
+	/* retrieve startup msg left on shutdown */
+	FILE *death_file = NULL;
+	if ((death_file = fopen("/tmp/k88_death", "r"))) {
+		fgets(startupmsg, sizeof(startupmsg)-1, death_file);
+		fclose(death_file);
+		remove("/tmp/k88_death");
+	}
 
 	/* detect if under systemd watchdog */
 	watchdog_interval = 0;

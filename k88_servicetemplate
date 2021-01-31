@@ -1,0 +1,13 @@
+[Unit]
+Description=k88 and her cute watchdog
+
+[Service]
+Type=notify
+WatchdogSec=60
+Restart=always
+RestartSec=10
+WorkingDirectory=PWD
+ExecStart=PWD/k88
+
+[Install]
+WantedBy=multi-user.target

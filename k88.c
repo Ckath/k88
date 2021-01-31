@@ -59,33 +59,15 @@ sock_action(int signo, siginfo_t *info, void *context)
 			char file[256];
 			sprintf(file, "/tmp/%s", servers[i].index);
 
-			/* TODO: split the irc connection part and cmd/msg handler
-			 * into separate programs for easier restarts:
-			 * - irc client program  buffers into file
-			 * - parser program reads from file and handles messages
-			 * - ??? parser sends message to client program, not sure how yet
-			 *
-			 * for now it works out fine as is, for the most,
-			 * some stuff is missed with this abomination of a signal handler */
-
-			/* buffer available data into file */
-			FILE *file_buf = fopen(file, "w+");
+			/* handle new messages */
 			while((n = SSL_read(servers[i].sock, line_buf, sizeof(line_buf)-1)) > 0) {
 				line_buf[n] = '\0';
-				fputs(line_buf, file_buf);
-			}
-
-			/* handle all data */
-			fseek(file_buf, 0, SEEK_SET);
-			memset(line_buf, 0, sizeof(line_buf));
-			while(fgets(line_buf, sizeof(line_buf)-1, file_buf)) {
-				log_recv("%s", line_buf);
 				mod_arg *args = malloc(sizeof(mod_arg));
+				log_recv("%s", line_buf);
 				args->conn = &servers[i];
 				strcpy(args->line, line_buf);
 				pthread_create(&args->thr, NULL, (void *)handle_modules, args);
 			}
-			fclose(file_buf);
 		}
 	}
 }

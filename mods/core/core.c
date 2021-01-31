@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <openssl/sha.h>
+#include <systemd/sd-daemon.h>
 
 /* required */
 #include "../modtape.h"
@@ -14,6 +15,8 @@ static char crash_data[BUFSIZE];
 static time_t self_init;
 static time_t last_time;
 static int mistimes = 0;
+static uint64_t watchdog_interval = 0;
+static bool systemd_watchdog;
 
 static void
 handle_timed(irc_conn *s, char *index, time_t t)
@@ -24,9 +27,9 @@ handle_timed(irc_conn *s, char *index, time_t t)
 		reconnect_conn(s);
 	}
 
-	/* touch file for watchdog lockup check */
-	if (!(t%20)) {
-		fclose(fopen("/tmp/k88_alive", "w+"));
+	/* systemd watchdog */
+	if (systemd_watchdog && !(t%(watchdog_interval/3))) {
+		sd_notify(0, "WATCHDOG=1");
 	}
 
 	/* ideally given time should be current time */
@@ -105,10 +108,20 @@ core_init()
 	}
 	self_init = time(NULL);
 
+	/* detect if under systemd watchdog */
+	watchdog_interval = 0;
+	systemd_watchdog = sd_watchdog_enabled(0, &watchdog_interval);
+	if (systemd_watchdog) {
+		setbuf(stdout, NULL); /* probably does something, in systemd example */
+		watchdog_interval /= 1000000;
+		log_info("%d second systemd watchdog detected, notifying ready\n",
+				watchdog_interval);
+		sd_notify(0, "READY=1");
+	}
+
 	mods_new("core", true);
 	mods_timed_handler(handle_timed);
 	mods_rawmsg_handler(handle_rawmsg);
 	mods_privmsg_handler(handle_privmsg);
 	mods_cmdmsg_handler(handle_cmdmsg);
-
 }

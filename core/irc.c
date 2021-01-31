@@ -132,6 +132,9 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 	if (SSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {
 		log_err("failed to send: '%s'", buf);
 		ERR_print_errors_fp(stderr);
+		FILE *crashf = fopen("/tmp/k88_crash", "w+");
+		fputs("error on SSL fd, probably crashed", crashf);
+		fclose(crashf);
 	} else if (!silent) {
 		log_send("%s", buf);
 	}

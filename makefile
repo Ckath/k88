@@ -25,7 +25,7 @@ update_mods:
 
 k88.service:
 	@cp k88_servicetemplate k88.service
-	@sed -i "s:PWD:`pwd`:g" k88.service
+	@sed -i "s:PWD:`pwd`:g;s:WHO:`whoami`:" k88.service
 	@echo service file generated
 
 clean:

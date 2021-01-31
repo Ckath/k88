@@ -2,6 +2,7 @@
 Description=k88 and her cute watchdog
 
 [Service]
+User=WHO
 Environment="WOLFRAM_APPID=mightwannafillthisin"
 Type=notify
 WatchdogSec=60

@@ -32,7 +32,7 @@ curl_reset()
 	FILE *crashf = fopen("/tmp/k88_crash", "w+");
 	fputs("restarted to unfuck curl", crashf);
 	fclose(crashf);
-	system("pkill k88");
+	exit(1);
 }
 
 void

@@ -44,7 +44,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		FILE *crashf = fopen("/tmp/k88_crash", "w+");
 		fputs("updated", crashf);
 		fclose(crashf);
-		system("pkill k88");
+		exit(1);
 	} else if (!strncmp(msg, "version", 7)) {
 		FILE *cp = popen("git rev-parse --short HEAD", "r");
 		char ver[9] = { '\0' };

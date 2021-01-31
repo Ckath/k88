@@ -13,7 +13,6 @@
 
 static char crash_data[BUFSIZE];
 static time_t self_init;
-static time_t last_time;
 static int mistimes = 0;
 static uint64_t watchdog_interval = 0;
 static bool systemd_watchdog;
@@ -113,7 +112,7 @@ core_init()
 	systemd_watchdog = sd_watchdog_enabled(0, &watchdog_interval);
 	if (systemd_watchdog) {
 		setbuf(stdout, NULL); /* probably does something, in systemd example */
-		watchdog_interval /= 1000000;
+		watchdog_interval /= 1000000; /* convert usec(thx systemd) to secs */
 		log_info("%d second systemd watchdog detected, notifying ready\n",
 				watchdog_interval);
 		sd_notify(0, "READY=1");

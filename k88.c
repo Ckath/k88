@@ -54,16 +54,14 @@ sock_action(int signo, siginfo_t *info, void *context)
 {
 	for (int i = 0; i < nservers; ++i) {
 		if (info->si_fd == *servers[i].fd) {
-			int n;
+			int n; /* handle all new messages for matching server */
 			char line_buf[BUFSIZE];
-			char file[256];
-			sprintf(file, "/tmp/%s", servers[i].index);
-
-			/* handle new messages */
 			while((n = SSL_read(servers[i].sock, line_buf, sizeof(line_buf)-1)) > 0) {
 				line_buf[n] = '\0';
-				mod_arg *args = malloc(sizeof(mod_arg));
 				log_recv("%s", line_buf);
+
+				/* prepare args and let module handler thread take care of it */
+				mod_arg *args = malloc(sizeof(mod_arg));
 				args->conn = &servers[i];
 				strcpy(args->line, line_buf);
 				pthread_create(&args->thr, NULL, (void *)handle_modules, args);

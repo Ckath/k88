@@ -25,7 +25,7 @@ an ever incomplete list of the functionality provided through modules:
 git submodule init
 git submodule update
 make
-./k88 # this is fine for testing, dont bother with the helper scripts
+./k88 # this is fine for testing, dont bother with the service
 ```
 \*: it is not recommended to actually use this bot, the source is only public so other people can fix issues for me. if you, for whatever reason, want the bot in your channel contact me instead and I'll join my instance.
 

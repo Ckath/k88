@@ -7,7 +7,7 @@ Environment="WOLFRAM_APPID=mightwannafillthisin"
 Type=notify
 WatchdogSec=60
 Restart=always
-RestartSec=10
+RestartSec=3
 WorkingDirectory=PWD
 ExecStart=PWD/k88
 

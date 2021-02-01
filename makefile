@@ -10,7 +10,7 @@ SRC += $(wildcard core/*.c utils/*.c mods/**/*.c)
 SRC += mods/markov/chains/deps/hash/hash.c mods/markov/chains/src/chains.c 
 OBJ  = ${SRC:.c=.o}
 
-.PHONY: update_mods gen_service
+.PHONY: update_mods
 
 .c.o:
 	@echo CC -c $<

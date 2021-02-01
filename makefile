@@ -16,7 +16,7 @@ OBJ  = ${SRC:.c=.o}
 	@echo CC -c $<
 	@${CC} -c ${CFLAGS} ${CPPFLAGS} $< -o ${<:.c=.o}
 
-${NAME}: update_mods k88.service ${SRC} ${OBJ}
+${NAME}: update_mods k88.service config.ini ${SRC} ${OBJ}
 	@echo CC -o $@
 	@${CC} -o $@ ${CFLAGS} ${OBJ} ${LDFLAGS}
 
@@ -27,6 +27,10 @@ k88.service:
 	@cp k88_servicetemplate k88.service
 	@sed -i "s:PWD:`pwd`:g;s:WHO:`whoami`:" k88.service
 	@echo service file generated
+
+config.ini:
+	@echo no config found, default config created
+	@cp example_config.ini config.ini
 
 clean:
 	@echo cleaning...

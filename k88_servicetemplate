@@ -1,5 +1,6 @@
 [Unit]
 Description=k88 and her cute watchdog
+After=network.target
 
 [Service]
 User=WHO

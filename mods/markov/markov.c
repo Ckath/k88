@@ -13,7 +13,7 @@
 #include "chains/src/chains.h"
 
 static struct markov_model *mm;
-_Atomic bool markov_loading = false;
+_Atomic static bool markov_loading = false;
 static bool markov_loaded = false;
 static FILE *learned;
 

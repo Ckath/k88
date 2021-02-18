@@ -15,9 +15,9 @@
 
 static INI *feels;
 static CURL *curl = NULL;
-time_t started = 0;
-time_t finished = 0;
-bool store_index = 0;
+static time_t started = 0;
+static time_t finished = 0;
+static bool store_index = 0;
 
 static void
 json_item(char *dest, char *json, char *item, char *end)

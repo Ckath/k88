@@ -9,7 +9,7 @@
 #include "../../core/log.h"
 #include "../../core/irc.h"
 
-INI *seen;
+static INI *seen;
 
 static void
 handle_privmsg(msg_info *mi, char *msg)

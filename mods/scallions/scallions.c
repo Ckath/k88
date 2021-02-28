@@ -30,8 +30,7 @@ handle_privmsg(msg_info *mi, char *msg)
 		}
 	}
 
-	/* if an onion remains, mirror it to tmphost, only works for 1 */
-	if ((strstr(buf, "http://") || strstr(buf, "https://"))
+	while ((strstr(buf, "http://") || strstr(buf, "https://"))
 			&& strstr(buf, ".onion")) {
 		/* filter url out */
 		char *onion = strstr(buf, ".onion");
@@ -56,6 +55,8 @@ handle_privmsg(msg_info *mi, char *msg)
 			strrplc(tmpurl, "\n", "");
 			strrplc(buf, url, tmpurl);
 			url_fixed = true;
+		} else {
+			strrplc(buf, url, "");
 		}
 	}
 

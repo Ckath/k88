@@ -13,7 +13,7 @@
 
 /* yes, these are stolen from glitz,
  * they also use the same format to steal more in the future */
-static char *cutes[] = {
+static char *target_cutes[] = {
 	"(✿◠‿◠)っ~ ♥ {target}",
 	"⊂◉‿◉つ ❤ {target}",
 	"( ´・‿-) ~ ♥ {target}",
@@ -29,6 +29,44 @@ static char *cutes[] = {
 	"{sender} (◦˘ З(◦’ںˉ◦)♡ {target}"
 };
 
+static char *cutes[] = {
+	"✿◕ ‿ ◕✿",
+	"❀◕ ‿ ◕❀",
+	"(✿◠‿◠)",
+	"(◕‿◕✿) ",
+	"( ｡◕‿◕｡)",
+	"(◡‿◡✿)",
+	"⊂◉‿◉つ ❤",
+	"{ ◕ ◡ ◕}",
+	"( ´・‿-) ~ ♥",
+	"(っ⌒‿⌒)っ~ ♥",
+	"ʕ´•ᴥ•`ʔσ”",
+	"(･Θ･) caw",
+	"(=^･ω･^)y＝",
+	"ヽ(=^･ω･^=)丿",
+	"~(=^･ω･^)ヾ(^^ )",
+	"| (•□•) | (❍ᴥ❍ʋ)",
+	"ϞϞ(๑⚈ ․̫ ⚈๑)∩",
+	"ヾ(･ω･*)ﾉ",
+	"~(=^･ω･^) nyaa~",
+	"(◎｀・ω・´)人(´・ω・｀*)",
+	"(*´・ω・)ノ(-ω-｀*)",
+	"(❁´ω`❁)",
+	"(＊◕ᴗ◕＊)",
+	"{´◕ ◡ ◕｀}",
+	"₍•͈ᴗ•͈₎",
+	"(˘･ᴗ･˘)",
+	"(ɔ ˘⌣˘)˘⌣˘ c)",
+	"(⊃｡•́‿•̀｡)⊃",
+	"(´ε｀ )♡",
+	"(◦˘ З(◦’ںˉ◦)♡",
+	"( ＾◡＾)っ~ ❤ ck",
+	"╰(　´◔　ω　◔ `)╯",
+	"(*･ω･)",
+	"(∗•ω•∗)",
+	"( ◐ω◐ )",
+};
+
 static void
 handle_cmdmsg(msg_info *mi, char *msg)
 {
@@ -38,18 +76,15 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 	srand(time(NULL));
 	char cute_pick[BUFSIZE] = {'\0'};
-	strcpy(cute_pick, cutes[rand()%13]);
-
 	char *target = strchr(msg, ' ');
-	if (!target) {
-		strrplc(cute_pick, "{sender}", "");
-		strrplc(cute_pick, "{target}", "");
-		send_privmsg("%s", cute_pick);
-		return;
+
+	/* prepare the cute, targeted or not */
+	strcpy(cute_pick, target ? target_cutes[rand()%13] : cutes[rand()%35]);
+	if (target) {
+		strrplc(cute_pick, "{sender}", mi->user);
+		strrplc(cute_pick, "{target}", target+1);
 	}
 
-	strrplc(cute_pick, "{sender}", mi->user);
-	strrplc(cute_pick, "{target}", target+1);
 	send_privmsg("%s", cute_pick);
 }
 

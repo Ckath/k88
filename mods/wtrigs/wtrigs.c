@@ -23,11 +23,8 @@ handle_privmsg(msg_info *mi, char *msg)
 		char trig_resp[BUFSIZE] = { '\0' };
 		strcpy(trig_resp, ini_read(trigs, mi->chan, trig_list[i]));
 
-		/* either match exactly 
-		 * or match beginning for ones expecting {arg} */
-		bool match = !strcmp(msg, trig_list[i])
-				|| (strstr(trig_resp, "{arg}") && 
-						!strncmp(msg, trig_list[i], strlen(trig_list[i])));
+		/* this check and the default off is the only difference with trigs */
+		bool match = strstr(msg, trig_list[i]);
 		if (match) {
 			char *arg = strstr(msg, trig_list[i])+strlen(trig_list[i])+1;
 			parse_trig(trig_resp, mi, arg);
@@ -40,7 +37,7 @@ handle_privmsg(msg_info *mi, char *msg)
 static void
 handle_cmdmsg(msg_info *mi, char *msg)
 {
-	if (strncmp(msg, "trig ", 5)) {
+	if (strncmp(msg, "wtrig ", 6)) {
 		return;
 	}
 
@@ -66,7 +63,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		if (r) {
 			send_privmsg("removed");
 		} else {
-			send_privmsg("no such trig");
+			send_privmsg("no such wtrig");
 		}
 	} else if(!strncmp(cmd, "list", 4)) {
 		char **trig_list = ini_list_items(trigs, mi->chan);
@@ -77,16 +74,16 @@ handle_cmdmsg(msg_info *mi, char *msg)
 				strcat(triglist, ", ");
 			}
 		}
-		send_privmsg("trigs here: %s", triglist);
+		send_privmsg("wtrigs here: %s", triglist);
 	}
 }
 
 void
-trigs_init()
+wtrigs_init()
 {
-	trigs = ini_load("mods/trigs/trigs.ini");
+	trigs = ini_load("mods/wtrigs/wtrigs.ini");
 
-	mods_new("trigs", true);
+	mods_new("wtrigs", false);
 	mods_cmdmsg_handler(handle_cmdmsg);
 	mods_privmsg_handler(handle_privmsg);
 }

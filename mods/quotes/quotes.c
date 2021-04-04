@@ -2,9 +2,8 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
-#include <curl/curl.h>
 #include <unistd.h>
-#include "../../utils/curl.h"
+#include "../../utils/format.h"
 
 /* required */
 #include "../modtape.h"
@@ -25,7 +24,10 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	char quote_path[BUFSIZE];
 	strcpy(quote_path, "mods/quotes/quotes/");
 	strcat(quote_path, msg);
-	if (access(quote_path, F_OK)) {
+	char *space = strchr(quote_path, ' ');
+	if (space) {
+		space[0] = '\0';
+	} if (access(quote_path, F_OK)) {
 		return; /* no quote file found */
 	}
 
@@ -50,16 +52,16 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	/* pick random line and get it */
 	srand(time(NULL));
 	long pick = (rand()%lines)+1;
-	log_info("lines: %ld, pick %ld\n", lines, pick);
 	r = data;
 	lines = 0;
 	fseek(f, 0, SEEK_SET);
 	while ((line_end = strchr(r, '\n'))) {
 		if (++lines == pick) {
-			/* TODO: parse shit here like in triggers */
 			char quote[BUFSIZE];
 			strncpy(quote, r, BUFSIZE-1);
 			strchr(quote, '\n')[0] = '\0';
+			char *arg = strchr(msg, ' ');
+			mi_format(quote, mi, arg ? arg+1: arg);
 			send_privmsg("%s", quote);
 			return;
 		}

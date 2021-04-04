@@ -63,6 +63,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			char *arg = strchr(msg, ' ');
 			mi_format(quote, mi, arg ? arg+1: arg);
 			send_privmsg("%s", quote);
+			fclose(f);
 			return;
 		}
 		r = line_end+1;

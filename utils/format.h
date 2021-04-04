@@ -2,6 +2,6 @@
 #define TRIGPARSER_H
 #include "../core/modules.h" /* msg_info */
 
-ssize_t parse_trig(char *trig, msg_info *mi, char *arg);
+ssize_t mi_format(char *src, msg_info *mi, char *arg);
 
 #endif

@@ -2,7 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
-#include "../../utils/trigparser.h"
+#include "../../utils/format.h"
 
 /* required */
 #include "../modtape.h"
@@ -30,7 +30,7 @@ handle_privmsg(msg_info *mi, char *msg)
 						!strncmp(msg, trig_list[i], strlen(trig_list[i])));
 		if (match) {
 			char *arg = strstr(msg, trig_list[i])+strlen(trig_list[i])+1;
-			parse_trig(trig_resp, mi, arg);
+			mi_format(trig_resp, mi, arg);
 			send_privmsg("%s", trig_resp);
 			return;
 		}

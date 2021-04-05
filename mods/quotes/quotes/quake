@@ -201,7 +201,7 @@ You're a pus bag, {arg}, and you can take that literally.
 You've got to have some non-organic parts in there somewhere, {arg}.
 I wanted you to feel like you could do something well, so I killed you again.
 You cut the cheese, {arg}? Or is this your normal perfume?
-Hey, , 0 ,, repeat after me ... I WILL brush my teeth.
+Hey, {arg}, repeat after me ... I WILL brush my teeth.
 All the leaves have shaken off that bush. I see you now.
 The hot wings made my fingers all sticky.
 Robot?!?! I'm a synthetic humanoid, thank you very much.
@@ -355,12 +355,12 @@ You earned your tombstone, , fighter, .
 I'm gonna give y'all a new purpose in life ... dying gloriously.
 I'm determined to make something of all y'all ... fertilizer.
 Feel the pain. Feel the pain.
-Every time I get in {chan} , I just wanna break my , 5,  over {arg}'s head.
+Every time I get in {chan} , I just wanna break my gun over {arg}'s head.
 Y'all ain't from around these parts are ya, {arg}?
 Y'know, I'm craving some , food,  and a cold , liquid,  'bout right now.
 Hey {arg}, you got family in , place, ? You remind me of someone I know.
 Hey {arg}, it's good to see some new faces in this hole.
-{arg}, will I have to show you how to use that , 5,  again?
+{arg}, will I have to show you how to use that gun again?
 Yo, {arg}, I got a ~bone to pick with you.
 This place is dead.
 I'm NOT gonna need to work my fingers to the ~bone to beat this crew.
@@ -683,7 +683,7 @@ You know you're getting too old for this when ...
 Someone had to do it. I was getting tired of you being last every time, {arg}.
 Madre de dios!
 Ay chihuahua!
-Scratch a little lower, , 0 ,.
+Scratch a little lower, {arg}.
 I don't do 'patty-cake' on a first date, ~jerk.
 Way to go, , fighter, . Let's get us a 'pic-a-nic' basket and go camping.
 How did you fire that thing? Chickens don't got fingers.
@@ -740,12 +740,12 @@ You demons don't stand a chance against me.
 You just haven't learned yet, have you?
 Dooooooooooommmmmmmmm!
 Didn't think I'd be fighting cheerleaders.
-The {chan}? Hey I think I left , 1 ,'s spleen in here last time!
+The {chan}? Hey I think I left {arg}'s spleen in here last time!
 Job's done here. Gotta move on... too many demons...
 All roads lead to hell. Every last ~one of 'em.
 I'm history! And {arg} can kiss my ammo belt.
 Get the reporters out o' here, this ain't gonna be pretty!
-Too many in here! Get out, , 1 ,! Run while you can!
+Too many in here! Get out, {arg}! Run while you can!
 Aaaaarrrggghhh!
 Destruction and turmoil are my companions.
 Turn up the heat! Not good enough! Never friggin' good enough!
@@ -866,7 +866,7 @@ You're just jealous because the voices only talk to me, {arg}.
 So, {arg}. Why don't we frag the , fighter, s, then duel it out?
 Everybody stop persecuting me!?
 Where's the freakin' red key card?
-So, {arg}. How many , 5, s do you need anyways?
+So, {arg}. How many guns do you need anyways?
 {chan}? Super! Gorre owns this place!
 Oh looky, Gorre's here. You're all toast.
 I am Gorre. I will frag you all!
@@ -932,7 +932,7 @@ Heh. And I consider stealth the least of my talents.
 Slap bag, zipperface.
 Behold the power of a sneeze.
 Pop!
-When I stomp, I ^1STOMP!
+When I stomp, I STOMP!
 Facing me, your actions are understandable.
 I'm gonna paint a big 'L' on your toe tag, LOSER.
 Here lies, {arg}, the scab. Fought a god and bought a slab.
@@ -1022,7 +1022,7 @@ Dr. Death would be so proud of you {arg}.
 'Old Betsy' still works like a charm.
 I just love modern technology.
 {arg}, consider yourself terminated with extreme prejudice.
-Feel the ^1POWER!	
+Feel the POWER!
 Ow. My hand hurts now.
 Beats a hand blaster any day.
 Blood and gore all over the floor and me without a spoon.
@@ -1092,7 +1092,7 @@ Give a kid a weapon and he thinks he's a soldier.
 0, is still shaking. First kill for you kid?
 Ok, {arg}, you I kill for free.
 ~Two-bit Punk!
-You better have eyes in the back of your head, , 0 , . 
+You better have eyes in the back of your head, {arg} . 
 You're dog food now, {arg}.
 Well I imagine someone's got to win the lottery.
 I look better dying than you do shooting, {arg}.
@@ -1120,10 +1120,10 @@ I found your face, {arg}. You want it back?
 {arg} I sure earned my paycheck on you.
 Wow! Thats the most excitement {arg} has ever shown me.
 Hey, {arg}. Atleast pretend like you're trying to win.
-How many times have you died, , 0 , ? There's parts of you everywhere.
+How many times have you died, {arg} ? There's parts of you everywhere.
 I'm on vacation. I just do this to relax.
 Wow, is this beginner night?
-Look! , 0 , is hiding in the corner again!
+Look! {arg} is hiding in the corner again!
 Hmmm ... so many ways to kill you, {arg}, and so little time.
 At least {arg} has a reason to be so bad. What's your excuse, {arg}?
 Hey, {arg}. This yellow puddle must be where I nearly got you.
@@ -1344,7 +1344,7 @@ Feh. You ain't worth putting back together.
 They could rebuild you, {arg}, but they all outta 'stupid' parts.
 I see no honor in this.
 Remember, , fighter, , practice makes perfect.
-For a moment , fighter, , I thought you might actually win ... ^1 NOT.
+For a moment , fighter, , I thought you might actually win ...  NOT.
 I think I'll donate your body to science, {arg}.
 Come on, Alice! fight!
 Do you smell something? {arg}, maybe? Peeee-YEW!
@@ -1428,14 +1428,14 @@ Shrieking! Too many noise. Too many hurt!
 My pieces make altar. You need to pray.
 Now We know mystery you not know, {arg}.
 Forever all know {arg} kill Klesk. All hate {arg}.
-All is chaos! , 0 , win? No order to universe.
+All is chaos! {arg} win? No order to universe.
 Single-brainer {arg} too stupid to find joy. No deserve.
 We devolve to {arg} level. We fail.
 Colossal ridiculity is {arg}.
 We will find you, {arg} ... kill body, swallow soul, scatter thoughts. Nothing of {arg} remain.
 Peace now. We thank.
 You alpha ~one. {arg} make new race.
-Too easy for , 0 ,..., 0 , is chosen.
+Too easy for {arg}...{arg} is chosen.
 We come to your mind now, {arg}. We stronger.
 Now you learn secret. We be you.
 Is sad.
@@ -1456,7 +1456,7 @@ To followers We feed you.
 ~One little voice to silence. Not enough, but happy.
 {arg} mind weak, body weak. It follows. Too easy.
 Glide on {arg} spill guts. Dance of joy.
-Hollow skull, make , 0 , candle. Need focus.
+Hollow skull, make {arg} candle. Need focus.
 Worthy sacrifice {arg}. They pleased. Klesk stronger.
 Take pride, {arg}. Klesk outnumber you.
 Now {arg} find mystery and peace.
@@ -1464,16 +1464,16 @@ More thoughts I gather to kill {arg}.
 {arg} find focus. Klesk need follow thought line.
 {arg} strong, but we strongest.
 We remember {arg} long time.
-We hear you, , 0 ,. Your mind cry out inferior.
+We hear you, {arg}. Your mind cry out inferior.
 We am many, you only ~one, {arg}.
 {arg} voice run with spilling blood and gut. Is ecstacy.
 Better {arg} serve as nest for egglings.
-Only great survive. , 0 , easy die.
+Only great survive. {arg} easy die.
 You think stupid, {arg}. You weak! Klesk do favor killing you.
 There only black empty for {arg}. No revelation.
 Silence! All of you! Too much talk.
 Big boom-boom poppers make quiet faster. Need quiet!
-Ascend...climb...lie down, {arg} so , 1 , can stand on top you.
+Ascend...climb...lie down, {arg} so {arg} can stand on top you.
 The new psyche begins. Many voices as one. Join or be silence!
 We am never alone.
 Single-brainer know privacy. Envy...
@@ -1660,7 +1660,7 @@ Come on guys, I KNOW you like it when I'm on top.
 With a body like this, I just don't lose.
 I can even make killing look good.
 Photo op! Everyone smile!
-Bad idea, , 2 ,. Nice guys don't finish first.
+Bad idea, {arg}. Nice guys don't finish first.
 Hey, {arg}. I guess you wanted to be on top this time, huh?
 Hmmm ... flat on my back and everyone above me. I've been here before.
 Little ~one, never interrupt a lady when she's talking.
@@ -1674,7 +1674,7 @@ Try not to splatter, {arg} ... I don't look good in red.
 Hold still, {arg}. I want to match my lipstick against that color.
 I'm sorry, did your voice go up an octave or ~two?
 I would have shot lower, but my scope is all fogged up.
-Bark for me, , 0 ,! Bark for me!
+Bark for me, {arg}! Bark for me!
 Fantasize that, pimple-puss!
 ** winks and blows kisses **
 Whew, {arg}, I'm usually the ~one who blows the other guy's socks off.
@@ -1723,11 +1723,11 @@ You can't handle yourself. How are you going to handle me?
 Look on the bright side, {arg}. The last thing you saw before you died was... me!
 I've been told that I'm good enough to die for.
 If that's your biggest gun, {arg}, I did you a favor.
-Cheer up, , 0 ,. You lasted longer than most of my playmates.
+Cheer up, {arg}. You lasted longer than most of my playmates.
 You made the cutest face right before you died ... 
 Rigor mortis wasn't exactly what you had in mind, was it?
-It's not your fault, , 0 ,. Big girls carry BIG guns.
-If I had toys that shook as much as , 0 ,, I'd never leave my house.
+It's not your fault, {arg}. Big girls carry BIG guns.
+If I had toys that shook as much as {arg}, I'd never leave my house.
 You look familiar, {arg}. Did I ever do a contract on you?
 If looks could kill, {arg}, your face would be a serial murderer.
 Too many curves, {arg}? Are you having trouble aiming at me?
@@ -1743,7 +1743,7 @@ Like the shades? Got 'em off some guy, the 'Two' or 'One' ... something like tha
 {arg} runs like a cheap pair of pantyhose.
 I'm a 64 bit girl in an 8 bit world.
 I can play rougher, if that's what you want.
-Do you know how hard it is to find a , 5,  that color coordinates with my outfits?
+Do you know how hard it is to find a gun that color coordinates with my outfits?
 Designer shotgun. Do you like it?
 What about MY fantasies?
 Hey Cow!
@@ -1831,7 +1831,7 @@ When ~one is immortal, ~one can afford to bide one's time.
 Look how they line up like lambs to the slaughter.
 An abundance of life energy in here. I will enjoy {chan}.
 That was just for fun. What do you say we up the ante?
-Now I know to focus my attention on {arg} and not , 3 ,.
+Now I know to focus my attention on {arg} and not {arg}.
 Like any great actor, I shall perform encore after encore.
 I should have told you this before, {arg}...you can't kill me.
 I beg thee, end my suffering.
@@ -1988,8 +1988,8 @@ Apparently {arg} has camped the {chan} before.
 This is all so terribly real.
 My spirit is indomitable. I will persevere and survive this.
 What in the universe did you do to earn this billet, {arg}?
-{arg}, you grab the , 5,  and I'll grab the , 5, . We'll own this place!
-Special orders for , 4 ,: ... 'Remove all hostiles!'
+{arg}, you grab the gun and I'll grab the gun. We'll own this place!
+Special orders for {chan}: ... 'Remove all hostiles!'
 Where have the portals taken me now?
 ~Ranger reporting in. Am engaging the enemy in close combat.
 I'm surrounded by Quake minions. Laying down suppressing fire.
@@ -2160,7 +2160,7 @@ Thanks for cushioning the entry, {arg}.
 Pull yourself together friend!
 Sorry. I didn't know this stall was occupied.
 I'm next, right?
-I like your technique, , 0 ,. Could you show me that again?
+I like your technique, {arg}. Could you show me that again?
 **[shakes head]**
 Bravo, {arg}! It's not everyone who can frag themselves with their own gauntlet.
 How many times do I have to kill you before you get a clue, {arg}?
@@ -2194,7 +2194,7 @@ You think you got what it takes to beat me, {arg}?
 Keep up the pace soldiers. I'm up for some ~R and ~R.
 Duty calls. Try to keep from fragging yourselves.
 Duty calls.
-Alright, Heroes. It's time for some ^1Pain. 
+Alright, Heroes. It's time for some Pain. 
 Everyone drop and give me 20!
 Let's get this over with.
 It's time to separate the warriors from the kiddies.
@@ -2854,7 +2854,7 @@ Don't take it personally,{arg}, I was doing this when you were in diapers.
 Yeah. Technology over tactics. Big guns over good moves.
 You proud, {arg}? You shouldn't be proud! That was lame!
 They've changed this place. I remember {chan} before they messed it up.
-I don't care what it freakin' says. ^1I DON'T LOSE.
+I don't care what it freakin' says. I DON'T LOSE.
 Don't they teach etiquette in your clan, , fighter, .
 I really hope that {arg} just misfired.
 I remember when , fighter, s like you had better manners.
@@ -2928,7 +2928,7 @@ I got a cramp. Hey, {arg}, rub my leg.
 Improve or die, , fighter, s. Improve or die.
 I want to feel some more of your pain, {arg}.
 And the sky was full of planes ...
-Hey, {arg}! I need a , 5, . Think I'll take yours.
+Hey, {arg}! I need a gun. Think I'll take yours.
 Now that we are all here, let the lesson begin.
 Welcome unenlightened ones. Learn, and then die.
 The bee is drawn to the flower, yet the spider lurks below.

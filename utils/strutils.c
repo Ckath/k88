@@ -42,9 +42,11 @@ strunescape(char *in)
 	uint32_t	 U;
 	char out[outsiz+1];
 
-	for (i = 0, j = 0; in[i] != '\0'; i++) {
+	if (!in || !in[0]) { /* sanity check that might be needed */
+		return NULL;
+	} for (i = 0, j = 0; in[i] != '\0'; i++) {
 		if (j >= outsiz)
-			goto fail;
+			return NULL;
 		if (!esc) {
 			switch (in[i]) {
 			case '\\':
@@ -63,7 +65,7 @@ strunescape(char *in)
 				out[j++] = in[i];
 				break;
 			default:
-				goto fail;
+				return NULL;
 			case 'b':
 				out[j++] = 0x08;
 				break;
@@ -87,7 +89,7 @@ strunescape(char *in)
 				    !IS_XDIGIT(in[i + 2]) ||
 				    !IS_XDIGIT(in[i + 3]) ||
 				    !IS_XDIGIT(in[i + 4]))
-					goto fail;
+					return NULL;
 				W1 =
 				    (XDIGIT(in[i + 1]) << 12) |
 				    (XDIGIT(in[i + 2]) << 8) |
@@ -98,7 +100,7 @@ strunescape(char *in)
 				if (W1 < 0xD800 || 0xDFFF < W1)
 					U = W1;
 				else if (!(0xD800 <= W1 && W1 <= 0xDBFF))
-					goto fail;
+					return NULL;
 				else {
 					if (in[i] != '\\' ||
 					    in[i + 1] != 'u' ||
@@ -106,7 +108,7 @@ strunescape(char *in)
 					    !IS_XDIGIT(in[i + 3]) ||
 					    !IS_XDIGIT(in[i + 4]) ||
 					    !IS_XDIGIT(in[i + 5]))
-						goto fail;
+						return NULL;
 					W2 =
 					    (XDIGIT(in[i + 2]) << 12) |
 					    (XDIGIT(in[i + 3]) << 8) |
@@ -115,7 +117,7 @@ strunescape(char *in)
 					i += 6;
 
 					if (!(0xDC00 <= W2 && W2 <= 0xDFFF))
-						goto fail;
+						return NULL;
 
 					U = ((W1 & 0x3FF) << 10) | (W2 & 0x3FF);
 					U += 0x10000;
@@ -127,37 +129,34 @@ strunescape(char *in)
 					out[j++] = U & 0x7F;
 				else if (U <= 0x000007FF) {
 					if (j + 1 >= outsiz)
-						goto fail;
+						return NULL;
 					out[j++] = 0xC0 | ((U >> 6) & 0x1F);
 					out[j++] = 0x80 | (U & 0x3F);
 				} else if (U <= 0x0000FFFF) {
 					if (j + 2 >= outsiz)
-						goto fail;
+						return NULL;
 					out[j++] = 0xE0 | ((U >> 12) & 0x0F);
 					out[j++] = 0x80 | ((U >> 6) & 0x3F);
 					out[j++] = 0x80 | (U & 0x3F);
 				} else if (0x00010000 <= U && U <= 0x0010FFFF) {
 					if (j + 3 >= outsiz)
-						goto fail;
+						return NULL;
 					out[j++] = 0xF0 | ((U >> 18) & 0x07);
 					out[j++] = 0x80 | ((U >> 12) & 0x3F);
 					out[j++] = 0x80 | ((U >> 6) & 0x3F);
 					out[j++] = 0x80 | (U & 0x3F);
 				} else
-					goto fail;
+					return NULL;
 				--i;	/* prepare for ++ at the for loop */
 			}
 		}
 	}
 	if (j >= outsiz)
-		goto fail;
+		return NULL;
 	out[j++] = '\0';
 
 	strcpy(in, out);
-	return (in);
-
- fail:
-	return (NULL);
+	return in;
 }
 
 size_t

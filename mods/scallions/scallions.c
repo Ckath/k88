@@ -43,7 +43,7 @@ handle_privmsg(msg_info *mi, char *msg)
 		}
 
 		/* awful check for direct file link (strlen extension) */
-		if (strlen(url)-(strrchr(url, '.')-url) < 5) {
+		if (strlen(url)-(strrchr(url, '.')-url) < 6) {
 			char cmd[BUFSIZE] = {'\0'};
 			sprintf(cmd, "torsocks curl -so /tmp/$(basename '%s') '%s'" \
 					" && ~/tmpupload.sh /tmp/$(basename '%s')",

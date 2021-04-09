@@ -5,6 +5,7 @@ After=network.target
 [Service]
 User=WHO
 Environment="WOLFRAM_APPID=mightwannafillthisin"
+Environment="SAUCE_APPID=mightwannafillthisin"
 Type=notify
 WatchdogSec=60
 Restart=always

@@ -41,7 +41,7 @@ parse_results(char *results)
 
 	int index_id = strtoul(index, NULL, 0);
 	int score_grade = strtoul(score, NULL, 0);
-	score_grade = score_grade > 60 ? 3 : score_grade > 30 ? 7 : 4; 
+	score_grade = score_grade > 60 ? 3 : score_grade > 40 ? 7 : 4; 
 	switch (index_id) { /* cursed switchcase of bad result type handling */
 	case 21:; /* anime */
 		char show[BUFSIZE] = { '\0' };

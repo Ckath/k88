@@ -33,9 +33,10 @@ json_item(char *dest, char *json, char *item, char *end)
 static void
 parse_results(char *results)
 {
+	/* in case you're fixing index_id handling uncomment this */
+	/* log_info("returned results: '%s'\n", results); */
 	char score[10] = { '\0' };
 	char index[10] = { '\0' };
-	
 	json_item(score, results, "similarity\":", "\",\"");
 	json_item(index, results, "index_id\"", "\",\"");
 
@@ -65,11 +66,28 @@ parse_results(char *results)
 		sprintf(results, "%d%s%%: %s by %s",
 				score_grade, score, game, company);
 		break;
+	case 38:; /* e-h doujin */
+		char doujin[BUFSIZE] = { '\0' };
+		char creator[BUFSIZE] = { '\0' };
+		json_item(doujin, results, "source\":", "\"");
+		json_item(creator, results, "creator\":", ",\"");
+		strrplc(creator, "[", "");
+		strunescape(creator);
+		strunescape(doujin);
+		sprintf(results, "%d%s%%: %s by %s",
+				score_grade, score, doujin, creator);
+		break;
+		
 	default:;
 		char url[BUFSIZE] = { '\0' };
 		char title[BUFSIZE] = { '\0' };
 		json_item(url, results, "ext_urls\":[", "\"");
 		json_item(title, results, "title\":", "\"");
+		if (!url[0] && !title[0]) {
+			sprintf(results, "%d%s%%: parser too shit to deal with result (id #%d)",
+				score_grade, score, index_id);
+			break;
+		}
 		strunescape(url);
 		strunescape(title);
 		sprintf(results, "%d%s%%: %s %s",
@@ -109,7 +127,6 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	} else {
 		char results[BUFSIZE] = { '\0' };
 		json_item(results, res.memory, "results\":[{", "}}");
-		log_info("returned results: '%s'\n", results);
 
 		if (!results[0]) {
 			json_item(results, res.memory, "message\":", "\"}}");

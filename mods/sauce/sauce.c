@@ -66,12 +66,15 @@ parse_results(char *results)
 		sprintf(results, "%d%s%%: %s by %s",
 				score_grade, score, game, company);
 		break;
-	case 38:; /* e-h doujin */
+	case 18: /* doujin */
+	case 38:;
 		char doujin[BUFSIZE] = { '\0' };
 		char creator[BUFSIZE] = { '\0' };
 		json_item(doujin, results, "source\":", "\"");
-		json_item(creator, results, "creator\":", ",\"");
+		json_item(creator, results, "creator\":", "]");
 		strrplc(creator, "[", "");
+		strrplc(creator, "\"", "");
+		strrplc(creator, ",", "/");
 		strunescape(creator);
 		strunescape(doujin);
 		sprintf(results, "%d%s%%: %s by %s",

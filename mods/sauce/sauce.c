@@ -86,15 +86,23 @@ parse_results(char *results)
 		char title[BUFSIZE] = { '\0' };
 		json_item(url, results, "ext_urls\":[", "\"");
 		json_item(title, results, "title\":", "\"");
-		if (!url[0] && !title[0]) {
+		if (!url[0] && !title[0]) { /* time to give up */
 			sprintf(results, "%d%s%%: parser too shit to deal with result (id #%d)",
 				score_grade, score, index_id);
 			break;
 		}
 		strunescape(url);
-		strunescape(title);
-		sprintf(results, "%d%s%%: %s %s",
-				score_grade, score, title, url);
+		if (title[0]) {
+			strunescape(title);
+			sprintf(results, "%d%s%%: %s %s",
+					score_grade, score, title, url);
+		} else { /* no title, try to save it by going for source */
+			char source[BUFSIZE] = { '\0' };
+			json_item(source, results, "source\":", "\"");
+			strunescape(source);
+			sprintf(results, "%d%s%%: %s %s",
+					score_grade, score, source, url);
+		}
 		break;
 	}
 }

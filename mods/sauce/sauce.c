@@ -35,8 +35,8 @@ parse_results(char *results)
 {
 	/* in case you're fixing index_id handling uncomment this */
 	/* log_info("returned results: '%s'\n", results); */
-	char score[10] = { '\0' };
-	char index[10] = { '\0' };
+	char score[BUFSIZE] = { '\0' };
+	char index[BUFSIZE] = { '\0' };
 	json_item(score, results, "similarity\":", "\",\"");
 	json_item(index, results, "index_id\"", "\",\"");
 

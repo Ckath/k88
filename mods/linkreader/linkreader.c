@@ -93,6 +93,14 @@ handle_privmsg(msg_info *mi, char *msg)
 		}
 		break;
 	}
+	
+	/* redirect entry point */
+	int redirects = 0;
+redirect:;
+	if (redirects++ > 10) {
+		send_privmsg("[ shitty site with >10 redirects ]");
+		goto giveup;
+	}
 
 	/* twitter workaround */
 	bool twitter_bs = strrplc(url, "twitter.com", "nitter.net");
@@ -109,6 +117,17 @@ handle_privmsg(msg_info *mi, char *msg)
 	if (r != CURLE_OK) {
 		log_err("curl error: %s\n", curl_easy_strerror(r));
 	} else {
+		long response_code = 0;
+		r = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+		if (response_code/100 == 3) { /* redirect */
+			char *new_url;
+			curl_easy_getinfo(curl, CURLINFO_REDIRECT_URL, &new_url);
+			strcpy(url, new_url);
+			goto redirect;
+		} else if (r != CURLE_OK) {
+			goto giveup;
+		}
+
 		char title[BUFSIZE] = {'\0'};
 		find_title(title, res.memory);
 
@@ -121,10 +140,12 @@ handle_privmsg(msg_info *mi, char *msg)
 			send_privmsg("[ %s ]", title);
 		}
 	}
-
+giveup:
 	/* cleanup */
 	curl_easy_cleanup(curl);
-	free(res.memory);
+	if (res.memory) {
+		free(res.memory);
+	}
 }
 
 void

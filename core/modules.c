@@ -187,7 +187,8 @@ handle_modules(mod_arg *args)
 		.chan = NULL,
 		.user = NULL,
 		.userid = NULL,
-		.mod = NULL
+		.mod = NULL,
+		.ts = args->ts
 	};
 
 	/* call all raw handlers */

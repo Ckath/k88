@@ -62,6 +62,7 @@ sock_action(int signo, siginfo_t *info, void *context)
 
 				/* prepare args and let module handler thread take care of it */
 				mod_arg *args = malloc(sizeof(mod_arg));
+				clock_gettime(CLOCK_MONOTONIC_RAW, &args->ts);
 				args->conn = &servers[i];
 				strcpy(args->line, line_buf);
 				pthread_create(&args->thr, NULL, (void *)handle_modules, args);

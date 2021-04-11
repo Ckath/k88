@@ -88,14 +88,19 @@ handle_cmdmsg(msg_info *mi, char *msg)
 {
 	if (!strncmp(msg, "status", 6)) {
 		time_t now = time(NULL);
+		struct timespec ts_now;
+		clock_gettime(CLOCK_MONOTONIC_RAW, &ts_now);
 		send_privmsg("bot uptime: %dh %dm, " \
 				"connection uptime: %dh %dm, " \
 				"reconnects: %d, " \
-				"module desyncs: %d, " \
+				"desyncs: %d, " \
+				"internal lag: %.2fms, " \
 				"last crash/restart reason: %s",
 				(now-self_init)/60/60, ((now-self_init)/60)%60,
 				(now-mi->conn->init_time)/60/60, ((now-mi->conn->init_time)/60)%60,
-				mi->conn->reconns, mistimes, crash_data);
+				mi->conn->reconns, mistimes,
+				(ts_now.tv_sec-mi->ts.tv_sec)*1000+(double)(ts_now.tv_nsec-mi->ts.tv_nsec)/1000000,
+				crash_data);
 	}
 }
 

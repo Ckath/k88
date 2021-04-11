@@ -11,6 +11,7 @@ typedef struct msg_info {
 	char *user;
 	char *userid;
 	bool mod;
+	struct timespec ts;
 } msg_info;
 
 typedef struct module {
@@ -31,6 +32,7 @@ typedef struct mod_arg {
 	irc_conn *conn;
 	char line[BUFSIZE];
 	pthread_t thr;
+	struct timespec ts;
 } mod_arg;
 
 typedef struct timed_arg {

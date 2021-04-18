@@ -71,6 +71,17 @@ sock_action(int signo, siginfo_t *info, void *context)
 	}
 }
 
+static void
+handle_abort()
+{
+	log_err("received SIGABRT, probably stuck, killing main thread\n");
+	/* in a reality where I care I'd free all the resources here */
+	FILE *crashf = fopen("/tmp/k88_crash", "w+");
+	fputs("watchdog timeout", crashf);
+	fclose(crashf);
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -80,6 +91,7 @@ main(int argc, char *argv[])
 	act.sa_flags = SA_SIGINFO;
 	act.sa_sigaction = sock_action;
 	sigaction(SIGIO, &act, 0);
+	signal(SIGABRT, (void *)handle_abort);
 
 	init_modules();
 	INI *conf = ini_load("config.ini");

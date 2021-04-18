@@ -29,7 +29,7 @@ init_conn(irc_conn *conn)
 	/* create socket for connection */
 	conn->fd = malloc(sizeof(int));
 	while(init_sock(conn->fd, conn->addr, conn->port)) {
-		log_info("reconnecting...");
+		log_info("reconnecting...\n");
 		sleep(1);
 	}
 	conn->init = 0; /* ensure we init it again */

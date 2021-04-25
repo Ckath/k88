@@ -109,9 +109,10 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	char server[BUFSIZE];
 
 	/* find out what to do, poorly */
-	if (!arg) {
+	if (!arg || strlen(arg) < 3) {
 		if (linked_mumble) {
 			strcpy(server, linked_mumble);
+			arg = NULL; /* quality workaround */
 		} else {
 			send_privmsg("no mumble linked to %s or specified in command",
 					mi->chan);

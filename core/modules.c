@@ -231,9 +231,11 @@ handle_modules(mod_arg *args)
 					strlen(msginfo.userid));
 			char cmd_msg[BUFSIZE];
 			strcpy(cmd_msg, msg+strlen(prefix));
-			for (int i = 0; i < cmdmsg.n; ++i) {
-				if (mod_enabled(&cmdmsg.mods[i], index)) {
-					cmdmsg.mods[i].cmdmsg(&msginfo, cmd_msg);
+			if (strlen(cmd_msg)) {
+				for (int i = 0; i < cmdmsg.n; ++i) {
+					if (mod_enabled(&cmdmsg.mods[i], index)) {
+						cmdmsg.mods[i].cmdmsg(&msginfo, cmd_msg);
+					}
 				}
 			}
 		}

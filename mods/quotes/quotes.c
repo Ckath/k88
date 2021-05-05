@@ -29,7 +29,10 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		space[0] = '\0';
 	} if (access(quote_path, F_OK)) {
 		return; /* no quote file found */
+	} if (quote_path[strlen(quote_path)-1] == '/') {
+		return; /* empty or dir path */
 	}
+
 
 	/* load in file */
 	FILE *f = fopen(quote_path, "r");

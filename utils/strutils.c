@@ -1,8 +1,9 @@
 #include "../core/irc.h" /* for BUFSIZE */
 #include <stdlib.h>
 #include <string.h>
-#include "strutils.h"
 #include <sys/types.h>
+#include <ctype.h>
+#include "strutils.h"
 
 /* unescape adapted from https://github.com/yasuoka/unescape */
 /*
@@ -174,4 +175,20 @@ strrplc(char *haystack, char *needle, char *replace)
 		matches++;
 	}
 	return matches;
+}
+
+void
+strtolower(char *str)
+{
+	for(char *r = str; *r; ++r) {
+		*r = tolower(*r);
+	}
+}
+
+void
+strtoupper(char *str)
+{
+	for(char *r = str; *r; ++r) {
+		*r = toupper(*r);
+	}
 }

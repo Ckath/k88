@@ -8,6 +8,7 @@
 #include "../../core/modules.h"
 #include "../../core/log.h"
 #include "../../core/irc.h"
+#include "../../utils/strutils.h"
 
 static INI *seen;
 
@@ -19,8 +20,10 @@ handle_privmsg(msg_info *mi, char *msg)
 	char timestr[80];
 	time_t t = time(NULL);
 	strftime(timestr, 80, "%X %x %Z", localtime(&t));
+	lowerdup(mi->user, luser);
 	sprintf(lastseen, "%s <%s> %s (%s)", mi->chan, mi->user, msg, timestr);
-	ini_write(seen, mi->conn->index, mi->user, lastseen);
+	ini_write(seen, mi->conn->index, luser, lastseen);
+	free(luser);
 }
 
 static void
@@ -40,12 +43,14 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		strchr(name, ' ')[0] = '\0';
 	}
 
-	char *lastseen = ini_read(seen, mi->conn->index, name);
+	lowerdup(name, lname);
+	char *lastseen = ini_read(seen, mi->conn->index, lname);
 	if (lastseen) {
 		send_privmsg("last msg: %s", lastseen);
 	} else {
-		send_privmsg("no data", lastseen);
+		send_privmsg("no data");
 	}
+	free(lname);
 }
 
 void

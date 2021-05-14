@@ -37,11 +37,8 @@ json_item(char *dest, char *json, char *item, char *end)
 static void
 parse_results(char *results)
 {
-	/* for debugging */
-	/* log_info("%s\n", results); */
-
 	/* collect info, terribly */
-	strunescape(results);
+	strunescape(results); /* just unescape the entirety, what a mess */
 	char title[BUFSIZE] = { '\0' };
 	char url[BUFSIZE] = { '\0' };
 	char next_ep[BUFSIZE] = { '\0' };
@@ -53,14 +50,19 @@ parse_results(char *results)
 	json_item(url, results, "siteUrl\":", "\",\"");
 	json_item(next_ep, results, "nextAiringEpisode", "\",\"");
 	json_item(description, results, "description\":", "\",\"");
-	strrplc(description, "<br><br>", " ");
-	strrplc(description, "\\n", "");
-	strrplc(description, "\n", "");
+
 	/* TODO: think about if I care about showing the score, currently no */
 	json_item(score, results, "averageScore\":", ",\"");
 	if (!score[0]) {
 		json_item(score, results, "meanScore\":", "}");
 	}
+
+	/* attempt at making the description okay on irc */
+	strrplc(description, "<br><br>", " ");
+	strrplc(description, "<br>\n<br>\n", " ");
+	strrplc(description, "<br>", " ");
+	strrplc(description, "\n", "");
+	strrplc(description, "\\n", "");
 
 	/* try to make some usable output from the info at hand */
 	if (next_ep[0]) {

@@ -21,7 +21,7 @@ static bool systemd_watchdog;
 static void
 handle_timed(irc_conn *s, char *index, time_t t)
 {
-	if (t - s->heartbeat > 300) {
+	if (s->init && t - s->heartbeat > 300) {
 		s->heartbeat = t;
 		log_err("connection timed out, resetting\n");
 		reconnect_conn(s);

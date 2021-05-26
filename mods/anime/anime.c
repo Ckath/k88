@@ -49,6 +49,8 @@ parse_results(char *results)
 	json_item(title, results, "userPreferred\":", "\"},\"");
 	json_item(url, results, "siteUrl\":", "\",\"");
 	json_item(next_ep, results, "nextAiringEpisode", "\",\"");
+	json_item(eps, results, "episodes\"", ",\"");
+	json_item(duration, results, "duration\"", ",\"");
 	json_item(description, results, "description\":", "\",\"");
 
 	/* TODO: think about if I care about showing the score, currently no */
@@ -75,14 +77,14 @@ parse_results(char *results)
 		unsigned days = seconds/60/60/24;
 
 		if (days) {
-			sprintf(results, "%s (ep%s airs in %d days, %d hours) %s | %s",
-					title, ep, days, hours, url, description);
+			sprintf(results, "[%s x %smin] %s (ep%s airs in %d days, %d hours) %s | %s",
+					eps, duration, title, ep, days, hours, url, description);
 		} else if (hours) {
-			sprintf(results, "%s (ep%s airs in %d hours) %s | %s",
-					title, ep, hours, url, description);
+			sprintf(results, "[%s x %smin] %s (ep%s airs in %d hours) %s | %s",
+					eps, duration, title, ep, hours, url, description);
 		} else {
-			sprintf(results, "%s (ep%s airs in %d minutes) %s | %s",
-					title, ep, seconds/60, url, description);
+			sprintf(results, "[%s x %smin] %s (ep%s/%s airs in %d minutes) %s | %smin | %s",
+					eps, duration, title, ep, seconds/60, url, description);
 		}
 	} else {
 		char season[BUFSIZE] = { '\0' };
@@ -90,10 +92,12 @@ parse_results(char *results)
 		json_item(season, results, "season\":", "\",");
 		json_item(year, results, "seasonYear\"", ",\"");
 		if (season[0]) {
-			sprintf(results, "%s (%s %s) %s | %s", title, season, year, url, description);
+			sprintf(results, "[%s x %smin] %s (%s %s) %s | %s",
+					eps, duration, title, season, year, url, description);
 		} else {
 			json_item(year, results, "year\"", "}");
-			sprintf(results, "%s (%s) %s | %s", title, year, url, description);
+			sprintf(results, "[%s x %smin] %s (%s) %s | %s",
+					eps, duration, title, year, url, description);
 		}
 	}
 
@@ -113,7 +117,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 	/* build url */
 	char q[BUFSIZE];
-	sprintf(q, anime_type ? "query={Media(search: \"%s\", type: ANIME) {title {userPreferred}siteUrl, description(asHtml:false)nextAiringEpisode {timeUntilAiring,episode}, season, seasonYear, endDate {year}, averageScore, meanScore}}" : 
+	sprintf(q, anime_type ? "query={Media(search: \"%s\", type: ANIME) {title {userPreferred}siteUrl, description(asHtml:false)nextAiringEpisode {timeUntilAiring,episode}, season, seasonYear, endDate {year}, episodes, duration, averageScore, meanScore}}" :
 			 "query={Media(search: \"%s\", type: MANGA) {title {userPreferred}siteUrl, description(asHtml:false)nextAiringEpisode {timeUntilAiring,episode}endDate {year, month, day}averageScore}}", strchr(msg, ' ')+1);
 
 	/* curl is stupid and breaks my sockets if I init it any sooner */

@@ -18,14 +18,17 @@ an ever incomplete list of the functionality provided through modules:
 - onion link translating
 - link reader
 - 4chan scraper
+- cross server bridging
+- al search
+- image saucing
+- message triggers
 - typical irc nonsense (decide, IBIP, fortunes, modulemanagement etc)
 
 ## building and running\*
 ```
 git submodule init
 git submodule update
-make
-./k88 # this is fine for testing, dont bother with the service
+make run
 ```
 \*: it is not recommended to actually use this bot, the source is only public so other people can fix issues for me. if you, for whatever reason, want the bot in your channel contact me instead and I'll join my instance.
 

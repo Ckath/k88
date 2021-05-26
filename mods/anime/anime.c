@@ -78,13 +78,13 @@ parse_results(char *results)
 
 		if (days) {
 			sprintf(results, "[%s x %smin] %s (ep%s airs in %d days, %d hours) %s | %s",
-					eps, duration, title, ep, days, hours, url, description);
+					eps[0] ? eps : "?", duration, title, ep, days, hours, url, description);
 		} else if (hours) {
 			sprintf(results, "[%s x %smin] %s (ep%s airs in %d hours) %s | %s",
-					eps, duration, title, ep, hours, url, description);
+					eps[0] ? eps : "?", duration, title, ep, hours, url, description);
 		} else {
 			sprintf(results, "[%s x %smin] %s (ep%s/%s airs in %d minutes) %s | %smin | %s",
-					eps, duration, title, ep, seconds/60, url, description);
+					eps[0] ? eps : "?", duration, title, ep, seconds/60, url, description);
 		}
 	} else {
 		char season[BUFSIZE] = { '\0' };
@@ -93,11 +93,11 @@ parse_results(char *results)
 		json_item(year, results, "seasonYear\"", ",\"");
 		if (season[0]) {
 			sprintf(results, "[%s x %smin] %s (%s %s) %s | %s",
-					eps, duration, title, season, year, url, description);
+					eps[0] ? eps : "?", duration, title, season, year, url, description);
 		} else {
 			json_item(year, results, "year\"", "}");
 			sprintf(results, "[%s x %smin] %s (%s) %s | %s",
-					eps, duration, title, year, url, description);
+					eps[0] ? eps : "?", duration, title, year, url, description);
 		}
 	}
 

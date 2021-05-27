@@ -32,7 +32,10 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		return;
 	}
 	srand(time(NULL));
-	send_privmsg("%s's fortune: %s", mi->user, fortunes[rand()%13]);
+
+	char *target = strchr(msg, ' ');
+	send_privmsg("%s's fortune: %s", 
+			target ? target+1 : mi->user, fortunes[rand()%13]);
 }
 
 void

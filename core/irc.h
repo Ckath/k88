@@ -19,6 +19,7 @@ typedef struct irc_conn {
 	time_t heartbeat;
 	time_t init_time;
 	int reconns;
+	bool twitch;
 } irc_conn;
 
 int init_conn(irc_conn *conn);

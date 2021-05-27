@@ -29,10 +29,16 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char modlist[BUFSIZE] = {'\0'};
 		for (int i = 0; mods[i]; ++i) {
 			char *mod_status = mods_get_config(mi->index, mods[i]);
-			strcat(modlist, mod_status ? strcmp(mod_status, "enabled") ?
-					"4" : "3" : "");
-			strcat(modlist, mods[i]);
-			strcat(modlist, "");
+			if (!mi->conn->twitch) {
+				strcat(modlist, mod_status ? strcmp(mod_status, "enabled") ?
+						"4" : "3" : "");
+				strcat(modlist, mods[i]);
+				strcat(modlist, "");
+			} else {
+				strcat(modlist, mod_status ? strcmp(mod_status, "enabled") ?
+						"❌": "✅": "❓");
+				strcat(modlist, mods[i]);
+			}
 			if (mods[i+1]) {
 				strcat(modlist, ", ");
 			}

@@ -12,6 +12,7 @@
 #include "log.h"
 #include "socks.h"
 #include "irc.h"
+#include "../utils/strutils.h"
 
 char init_ssl = 0;
 
@@ -131,6 +132,20 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 	va_start(args, msgformat);
 	vsnprintf(buf, BUFSIZE, msgformat, args);
 	va_end(args);
+
+	if (conn->twitch) {
+		strrplc(buf, "3", "");
+		strrplc(buf, "4", "");
+		strrplc(buf, "6", "");
+		strrplc(buf, "7", "");
+		strrplc(buf, "9", "");
+		strrplc(buf, "10", "");
+		strrplc(buf, "11", "");
+		strrplc(buf, "12", "");
+		strrplc(buf, "13", "");
+		strrplc(buf, "", "");
+		strrplc(buf, "", "");
+	}
 
 	if (SSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {
 		log_err("failed to send: '%s'", buf);

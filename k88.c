@@ -37,6 +37,12 @@ parse_conf(INI *conf)
 		} else {
 			servers[nservers].pass = NULL;
 		}
+		char *twitch = ini_read(conf, server_list[nservers], "twitch");
+		if (twitch) {
+			servers[nservers].twitch = true;
+		} else {
+			servers[nservers].twitch = false;
+		}
 
 		servers[nservers].reconns = 0;
 		while (init_conn(&servers[nservers])) {

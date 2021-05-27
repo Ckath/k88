@@ -58,10 +58,13 @@ init_conn(irc_conn *conn)
 	fcntl(*conn->fd, F_SETSIG, SIGPOLL);
 
 	log_info("attempting to identify...\n");
-	send_raw(conn, 0, "USER k88 0 * :k88\r\n");
-	send_raw(conn, 0, "NICK %s\r\n", conn->nick);
 	if (conn->pass) {
+		send_raw(conn, 0, "USER %s 0 * :%s\r\n", conn->nick, conn->nick);
+		send_raw(conn, 0, "NICK %s\r\n", conn->nick);
 		send_raw(conn, 1, "PASS %s\r\n", conn->pass);
+	} else { /* znc, which requires pass, doesnt enjoy k88:k88 as user */
+		send_raw(conn, 0, "USER k88 0 * :k88\r\n");
+		send_raw(conn, 0, "NICK %s\r\n", conn->nick);
 	}
 	return 0;
 }

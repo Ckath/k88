@@ -18,6 +18,7 @@ static CURL *curl = NULL;
 static time_t started = 0;
 static time_t finished = 0;
 static bool store_index = 0;
+static char *lock_index = NULL;
 
 static void
 json_item(char *dest, char *json, char *item, char *end)
@@ -217,6 +218,13 @@ update_cache()
 static void
 handle_timed(irc_conn *s, char *index, time_t time)
 {
+	/* hacked in gate to stop it triggering on every server */
+	if (!lock_index) {
+		lock_index = index;
+	} if (strcmp(lock_index, index)) {
+		return;
+	}
+
 	if (s->init && time-started > 60*60*4/* 4 hours */) {
 		log_info("updating chanscraper cache\n");
 		update_cache();

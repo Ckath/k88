@@ -13,7 +13,6 @@
 
 static INI *reminders;
 static time_t *times = NULL;
-static char *lock_index = NULL;
 
 static void
 update_times()

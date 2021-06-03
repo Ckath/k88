@@ -18,7 +18,7 @@ static CURL *curl = NULL;
 static time_t started = 0;
 static time_t finished = 0;
 static bool store_index = 0;
-static char *lock_index = NULL;
+static char lock_index[256] = "\0";
 
 static void
 json_item(char *dest, char *json, char *item, char *end)
@@ -219,8 +219,8 @@ static void
 handle_timed(irc_conn *s, char *index, time_t time)
 {
 	/* hacked in gate to stop it triggering on every server */
-	if (!lock_index) {
-		lock_index = index;
+	if (!lock_index[0]) {
+		strcpy(lock_index ,index);
 	} if (strcmp(lock_index, index)) {
 		return;
 	}

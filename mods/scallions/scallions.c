@@ -88,6 +88,17 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		ini_write(lookup, "onions", tmp, clearnet);
 		urls = ini_list_items(lookup, "onions");
 		send_privmsg("sure");
+	} else if (!strncmp(msg, "unonion ", 8)) {
+		char onion[BUFSIZE];
+		strcpy(onion, strchr(msg, ' ')+1);
+
+		char tmp[BUFSIZE];
+		sprintf(tmp, "http://%s", onion);
+		ini_remove(lookup, "onions", tmp);
+		sprintf(tmp, "https://%s", onion);
+		ini_remove(lookup, "onions", tmp);
+		urls = ini_list_items(lookup, "onions");
+		send_privmsg("whatever");
 	}
 }
 

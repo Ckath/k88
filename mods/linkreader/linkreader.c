@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <curl/curl.h>
+#include <locale.h>
 #include "../../utils/curl.h"
 #include "../../utils/strutils.h"
 
@@ -58,6 +59,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	}
 
 	/* curl is stupid and breaks my sockets if I init it any sooner */
+	setlocale(LC_ALL, ""); /* needed for encoding */
 	curl_init();
 	CURL *curl = curl_easy_init();
 
@@ -67,7 +69,15 @@ handle_privmsg(msg_info *mi, char *msg)
 	strcpy(url, start);
 	char *url_end = strpbrk(url, " ⟨⟩<>{}\\^\"\0");
 	if (url_end) {
-		url_end[0] = '\0';
+		if (url_end[0] > 0) {
+			url_end[0] = '\0';
+		} else { /* workaround when ending in the middle of a wchar */
+			while (*(++url_end) < 0);
+			url_end = strpbrk(url_end,  " ⟨⟩<>{}\\^\"\0");
+			if (url_end) {
+				url_end[0] = '\0';
+			}
+		}
 	}
 	for(;;) {
 		switch(url[strlen(url)-1]) {
@@ -109,6 +119,7 @@ redirect:;
 	chunk res = { .memory = malloc(1), .size = 0 };
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
 	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_wrcb);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res);
 

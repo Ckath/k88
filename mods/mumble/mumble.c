@@ -1,3 +1,4 @@
+#define _GNU_SOURCE /* getaddr idn extensions */
 #include <arpa/inet.h>
 #include <endian.h>
 #include <netdb.h>
@@ -11,6 +12,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#include <locale.h>
 
 /* required */
 #include "../modtape.h"
@@ -147,8 +149,16 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 	/* (try to) get ip from provided url */
 	struct addrinfo *res;
-	if(getaddrinfo(server, NULL, NULL, &res)) {
-		send_privmsg("error: failed dns lookup");
+	setlocale(LC_ALL, ""); /* needed for encoding */
+	struct addrinfo hints = {
+		.ai_family = AF_UNSPEC,
+		.ai_protocol = IPPROTO_UDP,
+		.ai_socktype = SOCK_DGRAM,
+		.ai_flags = AI_CANONNAME | AI_IDN | AI_CANONIDN
+	};
+	int dnserr;
+	if((dnserr = getaddrinfo(server, NULL, &hints, &res))) {
+		send_privmsg("error: %s", gai_strerror(dnserr));
 		return;
 	}
 

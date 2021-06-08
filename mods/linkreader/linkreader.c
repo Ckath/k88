@@ -119,7 +119,6 @@ redirect:;
 	chunk res = { .memory = malloc(1), .size = 0 };
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
 	curl_easy_setopt(curl, CURLOPT_URL, url);
-	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_wrcb);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res);
 

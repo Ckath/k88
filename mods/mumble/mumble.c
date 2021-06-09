@@ -103,10 +103,13 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	if (strncmp(msg, "mumble", 6)) {
 		return;
 	}
+	char *linked_mumble = mods_get_config(mi->index, "mumble_server");
+	if (!linked_mumble && !mi->mod) { /* jfc kalium fine its locked off */
+		return;
+	}
 
 	char *arg = strchr(msg, ' ');
 	bool link = false;
-	char *linked_mumble = mods_get_config(mi->index, "mumble_server");
 	uint16_t port = 0;
 	char server[BUFSIZE];
 

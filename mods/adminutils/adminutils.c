@@ -27,6 +27,10 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			send_privmsg("%s", output);
 		}
 		pclose(cp);
+	} else if (!strncmp(msg, "raw ", 4)) {
+		char send[BUFSIZE];
+		sprintf(send, "%s\r\n", strchr(msg, ' ')+1);
+		send_raw(mi->conn, 0, send);
 	}
 }
 

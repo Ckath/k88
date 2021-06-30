@@ -40,6 +40,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		send_privmsg("curl error: %s", curl_easy_strerror(r));
 		curl_reset();
 	} else {
+		if (strlen(res.memory) > 420) {
+			strcpy(res.memory+418, "..");
+		}
 		send_privmsg("%s", res.memory);
 	}
 

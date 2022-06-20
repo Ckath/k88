@@ -38,6 +38,8 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	if (r != CURLE_OK) {
 		send_privmsg("curl error: %s", curl_easy_strerror(r));
 		curl_reset();
+	} else if (!res.size) {
+		send_privmsg("kot api error, didnt get kot");
 	} else {
 		char kot[BUFSIZE] = { '\0' };
 		strcpy(kot, strstr(res.memory, "\":\"")+3);

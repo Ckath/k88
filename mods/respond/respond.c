@@ -92,10 +92,15 @@ handle_privmsg(msg_info *mi, char *msg)
 		send_privmsg("curl error: %s", curl_easy_strerror(r));
 		curl_reset();
 	} else {
-		log_info("respond data: %s\n", res.memory);
 		char resb[BUFSIZE];
 		char *r = resb;
 		json_item(resb, res.memory, "text\":", "\",\"");
+		if (!resb[0]) { /* brain damage */
+			strcpy(hist, "");
+			log_err("unusable response: %s\n", res.memory);
+			send_privmsg("%s: response backend has failed me, try again",
+					mi->user);
+		}
 		if (strlen(resb) > 420) {
 			strcpy(resb+418, "..");
 		}

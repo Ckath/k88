@@ -37,8 +37,11 @@ json_item(char *dest, char *json, char *item, char *end)
 static void
 handle_privmsg(msg_info *mi, char *msg)
 {
-	if (mi->cmd || (strncmp(msg, mi->conn->nick, strlen(mi->conn->nick)) ||
-		(mi->conn->ircnick[0] != '\0' &&
+	/* check for pings on nick,
+	 * bit of a mess due to znc having nick in irnick */
+	if (mi->cmd || (mi->conn->ircnick[0] != '\0' &&
+		 strncmp(msg, mi->conn->ircnick, strlen(mi->conn->ircnick)) ||
+		 (mi->conn->ircnick[0] == '\0' &&
 		 strncmp(msg, mi->conn->nick, strlen(mi->conn->nick))))) {
 		return;
 	}
@@ -67,9 +70,8 @@ handle_privmsg(msg_info *mi, char *msg)
 	char *req = curl_easy_escape(curl, strchr(msg, ' ')+1, strlen(strchr(msg, ' ')+1));
 	sprintf(auth, "Authorization: Bearer %s",
 			getenv("OPENAI_APPID"));
-	sprintf(data, "{ \"model\": \"text-davinci-002\", \"prompt\": \"%s%s\", \"temperature\": 0.5, \"max_tokens\": 60, \"top_p\": 1.0, \"frequency_penalty\": 0.5, \"presence_penalty\": 0.0, \"stop\": [\"maidAI:\", \"user:\"] }",
+	sprintf(data, "{ \"model\": \"text-davinci-002\", \"prompt\": \"%s%s\", \"temperature\": 0.5, \"max_tokens\": 60, \"top_p\": 1.0, \"frequency_penalty\": 0.6, \"presence_penalty\": 0.5, \"stop\": [\"maidAI:\", \"user:\"] }",
 		   AI_SEED, hist);
-	log_info("data: '%s'", data);
 
 	/* configure curl request */
 	struct curl_slist *headers = NULL;
@@ -90,6 +92,7 @@ handle_privmsg(msg_info *mi, char *msg)
 		send_privmsg("curl error: %s", curl_easy_strerror(r));
 		curl_reset();
 	} else {
+		log_info("respond data: %s\n", res.memory);
 		char resb[BUFSIZE];
 		char *r = resb;
 		json_item(resb, res.memory, "text\":", "\",\"");
@@ -115,7 +118,7 @@ handle_privmsg(msg_info *mi, char *msg)
 static void
 handle_cmdmsg(msg_info *mi, char *msg)
 {
-	if (mi->mod && strncmp(msg, "rclr", 4)) {
+	if (mi->mod && !strncmp(msg, "rclr", 4)) {
 		strcpy(hist, "");
 		send_privmsg("reset conversation buffer");
 		return;
@@ -127,4 +130,5 @@ respond_init()
 {
 	mods_new("respond", true);
 	mods_privmsg_handler(handle_privmsg);
+	mods_cmdmsg_handler(handle_cmdmsg);
 }

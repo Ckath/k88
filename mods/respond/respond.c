@@ -70,7 +70,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	char *req = curl_easy_escape(curl, strchr(msg, ' ')+1, strlen(strchr(msg, ' ')+1));
 	sprintf(auth, "Authorization: Bearer %s",
 			getenv("OPENAI_APPID"));
-	sprintf(data, "{ \"model\": \"text-davinci-002\", \"prompt\": \"%s%s\", \"temperature\": 0.5, \"max_tokens\": 60, \"top_p\": 1.0, \"frequency_penalty\": 0.6, \"presence_penalty\": 0.5, \"stop\": [\"maidAI:\", \"user:\"] }",
+	sprintf(data, "{ \"model\": \"text-davinci-002\", \"prompt\": \"%s%s\", \"temperature\": 0.9, \"max_tokens\": 60, \"top_p\": 1.0, \"frequency_penalty\": 0.6, \"presence_penalty\": 0.8, \"stop\": [\"maidAI:\", \"user:\"] }",
 		   AI_SEED, hist);
 
 	/* configure curl request */

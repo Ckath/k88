@@ -188,6 +188,7 @@ handle_modules(mod_arg *args)
 		.user = NULL,
 		.userid = NULL,
 		.mod = NULL,
+		.cmd = NULL,
 		.ts = args->ts
 	};
 
@@ -215,12 +216,8 @@ handle_modules(mod_arg *args)
 		strchr(msg, '\r')[0] = '\0';
 		strchr(msginfo.chan, ' ')[0] = '\0';
 
-		/* call all privmsg handlers */
-		for (int i = 0; i < privmsg.n; ++i) {
-			if (mod_enabled(&privmsg.mods[i], index)) {
-				privmsg.mods[i].privmsg(&msginfo, msg);
-			}
-		}
+		/* cmdmsg must be handled BEFORE privmsg
+		 * to keep respond sane when prefix is nick */
 
 		/* call all cmdmsg handlers */
 		char *prefix = mods_get_prefix(args->conn, index);
@@ -237,6 +234,13 @@ handle_modules(mod_arg *args)
 						cmdmsg.mods[i].cmdmsg(&msginfo, cmd_msg);
 					}
 				}
+			}
+		}
+
+		/* call all privmsg handlers */
+		for (int i = 0; i < privmsg.n; ++i) {
+			if (mod_enabled(&privmsg.mods[i], index)) {
+				privmsg.mods[i].privmsg(&msginfo, msg);
 			}
 		}
 	}

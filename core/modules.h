@@ -11,6 +11,7 @@ typedef struct msg_info {
 	char *user;
 	char *userid;
 	bool mod;
+	bool cmd;
 	struct timespec ts;
 } msg_info;
 

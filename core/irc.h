@@ -11,6 +11,7 @@ typedef struct irc_conn {
 	char addr[256];
 	char port[6];
 	char nick[32];
+	char ircnick[32]; /* special case for znc where nick != ircnick */
 	char *pass;
 	int *fd;
 	SSL *sock;

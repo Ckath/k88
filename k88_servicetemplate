@@ -6,6 +6,7 @@ After=network.target
 User=WHO
 Environment="WOLFRAM_APPID=mightwannafillthisin"
 Environment="SAUCE_APPID=mightwannafillthisin"
+Environment="OPENAI_APPID=mightwannafillthisin"
 Type=notify
 WatchdogSec=60
 Restart=always

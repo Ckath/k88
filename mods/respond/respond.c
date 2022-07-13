@@ -37,7 +37,9 @@ json_item(char *dest, char *json, char *item, char *end)
 static void
 handle_privmsg(msg_info *mi, char *msg)
 {
-	if (strncmp(msg, mi->conn->nick, strlen(mi->conn->nick)) || mi->cmd) {
+	if (mi->cmd || (strncmp(msg, mi->conn->nick, strlen(mi->conn->nick)) ||
+		(mi->conn->ircnick[0] != '\0' &&
+		 strncmp(msg, mi->conn->nick, strlen(mi->conn->nick))))) {
 		return;
 	}
 
@@ -113,7 +115,7 @@ handle_privmsg(msg_info *mi, char *msg)
 static void
 handle_cmdmsg(msg_info *mi, char *msg)
 {
-	if (mi->mod && strncmp(msg, "rclr", 12)) {
+	if (mi->mod && strncmp(msg, "rclr", 4)) {
 		strcpy(hist, "");
 		send_privmsg("reset conversation buffer");
 		return;

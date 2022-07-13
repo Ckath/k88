@@ -30,6 +30,8 @@ parse_conf(INI *conf)
 					server_list[nservers], "port"));
 		strcpy(servers[nservers].nick, ini_read(conf,
 					server_list[nservers], "nick"));
+		char *ircnick = ini_read(conf, server_list[nservers], "ircnick");
+		strcpy(servers[nservers].ircnick, ircnick ? ircnick : "");
 		char *pass = ini_read(conf, server_list[nservers], "pass");
 		if (pass) {
 			servers[nservers].pass = malloc(strlen(pass)+1);

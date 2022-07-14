@@ -40,9 +40,9 @@ handle_privmsg(msg_info *mi, char *msg)
 	/* check for pings on nick,
 	 * bit of a mess due to znc having nick in irnick */
 	if (mi->cmd || (mi->conn->ircnick[0] != '\0' &&
-		 strncmp(msg, mi->conn->ircnick, strlen(mi->conn->ircnick)) ||
+		 strncasecmp(msg, mi->conn->ircnick, strlen(mi->conn->ircnick)) ||
 		 (mi->conn->ircnick[0] == '\0' &&
-		 strncmp(msg, mi->conn->nick, strlen(mi->conn->nick))))) {
+		 strncasecmp(msg, mi->conn->nick, strlen(mi->conn->nick))))) {
 		return;
 	}
 

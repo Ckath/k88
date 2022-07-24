@@ -1,3 +1,4 @@
+#define _GNU_SOURCE /* thats right strcasestr needs it */
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -12,7 +13,7 @@
 #include "../../core/log.h"
 #include "../../core/irc.h"
 
-#define AI_SEED "user: hi\\nmaidAI: hi\\nuser: h\\nmaidAI: hello!\\nuser: what are you?\\nmaidAI: I'm a maid belonging to ck\\nuser: you're stupid and useless\\nmaidAI: I'll fucking rek you m8 come at me\\nuser: This is an excellent time for you to disappear\\nmaidAI: neck yourself\\nuser:fuck off retard\\nmaidAI: you cannot stop me\\n"
+#define AI_SEED "user: hi\\nmaidAI: hi\\nuser: h\\nmaidAI: hello!\\nuser: what are you?\\nmaidAI: I'm a maid belonging to ck\\nuser: you're stupid and useless\\nmaidAI: no u\\nuser: This is an excellent time for you to disappear\\nmaidAI: n-no u\\nuser:fuck off retard\\nmaidAI: you cannot stop me\\nuser: can you get me some coffeemaidAI: right away!\\n"
 
 char hist[1444] = { "\0" };
 
@@ -40,9 +41,9 @@ handle_privmsg(msg_info *mi, char *msg)
 	/* check for pings on nick,
 	 * bit of a mess due to znc having nick in irnick */
 	if (mi->cmd || (mi->conn->ircnick[0] != '\0' &&
-		 strncasecmp(msg, mi->conn->ircnick, strlen(mi->conn->ircnick)) ||
+		 !strcasestr(msg, mi->conn->ircnick)) ||
 		 (mi->conn->ircnick[0] == '\0' &&
-		 strncasecmp(msg, mi->conn->nick, strlen(mi->conn->nick))))) {
+		 !strcasestr(msg, mi->conn->nick))) {
 		return;
 	}
 

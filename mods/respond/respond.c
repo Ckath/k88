@@ -87,6 +87,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
 
+retry:
 	/* handle result */
 	CURLcode r = curl_easy_perform(curl);
 	if (r != CURLE_OK) {
@@ -101,6 +102,7 @@ handle_privmsg(msg_info *mi, char *msg)
 			log_err("unusable response: %s\n", res.memory);
 			send_privmsg("%s: response backend has failed me, try again",
 					mi->user);
+			return;
 		}
 		if (strlen(resb) > 420) {
 			strcpy(resb+418, "..");
@@ -109,6 +111,9 @@ handle_privmsg(msg_info *mi, char *msg)
 		strrplc(resb, "\\n", "");
 		if (resb[0] == ' ') {
 			r++;
+		}
+		if (strstr("I'm sorry", r)) {
+			goto retry;
 		}
 		send_privmsg("%s: %s", mi->user, r);
 		strcat(hist, r);
@@ -134,7 +139,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 void
 respond_init()
 {
-	mods_new("respond", true);
+	mods_new("respond", false);
 	mods_privmsg_handler(handle_privmsg);
 	mods_cmdmsg_handler(handle_cmdmsg);
 }

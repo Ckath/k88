@@ -3,6 +3,7 @@
 
 char *strunescape(char *);
 size_t strrplc(char *haystack, char *needle, char *replace);
+size_t strcaserplc(char *haystack, char *needle, char *replace);
 void strtolower(char *);
 void strtoupper(char *);
 

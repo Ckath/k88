@@ -1,3 +1,4 @@
+#define _GNU_SOURCE /* thats right strcasestr needs it */
 #include "../core/irc.h" /* for BUFSIZE */
 #include <stdlib.h>
 #include <string.h>
@@ -167,6 +168,23 @@ strrplc(char *haystack, char *needle, char *replace)
 	char *match;
 	size_t matches = 0;
 	while ((match = strstr(haystack, needle))) {
+		char tmp[BUFSIZE] = {'\0'};
+		strncpy(tmp, haystack, match-haystack);
+		strcat(tmp, replace);
+		strcat(tmp, match+strlen(needle));
+		strcpy(haystack, tmp);
+		matches++;
+	}
+	return matches;
+}
+
+size_t
+strcaserplc(char *haystack, char *needle, char *replace)
+{	
+	/* replace occurrences and return fixed string */
+	char *match;
+	size_t matches = 0;
+	while ((match = strcasestr(haystack, needle))) {
 		char tmp[BUFSIZE] = {'\0'};
 		strncpy(tmp, haystack, match-haystack);
 		strcat(tmp, replace);

@@ -50,11 +50,15 @@ handle_privmsg(msg_info *mi, char *msg)
 	char input[BUFSIZE]; 
 	strcpy(input, msg);
 	strcaserplc(input, nick, ""); 
-	fprintf(pings, "%s\n", input);
+	char *in = input;
+	if (!strncmp(": ", input, 2) || !strncmp(", ", input, 2)) {
+		in += 2;
+	}
+	fprintf(pings, "%s\n", in);
 	fflush(pings);
 
 	char response[MAX_LINE_LENGTH];
-	if (mm_respond_and_learn(mm, input, response, 0)) {
+	if (mm_respond_and_learn(mm, in, response, 0)) {
 		send_privmsg("%s: %s", mi->user, response);
 	} else {
 		send_privmsg("%s: brain dedded sorry", mi->user);

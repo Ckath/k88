@@ -1,8 +1,9 @@
 #define _GNU_SOURCE /* thats right strcasestr needs it */
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <stdio.h>
+#include <unistd.h>
 
 /* required */
 #include "../modtape.h"
@@ -57,6 +58,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	fprintf(pings, "%s\n", in);
 	fflush(pings);
 
+	sleep(rand()%3+3);
 	char response[MAX_LINE_LENGTH];
 	if (mm_respond_and_learn(mm, in, response, 0)) {
 		send_privmsg("%s: %s", mi->user, response);

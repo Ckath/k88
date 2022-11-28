@@ -45,6 +45,14 @@ find_title(char *dest, char *html)
 	/* title cleanup */
 	strrplc(dest, "\n", "");
 	strrplc(dest, "&quot;", "\"");
+	strrplc(dest, "&gt;", ">");
+	strrplc(dest, "&lt;", "<");
+	strrplc(dest, "&#039;", "'");
+	strrplc(dest, "&quot;", "\"");
+	strrplc(dest, "&amp;", "&");
+	strrplc(dest, "&apos;", "'");
+	strrplc(dest, "<br>", "");
+	strunescape(dest);
 }
 
 static void

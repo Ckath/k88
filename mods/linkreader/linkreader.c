@@ -121,7 +121,7 @@ redirect:;
 	}
 
 	/* twitter workaround */
-	bool twitter_bs = strrplc(url, "twitter.com", "nitter.unixfox.eu");
+	bool twitter_bs = strrplc(url, "twitter.com", "nitter.pussthecat.org");
 
 	/* configure curl request */
 	chunk res = { .memory = malloc(1), .size = 0 };
@@ -151,7 +151,7 @@ redirect:;
 
 		if (title[0]) {
 			if (twitter_bs) { /* hide the twitter -> nitter workaround */
-				strrplc(title, " | nitter-unixfox", "");
+				strrplc(title, " | Nitter | PussTheCat.org", "");
 			} if (strlen(title) > 450) {
 				strcpy(&title[447], "..");
 			}

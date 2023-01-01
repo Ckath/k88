@@ -52,6 +52,7 @@ find_title(char *dest, char *html)
 	strrplc(dest, "&amp;", "&");
 	strrplc(dest, "&apos;", "'");
 	strrplc(dest, "<br>", "");
+	strrplc(dest, "&#x27;", "'");
 	strunescape(dest);
 }
 

@@ -41,10 +41,12 @@ handle_timed(irc_conn *s, char *index, time_t t)
 static void
 handle_rawmsg(msg_info *mi, char *line)
 {
-	mi->conn->heartbeat = time(NULL);
 	if (!strncmp(line, "PING ", 5)) {
 		line[1] = 'O';
 		send_raw(mi->conn, 0, line);
+		if (!mi->conn->init) {
+			return;
+		}
 	} else if(!strncmp(line, "ERROR", 5)) {
 		log_err("recieved ERROR, resetting connection\n");
 		reconnect_conn(mi->conn);
@@ -60,6 +62,7 @@ handle_rawmsg(msg_info *mi, char *line)
 		mi->conn->init = 1;
 		mi->conn->init_time = time(NULL);
 	}
+	mi->conn->heartbeat = time(NULL);
 }
 
 static void

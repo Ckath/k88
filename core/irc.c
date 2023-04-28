@@ -154,6 +154,7 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 		FILE *crashf = fopen("/tmp/k88_crash", "w+");
 		fputs("error on SSL fd, probably crashed", crashf);
 		fclose(crashf);
+		reconnect_conn(conn);
 	} else if (!silent) {
 		log_send("%s", buf);
 	}

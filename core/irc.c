@@ -152,8 +152,13 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 		strrplc(buf, "", "");
 	}
 
-	if (wolfSSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {
-		log_err("failed to send: '%s'", buf);
+	int wolfSSL_ret;
+	if ((wolfSSL_ret = wolfSSL_write(conn->sock, buf, strlen(buf))) < 0 && !silent) {
+		log_err("failed to send: '%s', reconnecting soon", buf);
+		int e = wolfSSL_get_error(conn->sock, wolfSSL_ret);
+		char s[256];
+		log_err("wolfSSL error %d: %s", e, wolfSSL_ERR_error_string(e, s));
+
 		FILE *crashf = fopen("/tmp/k88_crash", "w+");
 		fputs("error on SSL fd, probably crashed", crashf);
 		fclose(crashf);

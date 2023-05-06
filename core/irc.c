@@ -51,6 +51,11 @@ init_conn(irc_conn *conn)
 
 	wolfSSL_set_fd(conn->sock, *conn->fd);
 	wolfSSL_connect(conn->sock);
+	log_info("connected with %s cipher\n", wolfSSL_get_cipher(conn->sock));
+	/* something not right here, bail (for retry) */
+	if (!strcmp(wolfSSL_get_cipher(conn->sock), "(NONE)")) {
+		return 1;
+	}
 
 	/* everything done, configure fd options */
 	fcntl(*conn->fd, F_SETFL,

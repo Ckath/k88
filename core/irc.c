@@ -35,13 +35,13 @@ init_conn(irc_conn *conn)
 	conn->reconns++;
 
 	/* setup SSL */
-	conn->ctx = wolfSSL_CTX_new(wolfTLSv1_2_client_method());
-	if (!conn->ctx) {
+	if (!(conn->ctx = wolfSSL_CTX_new(wolfTLSv1_2_client_method()))) {
 		log_err("wolfSSL_CTX_new error\n");
 		return 1;
 	}
+	wolfSSL_CTX_set_verify(conn->ctx, SSL_VERIFY_NONE, 0);
 
-	if ((conn->sock = wolfSSL_new(conn->ctx)) == NULL) {
+	if (!(conn->sock = wolfSSL_new(conn->ctx))) {
 		log_err("wolfSSL_new error\n");
 	}
 
@@ -157,7 +157,6 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 		FILE *crashf = fopen("/tmp/k88_crash", "w+");
 		fputs("error on SSL fd, probably crashed", crashf);
 		fclose(crashf);
-		reconnect_conn(conn);
 	} else if (!silent) {
 		log_send("%s", buf);
 	}

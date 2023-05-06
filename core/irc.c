@@ -35,7 +35,7 @@ init_conn(irc_conn *conn)
 	conn->reconns++;
 
 	/* setup SSL */
-	conn->ctx = wolfSSL_CTX_new(wolfTLSv1_3_client_method());
+	conn->ctx = wolfSSL_CTX_new(wolfTLSv1_2_client_method());
 	if (!conn->ctx) {
 		log_err("wolfSSL_CTX_new error\n");
 		return 1;

@@ -1,8 +1,7 @@
 #define _GNU_SOURCE
 #include <fcntl.h>
-#include <openssl/bio.h>
-#include <openssl/err.h>
-#include <openssl/ssl.h>
+#include <wolfssl/options.h>
+#include <wolfssl/ssl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdio.h>
@@ -21,9 +20,7 @@ init_conn(irc_conn *conn)
 {
 	/* SSL inits */
 	if (!init_ssl) {
-		SSL_library_init();
-		SSL_load_error_strings();
-		OpenSSL_add_all_algorithms();
+		wolfSSL_Init();
 		init_ssl = 1;
 	}
 
@@ -38,20 +35,22 @@ init_conn(irc_conn *conn)
 	conn->reconns++;
 
 	/* setup SSL */
-	conn->ctx = SSL_CTX_new(TLS_client_method());
+	conn->ctx = wolfSSL_CTX_new(wolfTLSv1_3_client_method());
 	if (!conn->ctx) {
-		ERR_print_errors_fp(stderr);
-	}
-	SSL_CTX_set_mode(conn->ctx, SSL_MODE_AUTO_RETRY|SSL_MODE_ASYNC);
-	conn->sock = SSL_new(conn->ctx);
-	SSL_set_fd(conn->sock, *conn->fd);
-	SSL_set_connect_state(conn->sock);
-	SSL_connect(conn->sock);
-	log_info("connected with %s cipher\n", SSL_get_cipher(conn->sock));
-	/* somethings not right here, bail (for retry) */
-	if (!strcmp(SSL_get_cipher(conn->sock), "(NONE)")) {
+		log_err("wolfSSL_CTX_new error\n");
 		return 1;
 	}
+
+	if ((conn->sock = wolfSSL_new(conn->ctx)) == NULL) {
+		log_err("wolfSSL_new error\n");
+	}
+
+	if (wolfSSL_CTX_load_system_CA_certs(conn->ctx) != SSL_SUCCESS) {
+		log_err("error loading system certs\n");
+	}
+
+	wolfSSL_set_fd(conn->sock, *conn->fd);
+	wolfSSL_connect(conn->sock);
 
 	/* everything done, configure fd options */
 	fcntl(*conn->fd, F_SETFL,
@@ -89,10 +88,10 @@ void
 destroy_conn(irc_conn *conn)
 {
 	if (conn->sock) {
-		SSL_free(conn->sock);
+		wolfSSL_free(conn->sock);
 	}
 	if (conn->ctx) {
-		SSL_CTX_free(conn->ctx);
+		wolfSSL_CTX_free(conn->ctx);
 	}
 	if (conn->fd) {
 		free(conn->fd);
@@ -148,9 +147,8 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 		strrplc(buf, "", "");
 	}
 
-	if (SSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {
+	if (wolfSSL_write(conn->sock, buf, strlen(buf)) < 0 && !silent) {
 		log_err("failed to send: '%s'", buf);
-		ERR_print_errors_fp(stderr);
 		FILE *crashf = fopen("/tmp/k88_crash", "w+");
 		fputs("error on SSL fd, probably crashed", crashf);
 		fclose(crashf);

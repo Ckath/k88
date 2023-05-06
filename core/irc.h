@@ -1,7 +1,7 @@
 #ifndef IRC_H
 #define IRC_H
 /* required for types */
-#include <openssl/ssl.h>
+#include <wolfssl/ssl.h>
 #include <stdbool.h>
 #include "../ini_rw/ini_rw.h"
 
@@ -14,8 +14,8 @@ typedef struct irc_conn {
 	char ircnick[32]; /* special case for znc where nick != ircnick */
 	char *pass;
 	int *fd;
-	SSL *sock;
-	SSL_CTX *ctx;
+	WOLFSSL *sock;
+	WOLFSSL_CTX *ctx;
 	bool init;
 	time_t heartbeat;
 	time_t init_time;

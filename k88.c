@@ -3,9 +3,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
-#include <openssl/bio.h>
-#include <openssl/err.h>
-#include <openssl/ssl.h>
+#include <wolfssl/ssl.h>
 #include <pthread.h>
 
 #include "core/irc.h"
@@ -59,7 +57,7 @@ sock_action(int signo, siginfo_t *info, void *context)
 		if (info->si_fd == *servers[i].fd) {
 			int n; /* handle all new messages for matching server */
 			char line_buf[BUFSIZE];
-			while((n = SSL_read(servers[i].sock, line_buf, sizeof(line_buf)-1)) > 0) {
+			while((n = wolfSSL_read(servers[i].sock, line_buf, sizeof(line_buf)-1)) > 0) {
 				line_buf[n] = '\0';
 				log_recv("%s", line_buf);
 

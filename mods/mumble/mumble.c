@@ -13,6 +13,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <locale.h>
+#include <inttypes.h>
 
 /* required */
 #include "../modtape.h"

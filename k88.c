@@ -13,6 +13,7 @@
 
 irc_conn *servers;
 size_t nservers = 0;
+extern pthread_mutex_t ssllock;
 
 static void
 parse_conf(INI *conf)
@@ -57,6 +58,7 @@ sock_action(int signo, siginfo_t *info, void *context)
 		if (info->si_fd == *servers[i].fd) {
 			int n; /* handle all new messages for matching server */
 			char line_buf[BUFSIZE];
+			pthread_mutex_lock(&ssllock);
 			while((n = wolfSSL_read(servers[i].sock, line_buf, sizeof(line_buf)-1)) > 0) {
 				line_buf[n] = '\0';
 				log_recv("%s", line_buf);
@@ -68,6 +70,7 @@ sock_action(int signo, siginfo_t *info, void *context)
 				strcpy(args->line, line_buf);
 				pthread_create(&args->thr, NULL, (void *)handle_modules, args);
 			}
+			pthread_mutex_unlock(&ssllock);
 		}
 	}
 }

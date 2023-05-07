@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include <fcntl.h>
+#include <pthread.h>
 #include <wolfssl/options.h>
 #include <wolfssl/ssl.h>
 #include <signal.h>
@@ -14,6 +15,7 @@
 #include "../utils/strutils.h"
 
 char init_ssl = 0;
+pthread_mutex_t ssllock = PTHREAD_MUTEX_INITIALIZER;
 
 int
 init_conn(irc_conn *conn)
@@ -152,6 +154,7 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 		strrplc(buf, "", "");
 	}
 
+	pthread_mutex_lock(&ssllock);
 	int wolfSSL_ret;
 	if ((wolfSSL_ret = wolfSSL_write(conn->sock, buf, strlen(buf))) < 0 && !silent) {
 		log_err("failed to send: '%s', reconnecting soon", buf);
@@ -167,4 +170,5 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 	} else if (!silent) {
 		log_send("%s", buf);
 	}
+	pthread_mutex_unlock(&ssllock);
 }

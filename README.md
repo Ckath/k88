@@ -8,7 +8,7 @@ at the core, its another attempt at a somewhat maintainable (for me) bot system 
 - multiple server support
 - ini config
 - self updating
-- SSL (and only SSL connections will work)
+- TLS v1.2
 
 ### modules
 an ever incomplete list of the functionality provided through modules:

@@ -26,7 +26,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	/* build url */
 	char url[BUFSIZE];
 	chunk res = { .memory = malloc(1), .size = 0 };
-	strcpy(url, "http://aws.random.cat/meow");
+	strcpy(url, "https://cataas.com/cat?json=true");
 
 	/* configure curl request */
 	curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -42,10 +42,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		send_privmsg("kot api error, didnt get kot");
 	} else {
 		char kot[BUFSIZE] = { '\0' };
-		strcpy(kot, strstr(res.memory, "\":\"")+3);
-		strrplc(kot, "\\", "");
+		strcpy(kot, strstr(res.memory, "/cat/"));
 		strstr(kot, "\"}")[0] = '\0';
-		send_privmsg("%s", kot);
+		send_privmsg("https://cataas.com%s", kot);
 	}
 
 	/* cleanup */

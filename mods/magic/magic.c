@@ -1,5 +1,5 @@
-// literal copy/paste job from cute/cute.c sed -i 's/cute/magic/g' :shipit:
-// -tso 2023-08-24 7:10:10 AM
+/* literal copy/paste job from cute/cute.c sed -i 's/cute/magic/g' :shipit:
+ * -tso 2023-08-24 7:10:10 AM */
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -25,12 +25,12 @@ static char *target_magics[] = {
 
 static char *magics[] = {
     "pew pew mf :DDD"
-};
+}; /* extendable, but not extended */
 
 static void
 handle_cmdmsg(msg_info *mi, char *msg)
 {
-	if (strncmp(msg, "magic", 4)) {
+	if (strncmp(msg, "magic", 5)) {
 		return;
 	}
 
@@ -39,9 +39,8 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	char *target = strchr(msg, ' ');
 
 	/* prepare the magic, targeted or not */
-	strcpy(magic_pick, target ? target_magics[rand()%13] : magics[rand()%35]);
+	strcpy(magic_pick, target ? target_magics[rand()%5] : magics[0]);
 	if (target) {
-		strrplc(magic_pick, "{sender}", mi->user);
 		strrplc(magic_pick, "{target}", target+1);
 	}
 

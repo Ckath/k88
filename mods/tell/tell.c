@@ -28,18 +28,18 @@ handle_privmsg(msg_info *mi, char *msg)
 	bool nick_popped = false;
 	for (int n = 0; nicks[n]; ++n) {
 		if (!strcasecmp(nicks[n], mi->user)) {
-			char **msgs = ini_list_items(tell, nicks[n]);
+			char **msgs = sini_list_items(tell, nicks[n]);
 			for (int m = 0; msgs[m]; ++m) {
 				send_privmsg("%s: %s %s", mi->user, msgs[m],
 						ini_read(tell, nicks[n], msgs[m]));
-				ini_remove(tell, nicks[n], msgs[m]);
+				sini_remove(tell, nicks[n], msgs[m]);
 			}
 			nick_popped = true;
 		}
 	}
 
 	if (nick_popped) {
-		nicks = ini_list_sections(tell);
+		nicks = sini_list_sections(tell);
 	}
 }
 
@@ -62,9 +62,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	strftime(timestr, 80, "%X %x %Z", localtime(&t));
 	char tellmsg[BUFSIZE];
 	sprintf(tellmsg, "<%s> %s", mi->user, strchr(strchr(msg, ' ')+1, ' ')+1);
-	ini_write(tell, name, timestr, tellmsg);
+	sini_write(tell, name, timestr, tellmsg);
 
-	nicks = ini_list_sections(tell);
+	nicks = sini_list_sections(tell);
 	send_privmsg("might do");
 }
 
@@ -75,5 +75,5 @@ tell_init()
 	mods_privmsg_handler(handle_privmsg);
 	mods_cmdmsg_handler(handle_cmdmsg);
 	tell = ini_load("mods/tell/tells.ini");
-	nicks = ini_list_sections(tell);
+	nicks = sini_list_sections(tell);
 }

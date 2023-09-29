@@ -22,7 +22,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	strftime(timestr, 80, "%X %x %Z", localtime(&t));
 	lowerdup(mi->user, luser);
 	sprintf(lastseen, "%s <%s> %s (%s)", mi->chan, mi->user, msg, timestr);
-	ini_write(seen, mi->conn->index, luser, lastseen);
+	sini_write(seen, mi->conn->index, luser, lastseen);
 	free(luser);
 }
 

@@ -15,7 +15,7 @@ static INI *trigs;
 static void
 handle_privmsg(msg_info *mi, char *msg)
 {
-	char **trig_list = ini_list_items(trigs, mi->chan);
+	char **trig_list = sini_list_items(trigs, mi->chan);
 	if (!trig_list) {
 		return;
 	}
@@ -52,21 +52,21 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		strcpy(trig_index, strchr(cmd, ' ')+1);
 		strcpy(trig_resp, strstr(trig_index, "->")+3);
 		strstr(trig_index, " -> ")[0] = '\0';
-		ini_write(trigs, mi->chan, trig_index, trig_resp);
+		sini_write(trigs, mi->chan, trig_index, trig_resp);
 		send_privmsg("added");
 	} else if(!strncmp(cmd, "rm ", 3) || !strncmp(cmd, "del ", 4)) {
 		char *trig_index = strchr(cmd, ' ')+1;
 		if (!trig_index) {
 			return;
 		}
-		int r = ini_remove(trigs, mi->chan, trig_index);
+		int r = sini_remove(trigs, mi->chan, trig_index);
 		if (r) {
 			send_privmsg("removed");
 		} else {
 			send_privmsg("no such wtrig");
 		}
 	} else if(!strncmp(cmd, "list", 4)) {
-		char **trig_list = ini_list_items(trigs, mi->chan);
+		char **trig_list = sini_list_items(trigs, mi->chan);
 		char triglist[BUFSIZE] = {'\0'};
 		for (int i = 0; trig_list[i]; ++i) {
 			strcat(triglist, trig_list[i]);

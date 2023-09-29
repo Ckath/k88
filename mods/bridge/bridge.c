@@ -25,7 +25,7 @@ static INI *routing;
 static void
 load_routing()
 {
-	char **bridges = ini_list_sections(routing);
+	char **bridges = sini_list_sections(routing);
 	if (!bridges) {
 		if (routes) {
 			free(routes);
@@ -48,7 +48,7 @@ load_routing()
 		routes[b].serv_b = NULL;
 
 		/* collect channels */
-		char **chans = ini_list_items(routing, bridges[b]);
+		char **chans = sini_list_items(routing, bridges[b]);
 		if (!chans) {
 			continue;
 		} for (int c = 0; chans[c]; ++c) {
@@ -123,7 +123,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char route_id[33];
 		sscanf(strchr(msg, ' ')+1, "%[^@]@%s", chan, serv);
 		sprintf(route_id, "%s_%s", mi->conn->index, serv);
-		ini_write(routing, route_id, mi->chan+1, chan);
+		sini_write(routing, route_id, mi->chan+1, chan);
 		send_privmsg("route to #%s at %s added", chan, serv);
 	} else if (!strncmp(msg, "syphen ", 7)) {
 		char chan[33];
@@ -131,7 +131,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char route_id[33];
 		sscanf(strchr(msg, ' ')+1, "%[^@]@%s", chan, serv);
 		sprintf(route_id, "%s_%s", serv, mi->conn->index);
-		ini_write(routing, route_id, chan, mi->chan+1);
+		sini_write(routing, route_id, chan, mi->chan+1);
 		send_privmsg("route from #%s at %s added", chan, serv);
 	} else if (!strncmp(msg, "bridge ", 7)) {
 		char chan[33];
@@ -139,9 +139,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char route_id[33];
 		sscanf(strchr(msg, ' ')+1, "%[^@]@%s", chan, serv);
 		sprintf(route_id, "%s_%s", mi->conn->index, serv);
-		ini_write(routing, route_id, mi->chan+1, chan);
+		sini_write(routing, route_id, mi->chan+1, chan);
 		sprintf(route_id, "%s_%s", serv, mi->conn->index);
-		ini_write(routing, route_id, chan, mi->chan+1);
+		sini_write(routing, route_id, chan, mi->chan+1);
 		send_privmsg("bridge between here and #%s at %s added", chan, serv);
 	} else if(!strncmp(msg, "rmforward ", 10) || !strncmp(msg, "delforward ", 11)) {
 		char chan[33];
@@ -149,7 +149,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char route_id[33];
 		sscanf(strchr(msg, ' ')+1, "%[^@]@%s", chan, serv);
 		sprintf(route_id, "%s_%s", mi->conn->index, serv);
-		ini_remove(routing, route_id, mi->chan+1);
+		sini_remove(routing, route_id, mi->chan+1);
 		send_privmsg("route to #%s at %s removed", chan, serv);
 	} else if(!strncmp(msg, "rmsyphen ", 9) || !strncmp(msg, "delsyphen ", 10)) {
 		char chan[33];
@@ -157,7 +157,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char route_id[33];
 		sscanf(strchr(msg, ' ')+1, "%[^@]@%s", chan, serv);
 		sprintf(route_id, "%s_%s", serv, mi->conn->index);
-		ini_remove(routing, route_id, chan);
+		sini_remove(routing, route_id, chan);
 		send_privmsg("route from #%s at %s removed", chan, serv);
 	} else if(!strncmp(msg, "rmbridge ", 9) || !strncmp(msg, "delbridge ", 10)) {
 		char chan[33];
@@ -165,9 +165,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char route_id[33];
 		sscanf(strchr(msg, ' ')+1, "%[^@]@%s", chan, serv);
 		sprintf(route_id, "%s_%s", mi->conn->index, serv);
-		ini_remove(routing, route_id, mi->chan+1);
+		sini_remove(routing, route_id, mi->chan+1);
 		sprintf(route_id, "%s_%s", serv, mi->conn->index);
-		ini_remove(routing, route_id, chan);
+		sini_remove(routing, route_id, chan);
 		send_privmsg("bridge between here and #%s at %s removed", chan, serv);
 	} else {
 		return;

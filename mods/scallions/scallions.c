@@ -9,7 +9,6 @@
 #include "../../core/log.h"
 #include "../../core/irc.h"
 
-#include "../../ini_rw/ini_rw.h"
 #include "../../utils/strutils.h"
 
 static INI *lookup;
@@ -83,10 +82,10 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 		char tmp[BUFSIZE];
 		sprintf(tmp, "http://%s", onion);
-		ini_write(lookup, "onions", tmp, clearnet);
+		sini_write(lookup, "onions", tmp, clearnet);
 		sprintf(tmp, "https://%s", onion);
-		ini_write(lookup, "onions", tmp, clearnet);
-		urls = ini_list_items(lookup, "onions");
+		sini_write(lookup, "onions", tmp, clearnet);
+		urls = sini_list_items(lookup, "onions");
 		send_privmsg("sure");
 	} else if (!strncmp(msg, "unonion ", 8)) {
 		char onion[BUFSIZE];
@@ -94,10 +93,10 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 		char tmp[BUFSIZE];
 		sprintf(tmp, "http://%s", onion);
-		ini_remove(lookup, "onions", tmp);
+		sini_remove(lookup, "onions", tmp);
 		sprintf(tmp, "https://%s", onion);
-		ini_remove(lookup, "onions", tmp);
-		urls = ini_list_items(lookup, "onions");
+		sini_remove(lookup, "onions", tmp);
+		urls = sini_list_items(lookup, "onions");
 		send_privmsg("whatever");
 	}
 }
@@ -109,5 +108,5 @@ scallions_init()
 	mods_privmsg_handler(handle_privmsg);
 	mods_cmdmsg_handler(handle_cmdmsg);
 	lookup = ini_load("mods/scallions/lookup.ini");
-	urls = ini_list_items(lookup, "onions");
+	urls = sini_list_items(lookup, "onions");
 }

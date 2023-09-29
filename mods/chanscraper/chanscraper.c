@@ -103,7 +103,7 @@ parse_thread(char *board, char *thread, bool ws, char *json)
 				sprintf(numbering, " #%d", tfws);
 				strcat(url, numbering);
 			}
-			ini_write(feels, board_sec, url, tfw);
+			sini_write(feels, board_sec, url, tfw);
 		}
 	}
 }
@@ -167,7 +167,7 @@ update_cache()
 	started = time(NULL);
 	char timestr[13];
 	sprintf(timestr, "%lld", (long long) started);
-	ini_write(feels, "updated", "started", timestr);
+	sini_write(feels, "updated", "started", timestr);
 
 	/* iterate over boards from boards api return data */
 	chunk res = { .memory = malloc(1), .size = 0 };
@@ -196,22 +196,22 @@ update_cache()
 	store_index = !store_index;
 	char indexstr[2];
 	sprintf(indexstr, "%d", store_index);
-	ini_write(feels, "updated", "index", indexstr);
+	sini_write(feels, "updated", "index", indexstr);
 
 	/* wipe old data */
 	char oldindex[3];
 	sprintf(oldindex, "%d_", !store_index);
-	char **boards = ini_list_sections(feels);
+	char **boards = sini_list_sections(feels);
 	for (int i = 0; boards[i]; ++i) {
 		if (strstr(boards[i], oldindex)) {
-			ini_remove(feels, boards[i], NULL);
+			sini_remove(feels, boards[i], NULL);
 		}
 	}
 
 	/* set end time */
 	finished = time(NULL);
 	sprintf(timestr, "%lld", (long long) finished);
-	ini_write(feels, "updated", "finished", timestr);
+	sini_write(feels, "updated", "finished", timestr);
 	log_info("finished updating chanscraper cache\n");
 }
 
@@ -248,7 +248,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char *board = strchr(msg, ' ');
 		char board_sec[20];
 		if (!board) {
-			char **boardlist = ini_list_sections(feels);
+			char **boardlist = sini_list_sections(feels);
 			int boardcount = 0;
 			while (boardlist[++boardcount]);
 			strcpy(board_sec, boardlist[(rand()%(boardcount-1))+1]);
@@ -258,7 +258,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			strrplc(board_sec, "/", "");
 		}
 
-		char **feellist = ini_list_items(feels, board_sec);
+		char **feellist = sini_list_items(feels, board_sec);
 		if (!feellist) {
 			send_privmsg("404 no feels found");
 			return;
@@ -286,9 +286,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		tfw_struct *tfws = NULL;
 
 		/* collect list of results */
-		char **boardlist = ini_list_sections(feels);
+		char **boardlist = sini_list_sections(feels);
 		for (int i = 1; boardlist[i]; ++i) {
-			char **postlist = ini_list_items(feels, boardlist[i]);
+			char **postlist = sini_list_items(feels, boardlist[i]);
 			if (!postlist) {
 				continue;
 			}

@@ -2,8 +2,6 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
-#include <openssl/sha.h>
-#include <systemd/sd-daemon.h>
 
 /* required */
 #include "../modtape.h"
@@ -18,7 +16,7 @@ static void
 update_times()
 {
 	/* obtain sections */
-	char **remind_times = ini_list_sections(reminders);
+	char **remind_times = sini_list_sections(reminders);
 	if (!remind_times) {
 		if (times) {
 			free(times);
@@ -56,7 +54,7 @@ handle_timed(irc_conn *s, char *index, time_t t)
 		if (*r < t) {
 			char sector[80];
 			sprintf(sector, "%s_%u", s->index, *r);
-			char **msgs = ini_list_items(reminders, sector);
+			char **msgs = sini_list_items(reminders, sector);
 			if (!msgs) { /* bail, wrong server probably */
 				return;
 			}
@@ -65,7 +63,7 @@ handle_timed(irc_conn *s, char *index, time_t t)
 			for (int m = 0; msgs[m]; ++m) {
 				send_raw(s, 0, "PRIVMSG %s\r\n",
 						ini_read(reminders, sector, msgs[m]));
-				ini_remove(reminders, sector, msgs[m]);
+				sini_remove(reminders, sector, msgs[m]);
 			}
 			time_popped = true;
 		}
@@ -133,7 +131,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		sprintf(index, "%s_%s_%u", mi->chan+1, mi->user, now);
 		sprintf(reminder, "%s :%s: %s (%s)", mi->chan, mi->user, remind, timestr);
 		sprintf(sector, "%s_%u", mi->conn->index, now+amount);
-		ini_write(reminders, sector, index, reminder);
+		sini_write(reminders, sector, index, reminder);
 		update_times();
 
 		send_privmsg("ETA: %u seconds(%u)", amount, now+amount);
@@ -168,7 +166,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		sprintf(index, "%s_%s_%u", mi->chan+1, mi->user, now);
 		sprintf(reminder, "%s :%s: %s (%s)", mi->chan, mi->user, remind, timestr);
 		sprintf(sector, "%s_%u", mi->conn->index, time);
-		ini_write(reminders, sector, index, reminder);
+		sini_write(reminders, sector, index, reminder);
 		update_times();
 		send_privmsg("ETA: %u seconds(%u)", time-now, time);
 	}

@@ -4,6 +4,7 @@
 #include <wolfssl/ssl.h>
 #include <stdbool.h>
 #include "../ini_rw/ini_rw.h"
+#include "../utils/sini.h"
 
 typedef struct irc_conn {
 	INI *globalconf;

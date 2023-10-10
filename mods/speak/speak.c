@@ -100,7 +100,8 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	espeak_SetSynthCallback(espeak_cb);
 
 	/* generate audio, caught by callback written to /tmp/h.wav */
-	espeak_Synth(strchr(msg, ' ')+1, BUFSIZE, 0, 0, 0, espeakCHARS_AUTO, (int *){}, (void *){});
+	espeak_Synth(strchr(msg, ' ')+1, BUFSIZE, 0, 0, 0, espeakCHARS_AUTO,
+			(int *){NULL}, (void *){NULL});
 
 	/* upload with systemwide tmpupload util
 	 * couldnt be bothered about ffmpeg, sorry */

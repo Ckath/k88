@@ -3,7 +3,7 @@ NAME = k88
 CC       ?= gcc
 CPPFLAGS += -Imods/markov/chains/deps
 CFLAGS   += -g -Os
-LDFLAGS  += -lsystemd -lpthread -lwolfssl -lcrypto -lcurl
+LDFLAGS  += -lsystemd -lpthread -lwolfssl -lcrypto -lcurl -lespeak-ng
 
 SRC  = ${NAME}.c ini_rw/ini_rw.c mods/modtape.c
 SRC += $(wildcard core/*.c utils/*.c mods/**/*.c)

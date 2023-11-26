@@ -42,9 +42,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		send_privmsg("kot api error, didnt get kot");
 	} else {
 		char kot[BUFSIZE] = { '\0' };
-		strcpy(kot, strstr(res.memory, "/cat/"));
+		strcpy(kot, strstr(res.memory, "_id")+6);
 		strstr(kot, "\"}")[0] = '\0';
-		send_privmsg("https://cataas.com%s", kot);
+		send_privmsg("https://cataas.com/cat/%s", kot);
 	}
 
 	/* cleanup */

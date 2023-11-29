@@ -51,7 +51,8 @@ handle_rawmsg(msg_info *mi, char *line)
 		log_err("recieved ERROR, resetting connection\n");
 		reconnect_conn(mi->conn);
 	} else if (!mi->conn->init && /* server inited on mode change, or twitch */
-			(strstr(line, " MODE ") || strstr(line, ":tmi.twitch.tv 376"))) {
+			(strstr(line, " MODE ") || strstr(line, ":tmi.twitch.tv 376"))
+			|| strstr(line, "End of MOTD")) {
 		join_chans(mi->conn, ini_read(mi->conn->globalconf,
 					mi->conn->index, "chans"));
 		if (startupmsg[0] &&

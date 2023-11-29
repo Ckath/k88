@@ -55,17 +55,16 @@ handle_timed(irc_conn *s, char *index, time_t t)
 			char sector[80];
 			sprintf(sector, "%s_%u", s->index, *r);
 			char **msgs = sini_list_items(reminders, sector);
-			if (!msgs) { /* bail, wrong server probably */
-				return;
-			}
 
-			/* send all messages for this time */
-			for (int m = 0; msgs[m]; ++m) {
-				send_raw(s, 0, "PRIVMSG %s\r\n",
-						ini_read(reminders, sector, msgs[m]));
-				sini_remove(reminders, sector, msgs[m]);
+			if (msgs) {
+				/* send all messages for this time */
+				for (int m = 0; msgs[m]; ++m) {
+					send_raw(s, 0, "PRIVMSG %s\r\n",
+							ini_read(reminders, sector, msgs[m]));
+					sini_remove(reminders, sector, msgs[m]);
+				}
+				time_popped = true;
 			}
-			time_popped = true;
 		}
 		r++;
 	}

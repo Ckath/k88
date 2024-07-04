@@ -123,7 +123,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			amount *= 604800;
 		} else if (!strncmp(unit, "month", 4)) {
 			amount *= 2680000;
-		} else if (!strncmp(unit, "year", 4)) {
+		} else if (u == 'y' || !strncmp(unit, "year", 4)) {
 			amount *= 31500000;
 		}
 

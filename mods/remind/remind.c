@@ -92,6 +92,18 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		if (!amount) {
 			return;
 		}
+
+		/* janky unit char obtaining */
+		char u = (when + (amount >= 100000000 ? 9 :
+			amount >= 10000000 ? 8 :
+			amount >= 1000000 ? 7 :
+			amount >= 100000 ? 6 :
+			amount >= 10000 ? 5 :
+			amount >= 1000 ? 4 :
+			amount >= 100 ? 3 :
+			amount >= 10 ? 2 : 1))[0];
+
+		/* unit word after space */
 		char *unit = strchr(when, ' ');
 		if (unit) {
 			unit++;
@@ -101,13 +113,13 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 		/* TODO: magically calculate amount of seconds */
 		/* seconds, minutes, hours, days, weeks, months, years */
-		if (!strncmp(unit, "min", 3)) {
+		if (u == 'm' || !strncmp(unit, "min", 3)) {
 			amount *= 60;
-		} else if (!strncmp(unit, "hour", 4)) {
+		} else if (u == 'h' || !strncmp(unit, "hour", 4)) {
 			amount *= 3600;
-		} else if (!strncmp(unit, "day", 3)) {
+		} else if (u == 'd' || !strncmp(unit, "day", 3)) {
 			amount *= 86400;
-		} else if (!strncmp(unit, "week", 4)) {
+		} else if (u == 'w' || !strncmp(unit, "week", 4)) {
 			amount *= 604800;
 		} else if (!strncmp(unit, "month", 4)) {
 			amount *= 2680000;
@@ -115,11 +127,16 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			amount *= 31500000;
 		}
 
-		char *remind = strchr(unit, ' ');
-		if (remind) {
-			remind++;
+		char *remind;
+		if (u == ' ') {
+			remind = strchr(unit, ' ');
+			if (remind) {
+				remind++;
+			} else {
+				return;
+			}
 		} else {
-			return;
+			remind = unit;
 		}
 
 		char reminder[BUFSIZE];

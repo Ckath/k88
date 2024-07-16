@@ -2,6 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
+#include <openssl/sha.h>
 
 /* required */
 #include "../modtape.h"

@@ -82,7 +82,7 @@ duck_parse(chunk *res, char *response)
 		/* add while valid */
 		strcat(response, chunk);
 		jsonptr = strchr(jsonptr, '}')+1; 
-	} while(jsonptr && strlen(response) < 440);
+	} while(jsonptr && strlen(jsonptr) > 100 && strlen(response) < 440);
 
 	/* keep within length */
 	if (strlen(response) > 439) {

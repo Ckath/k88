@@ -2,7 +2,7 @@ NAME = k88
 
 CC       ?= gcc
 CPPFLAGS += -Imods/markov/chains/deps
-CFLAGS   += -g -Os
+CFLAGS   += -Os
 LDFLAGS  += -lsystemd -lpthread -lwolfssl -lcrypto -lcurl -lespeak-ng
 
 SRC  = ${NAME}.c ini_rw/ini_rw.c mods/modtape.c

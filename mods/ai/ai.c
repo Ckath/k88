@@ -17,6 +17,7 @@
 #define FAKE_AGENT "Mozilla/5.0 (Windows NT 10.0; rv:122.0) Gecko/20100101 Firefox/122.0"
 
 static char duck_key[50] = {'\0'};
+static pthread_mutex_t ai_lock = PTHREAD_MUTEX_INITIALIZER;
 
 static size_t
 duck_hcb(char *buffer, size_t size, size_t nitems, void *userdata)
@@ -167,6 +168,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		return;
 	}
 
+	/* curl really hates doing this multiple times */
+	pthread_mutex_lock(&ai_lock);
+
 	/* curl is stupid and breaks my sockets if I init it any sooner */
 	curl_init();
 	CURL *curl = curl_easy_init();
@@ -216,6 +220,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		strrplc(response, "\\\"", "\""); 
 		send_privmsg("%s", response+1);
 	}
+	pthread_mutex_unlock(&ai_lock);
 }
 
 void

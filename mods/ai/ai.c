@@ -98,7 +98,9 @@ duck_send(CURL *curl, chunk *res, char *prompt)
 	char query[BUFSIZE];
 	sprintf(vqd, "x-vqd-4: %s", duck_key);
 	sprintf(query, "{\"model\":\"mistralai/Mixtral-8x7B-Instruct-v0.1\","
-			"\"messages\":[{\"role\":\"user\",\"content\":\"%s\"}]}", prompt);
+			"\"messages\":[{\"role\":\"user\",\"content\":"
+			"\"Respond as concisely as possible. "
+			"Never use more than 400 characters. %s\"}]}", prompt);
 
 	slist1 = curl_slist_append(slist1, "User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:122.0) Gecko/20100101 Firefox/122.0");
 	slist1 = curl_slist_append(slist1, "Accept: text/event-stream");

@@ -221,6 +221,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	} else {
 		strrplc(response, "\\n", " "); 
 		strrplc(response, "\\\"", "\""); 
+		strrplc(response, "\\\\_", "_"); 
 		send_privmsg("%s", response+1);
 	}
 	pthread_mutex_unlock(&ai_lock);

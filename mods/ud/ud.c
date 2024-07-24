@@ -65,7 +65,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			strrplc(text, "\\", "");
 			strrplc(text, "[", "");
 			strrplc(text, "]", "");
-			strrplc(url, "http", "https");
+			strrplc(url, "http:", "https:");
 			if (strlen(text) > 420) {
 				strcpy(&text[417], "..");
 			}
@@ -78,7 +78,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	/* cleanup */
 	curl_easy_cleanup(curl);
 	curl_free(req);
-	free(res.memory);
+	if (res.memory) {
+		free(res.memory);
+	}
 }
 
 void

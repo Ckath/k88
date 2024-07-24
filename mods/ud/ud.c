@@ -55,7 +55,6 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		send_privmsg("curl error: %s", curl_easy_strerror(r));
 		curl_reset();
 	} else {
-		char url[BUFSIZE];
 		char text[BUFSIZE];
 		json_item(text, res.memory, "definition");
 		json_item(url, res.memory, "permalink");
@@ -65,11 +64,10 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			strrplc(text, "\\", "");
 			strrplc(text, "[", "");
 			strrplc(text, "]", "");
-			strrplc(url, "http:", "https:");
 			if (strlen(text) > 420) {
 				strcpy(&text[417], "..");
 			}
-			send_privmsg("%s (%s)", text, url);
+			send_privmsg("%s | %s", text, url);
 		} else {
 			send_privmsg("dunno");
 		}

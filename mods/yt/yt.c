@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <curl/curl.h>
 #include "../../utils/curl.h"
+#include "../../utils/strutils.h"
 
 /* required */
 #include "../modtape.h"
@@ -59,6 +60,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char title[BUFSIZE];
 		json_item(id, res.memory, "videoId");
 		json_item(title, res.memory, "\"text");
+		strunescape(title);
 		if (id[0]) {
 			send_privmsg("%s - https://www.youtube.com/watch?v=%s", title, id);
 		} else {

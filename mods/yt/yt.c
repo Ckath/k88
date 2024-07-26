@@ -56,9 +56,11 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	} else {
 		char redirect[BUFSIZE];
 		char id[BUFSIZE];
+		char title[BUFSIZE];
 		json_item(id, res.memory, "videoId");
+		json_item(title, res.memory, "\"text");
 		if (id[0]) {
-			send_privmsg("https://www.youtube.com/watch?v=%s", id);
+			send_privmsg("%s - https://www.youtube.com/watch?v=%s", title, id);
 		} else {
 			send_privmsg("couldnt find video");
 		}

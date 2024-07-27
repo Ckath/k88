@@ -57,11 +57,17 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	} else {
 		char redirect[BUFSIZE];
 		char id[BUFSIZE];
-		char title[BUFSIZE];
-		json_item(id, res.memory, "videoId");
-		json_item(title, res.memory, "title\":{\"runs\":[{\"text");
-		strunescape(title);
+		char *v = strstr(res.memory, "videoId");
+		json_item(id, v, "videoId");
+
 		if (id[0]) {
+			/* get title, different for playlists */
+			char title[BUFSIZE];
+			json_item(title, v, strstr(v, "playlistId") - v < 100 ?
+					"{\"title\":{\"simpleText" : "title\":{\"runs\":[{\"text");
+
+			/* cleanup and send */
+			strunescape(title);
 			send_privmsg("%s - https://www.youtube.com/watch?v=%s", title, id);
 		} else {
 			send_privmsg("couldnt find video");

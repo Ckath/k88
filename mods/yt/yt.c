@@ -59,7 +59,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		char id[BUFSIZE];
 		char title[BUFSIZE];
 		json_item(id, res.memory, "videoId");
-		json_item(title, res.memory, "[{\"text");
+		json_item(title, res.memory, "title\":{\"runs\":[{\"text");
 		strunescape(title);
 		if (id[0]) {
 			send_privmsg("%s - https://www.youtube.com/watch?v=%s", title, id);

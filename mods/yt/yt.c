@@ -55,10 +55,9 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		send_privmsg("curl error: %s", curl_easy_strerror(r));
 		curl_reset();
 	} else {
-		char redirect[BUFSIZE];
 		char id[BUFSIZE];
 		char *v = strstr(res.memory, "videoId");
-		json_item(id, v, "videoId");
+		json_item(id, v ? v : "", "videoId");
 
 		if (id[0]) {
 			/* get title, different for playlists */

@@ -65,6 +65,12 @@ handle_privmsg(msg_info *mi, char *msg)
 		url_fixed = true;
 	}
 
+	/* geminer */
+	if (strstr(buf, "gemini://")) {
+		strrplc(buf, "gemini://",  "https://gp.vern.cc/gemini/");
+		url_fixed = true;
+	}
+
 	/* send if altered */
 	if (url_fixed) {
 		send_privmsg("%s", buf);

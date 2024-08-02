@@ -161,6 +161,19 @@ strunescape(char *in)
 	return in;
 }
 
+void
+str1rplc(char *haystack, char *needle, char *replace)
+{
+	char *match;
+	if ((match = strstr(haystack, needle))) {
+		char tmp[BUFSIZE] = {'\0'};
+		strncpy(tmp, haystack, match-haystack);
+		strcat(tmp, replace);
+		strcat(tmp, match+strlen(needle));
+		strcpy(haystack, tmp);
+	}
+}
+
 size_t
 strrplc(char *haystack, char *needle, char *replace)
 {	

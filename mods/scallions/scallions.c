@@ -59,6 +59,12 @@ handle_privmsg(msg_info *mi, char *msg)
 		}
 	}
 
+	/* gophering */
+	if (strstr(buf, "gopher://")) {
+		str1rplc(buf, "gopher://",  "https://gopher.floodgap.com/gopher/gw?gopher://");
+		url_fixed = true;
+	}
+
 	/* send if altered */
 	if (url_fixed) {
 		send_privmsg("%s", buf);

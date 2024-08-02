@@ -2,6 +2,7 @@
 #define STRUTILS
 
 char *strunescape(char *);
+void str1rplc(char *haystack, char *needle, char *replace);
 size_t strrplc(char *haystack, char *needle, char *replace);
 size_t strcaserplc(char *haystack, char *needle, char *replace);
 void strtolower(char *);

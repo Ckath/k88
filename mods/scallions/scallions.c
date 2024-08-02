@@ -60,7 +60,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	}
 
 	/* gophering */
-	if (strstr(buf, "gopher://")) {
+	if (strstr(buf, "gopher://") && !strstr(buf, "?gopher://")) {
 		str1rplc(buf, "gopher://",  "https://gopher.floodgap.com/gopher/gw?gopher://");
 		url_fixed = true;
 	}

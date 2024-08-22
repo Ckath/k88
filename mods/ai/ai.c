@@ -69,6 +69,13 @@ json_filter(char *dest, char *json, char *start, char *end)
 static void
 duck_parse(chunk *res, char *response)
 { 
+	/* try to include errors */
+	if (strstr(res->memory, "\"action\":\"error\"")) {
+		strcpy(response, res->memory);
+		strrplc(response, "data: ", "");
+		strrplc(response, "}", "\0");
+	}
+
 	char *jsonptr = res->memory;
 	char chunk[BUFSIZE] = {'\0'};
 	do {
@@ -93,6 +100,21 @@ duck_parse(chunk *res, char *response)
 static void
 duck_send(CURL *curl, chunk *res, char *prompt)
 {
+	/* the '''api''' doesnt enjoy these */
+	strrplc(prompt, "\"", "'");
+	strrplc(prompt, "3", "");
+	strrplc(prompt, "4", "");
+	strrplc(prompt, "6", "");
+	strrplc(prompt, "7", "");
+	strrplc(prompt, "9", "");
+	strrplc(prompt, "10", "");
+	strrplc(prompt, "11", "");
+	strrplc(prompt, "12", "");
+	strrplc(prompt, "13", "");
+	strrplc(prompt, "", "");
+	strrplc(prompt, "", "");
+	strrplc(prompt, "", "");
+
 	struct curl_slist *slist1 = NULL;
 	char vqd[100];
 	char query[BUFSIZE];

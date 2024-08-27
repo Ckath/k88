@@ -111,20 +111,35 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			return;
 		}
 
-		/* TODO: magically calculate amount of seconds */
 		/* seconds, minutes, hours, days, weeks, months, years */
+		char timestr[80];
 		if (u == 'm' || !strncmp(unit, "min", 3)) {
+			sprintf(timestr, amount == 1  ? "%d minute ago" :
+					"%d minutes ago", amount);
 			amount *= 60;
 		} else if (u == 'h' || !strncmp(unit, "hour", 4)) {
+			sprintf(timestr, amount == 1  ? "%d hour ago" :
+					"%d hours ago", amount);
 			amount *= 3600;
 		} else if (u == 'd' || !strncmp(unit, "day", 3)) {
+			sprintf(timestr, amount == 1  ? "%d day ago" :
+					"%d days ago", amount);
 			amount *= 86400;
 		} else if (u == 'w' || !strncmp(unit, "week", 4)) {
+			sprintf(timestr, amount == 1  ? "%d week ago" :
+					"%d weeks ago", amount);
 			amount *= 604800;
 		} else if (!strncmp(unit, "month", 4)) {
+			sprintf(timestr, amount == 1  ? "%d month ago" :
+					"%d months ago", amount);
 			amount *= 2680000;
 		} else if (u == 'y' || !strncmp(unit, "year", 4)) {
+			sprintf(timestr, amount == 1  ? "%d year ago" :
+					"%d years ago", amount);
 			amount *= 31500000;
+		} else {
+			sprintf(timestr, amount == 1  ? "%d second ago" :
+					"%d seconds ago", amount);
 		}
 
 		char *remind;
@@ -141,9 +156,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 		char reminder[BUFSIZE];
 		char index[100];
-		char timestr[80];
 		char sector[80];
-		strftime(timestr, 80, "%X %x %Z", localtime(&now));
 		sprintf(index, "%s_%s_%u", mi->chan+1, mi->user, now);
 		sprintf(reminder, "%s :%s: %s (%s)", mi->chan, mi->user, remind, timestr);
 		sprintf(sector, "%s_%u", mi->conn->index, now+amount);

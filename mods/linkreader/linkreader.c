@@ -135,6 +135,8 @@ redirect:;
 	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_wrcb);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "fuck/off");
+	curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
 
 	/* handle result */
 	CURLcode r = curl_easy_perform(curl);

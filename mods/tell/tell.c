@@ -24,14 +24,16 @@ handle_privmsg(msg_info *mi, char *msg)
 
 	/* check if nick has messages */
 	char user[256];
+	char timestr[80];
 	strcpy(user, mi->user);
 	bool nick_popped = false;
 	for (int n = 0; nicks[n]; ++n) {
 		if (!strcasecmp(nicks[n], mi->user)) {
 			char **msgs = sini_list_items(tell, nicks[n]);
 			for (int m = 0; msgs[m]; ++m) {
-				send_privmsg("%s: %s %s", mi->user, msgs[m],
-						ini_read(tell, nicks[n], msgs[m]));
+				send_privmsg("%s: %s (%s ago)", mi->user,
+						ini_read(tell, nicks[n], msgs[m]),
+						strtimef(timestr, time(NULL)-atol(msgs[m])));
 				sini_remove(tell, nicks[n], msgs[m]);
 			}
 			nick_popped = true;
@@ -58,8 +60,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	}
 
 	char timestr[80];
-	time_t t = time(NULL);
-	strftime(timestr, 80, "%X %x %Z", localtime(&t));
+	sprintf(timestr, "%u", time(NULL));
 	char tellmsg[BUFSIZE];
 	sprintf(tellmsg, "<%s> %s", mi->user, strchr(strchr(msg, ' ')+1, ' ')+1);
 	sini_write(tell, name, timestr, tellmsg);

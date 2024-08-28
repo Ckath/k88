@@ -17,11 +17,8 @@ handle_privmsg(msg_info *mi, char *msg)
 {
 	/* TODO: possibly add this on rawmsg, though user lacks there */
 	char lastseen[BUFSIZE];
-	char timestr[80];
-	time_t t = time(NULL);
-	strftime(timestr, 80, "%X %x %Z", localtime(&t));
 	lowerdup(mi->user, luser);
-	sprintf(lastseen, "%s <%s> %s (%s)", mi->chan, mi->user, msg, timestr);
+	sprintf(lastseen, "%u %s <%s> %s ", time(NULL), mi->chan, mi->user, msg);
 	sini_write(seen, mi->conn->index, luser, lastseen);
 	free(luser);
 }
@@ -46,7 +43,12 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	lowerdup(name, lname);
 	char *lastseen = ini_read(seen, mi->conn->index, lname);
 	if (lastseen) {
-		send_privmsg("last msg: %s", lastseen);
+		char timestr[80];
+		strncpy(timestr, lastseen, 79);
+		lastseen = strchr(lastseen, ' ')+1;
+		strchr(timestr, ' ')[0] = '\0';
+		strtimef(timestr, time(NULL) - atol(timestr));
+		send_privmsg("last msg: %s (%s ago)", lastseen, timestr);
 	} else {
 		send_privmsg("no data");
 	}

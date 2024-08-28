@@ -223,3 +223,21 @@ strtoupper(char *str)
 		*r = toupper(*r);
 	}
 }
+
+char *
+strtimef(char *r, time_t t)
+{
+	/* t > day(s) */
+	if (t > 86400) {
+		sprintf(r, t > 172800 ? "%d days, %02d:%02d:%02d" :
+			"%d day, %02d:%02d:%02d", t/86400, (t%86400)/3600,
+			((t%86400)%3600)/60, ((t%86400)%3600)%60);
+		return r;
+	}
+
+	/* t < day */
+	sprintf(r, "%02d:%02d:%02d", (t%86400)/3600, ((t%86400)%3600)/60,
+			((t%86400)%3600)%60);
+	return r;
+}
+

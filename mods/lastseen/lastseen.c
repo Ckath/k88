@@ -18,7 +18,7 @@ handle_privmsg(msg_info *mi, char *msg)
 	/* TODO: possibly add this on rawmsg, though user lacks there */
 	char lastseen[BUFSIZE];
 	lowerdup(mi->user, luser);
-	sprintf(lastseen, "%u %s <%s> %s ", time(NULL), mi->chan, mi->user, msg);
+	sprintf(lastseen, "%u %s <%s> %s", time(NULL), mi->chan, mi->user, msg);
 	sini_write(seen, mi->conn->index, luser, lastseen);
 	free(luser);
 }

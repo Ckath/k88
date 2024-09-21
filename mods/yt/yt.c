@@ -13,7 +13,7 @@
 #include "../../core/irc.h"
 
 static void
-json_item(char *dest, char *json, char *item)
+json_item(char *dest, char *json, char *item, char *end)
 {
 	char *start = strstr(json, item);
 	if (!start || !strncmp(start+strlen(item), "\":\"\"", 4)) {
@@ -23,7 +23,7 @@ json_item(char *dest, char *json, char *item)
 
 	start += strlen(item)+3;
 	strncpy(dest, start, BUFSIZE-1);
-	strchr(dest, '"')[0] = '\0';
+	strstr(dest, end)[0] = '\0';
 	return;
 }
 
@@ -57,13 +57,13 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	} else {
 		char id[BUFSIZE];
 		char *v = strstr(res.memory, "videoId");
-		json_item(id, v ? v : "", "videoId");
+		json_item(id, v ? v : "", "videoId", "\"");
 
 		if (id[0]) {
 			/* get title, different for playlists */
 			char title[BUFSIZE];
 			json_item(title, v, strstr(v, "playlistId") - v < 100 ?
-					"{\"title\":{\"simpleText" : "title\":{\"runs\":[{\"text");
+					"{\"title\":{\"simpleText" : "title\":{\"runs\":[{\"text", "\"}]");
 
 			/* cleanup and send */
 			strunescape(title);

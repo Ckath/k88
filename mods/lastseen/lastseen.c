@@ -56,7 +56,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		} else {
 			send_privmsg("no data");
 		}
-	} else if (mi-> mod && !strncmp(msg, "seenscrape", 10)) {
+	} else if (mi->mod && !strncmp(msg, "seenscrape", 10)) {
 		/* TODO: write this scraping logs */
 		send_privmsg("todo :DDD");
 		scraped = 0;
@@ -122,6 +122,7 @@ add:;
 				strcpy(msgg, strchr(strchr(line_buf, '>'), ' ')+1);
 				/* TODO: let channel be argument */
 				sprintf(newseen, "%u %s <%s> %s", ts, "#/g/punk", user, msgg);
+				strrplc(newseen, "\n", "");
 				sini_write(seen, mi->conn->index, luser, newseen);
 				log_info("updated %s '%s'", luser, newseen);
 			}

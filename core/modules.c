@@ -8,6 +8,7 @@
 #include "modules.h"
 #include "../mods/modtape.h"
 #include "../ini_rw/ini_rw.h"
+#include "../utils/sini.h"
 
 modlist all;
 modlist rawmsg;
@@ -68,7 +69,7 @@ mods_get_prefix(irc_conn *conn, char *index)
 	char *prefix = ini_read(modconf, index, "prefix");
 	if (!prefix) {
 		char *default_prefix = ini_read(conn->globalconf, conn->index, "prefix");
-		ini_write(modconf, index, "prefix", default_prefix ? default_prefix : ";");
+		sini_write(modconf, index, "prefix", default_prefix ? default_prefix : ";");
 		prefix = ini_read(modconf, index, "prefix");
 	}
 	return prefix;
@@ -77,7 +78,7 @@ mods_get_prefix(irc_conn *conn, char *index)
 int
 mods_set_config(char *index, char *item, char *value)
 {
-	return ini_write(modconf, index, item, value);
+	return sini_write(modconf, index, item, value);
 }
 
 char **
@@ -131,7 +132,7 @@ mod_enabled(module *mod, char *index)
 {
 	char *mod_status = ini_read(modconf, index, mod->name);
 	if (!mod_status) { /* first time seeing this index */
-		ini_write(modconf, index, mod->name,
+		sini_write(modconf, index, mod->name,
 				mod->default_enable ? "enabled" : "disabled");
 		return mod->default_enable;
 	} if (!strcmp(mod_status, "enabled")) {

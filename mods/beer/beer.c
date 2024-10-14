@@ -44,7 +44,7 @@ filter_beer(char *id, char *name, char *abv, char *ibu, char *html)
 static void
 handle_cmdmsg(msg_info *mi, char *msg)
 {
-	if ((strncmp(msg, "beer ", 5) && strncmp(msg, "ba", 2))
+	if ((strncmp(msg, "beer ", 5) && strncmp(msg, "ba ", 3))
 			|| !strchr(msg, ' ')) {
 		return;
 	}

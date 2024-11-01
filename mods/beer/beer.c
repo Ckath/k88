@@ -30,15 +30,18 @@ filter_beer(char *id, char *name, char *abv, char *ibu, char *html)
 	strncpy(name, strstr(strstr(strstr(beerptr, "beer-details"), "/b/"), "\">"), 255);
 	strchr(name, '<')[0] = '\0';
 	strrplc(name, "\">", "");
+	strrplc(name, "\t", "");
 	/* find abv */
 	strncpy(abv, strstr(beerptr, "\"abv\">\n"), 33);
 	strrplc(abv, "\"abv\">\n", "");
 	strchr(abv, '\n')[0] = '\0';
+	strrplc(abv, "\t", "");
 	/* find ibu */
 	strncpy(ibu, strstr(beerptr, "\"ibu\">\n"), 33);
 	strrplc(ibu, "\"ibu\">\n", "");
-	strchr(ibu, '\n')[0] = '\0';
+	strchr(ibu, '<')[0] = '\0';
 	strrplc(ibu, "</p>", "");
+	strrplc(ibu, "\t", "");
 }
 
 static void

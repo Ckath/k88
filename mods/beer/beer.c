@@ -39,7 +39,9 @@ filter_beer(char *id, char *name, char *abv, char *ibu, char *html)
 	/* find ibu */
 	strncpy(ibu, strstr(beerptr, "\"ibu\">\n"), 33);
 	strrplc(ibu, "\"ibu\">\n", "");
-	strchr(ibu, '<')[0] = '\0';
+	if (strchr(ibu, '<')) {
+		strchr(ibu, '<')[0] = '\0';
+	}
 	strrplc(ibu, "</p>", "");
 	strrplc(ibu, "\t", "");
 }

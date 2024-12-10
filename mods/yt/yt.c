@@ -63,7 +63,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 			/* get title, different for playlists */
 			char title[BUFSIZE];
 			json_item(title, v, strstr(v, "playlistId") - v < 100 ?
-					"{\"title\":{\"simpleText" : "title\":{\"runs\":[{\"text", "\"}");
+					"{\"title\":{\"content" : "title\":{\"runs\":[{\"text", "\"}");
 
 			/* cleanup and send */
 			strunescape(title);

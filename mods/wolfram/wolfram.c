@@ -26,7 +26,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 	char url[BUFSIZE];
 	chunk res = { .memory = malloc(1), .size = 0 };
 	char *req = curl_easy_escape(curl, strchr(msg, ' ')+1, strlen(strchr(msg, ' ')+1));
-	sprintf(url, "http://api.wolframalpha.com/v1/result?appid=%s&i=%s",
+	sprintf(url, "https://api.wolframalpha.com/v1/result?appid=%s&i=%s",
 			getenv("WOLFRAM_APPID"), req);
 
 	/* configure curl request */

@@ -50,6 +50,7 @@ find_title(char *dest, char *html)
 	strrplc(dest, "&lt;", "<");
 	strrplc(dest, "&#039;", "'");
 	strrplc(dest, "&apos;", "'");
+	strrplc(dest, "&#x2019;", "'");
 	strrplc(dest, "<br>", "");
 	strrplc(dest, "&#x27;", "'");
 	strrplc(dest, "&#39;", "'");

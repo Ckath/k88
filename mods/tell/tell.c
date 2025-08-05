@@ -59,6 +59,12 @@ handle_cmdmsg(msg_info *mi, char *msg)
 		strchr(name, ' ')[0] = '\0';
 	}
 
+	/* anti spam */
+	if (!strcasecmp(name, "zucc_bot")) {
+		send_privmsg("no");
+		return;
+	}
+
 	char timestr[80];
 	sprintf(timestr, "%u", time(NULL));
 	char tellmsg[BUFSIZE];

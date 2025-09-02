@@ -13,7 +13,7 @@ at the core, its another attempt at a somewhat maintainable (for me) bot system 
 ### modules
 an ever incomplete list of the functionality provided through modules:
 - ddg search (shoddy instant result api)
-- ddg ai chat (non documented api eternally broken)
+- lastfm last/nowplaying
 - wolfram alpha
 - markov posting (learns on every channel its enabled on)
 - onion link translating

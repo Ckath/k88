@@ -34,7 +34,8 @@ find_title(char *dest, char *html)
 	strncpy(dest, start, BUFSIZE-1);
 
 	/* end title, lots of these exist sadly enough */
-	char *end_match[] = { "</title>", "\">", "\"\\>", "\" >", "\" \\>", "\"/>", NULL };
+	char *end_match[] = {"</title>",
+		"\">", "\"\\>", "\" >", "\" \\>", "\"/>", "\" />", NULL};
 	for (int i = 0; end_match[i]; ++i) {
 		char *title_end = strcasestr(dest, end_match[i]);
 		if (title_end) {

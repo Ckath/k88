@@ -55,7 +55,8 @@ handle_privmsg(msg_info *mi, char *msg)
 
 	/* dont log own commands to markov learncache */
 	char *prefix = mods_get_prefix(mi->conn, mi->index);
-	if (!strncmp(prefix, msg, strlen(prefix))) {
+	if (!strncmp(prefix, msg, strlen(prefix)) ||
+			strcasestr(msg, "futa gf")) {
 		return;
 	}
 

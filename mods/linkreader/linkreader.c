@@ -61,6 +61,8 @@ find_title(char *dest, char *html)
 	strrplc(dest, "&#8212;", "-");
 	strrplc(dest, "&mdash;", "-");
 	strrplc(dest, "&ndash;", "-");
+	strrplc(dest, "&#x2d;", "-");
+	strrplc(dest, "&#038;", "-");
 	strrplc(dest, "&#064;", "@");
 	strrplc(dest, "&nbsp;", "");
 	strrplc(dest, "\t", "");

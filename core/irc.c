@@ -17,6 +17,8 @@
 
 char init_ssl = 0;
 pthread_mutex_t ssllock = PTHREAD_MUTEX_INITIALIZER;
+static char sent[BUFSIZE] = {'\0'};
+static int flood = 0;
 
 int
 init_conn(irc_conn *conn)
@@ -155,6 +157,13 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 		strrplc(buf, "", "");
 	}
 
+	/* some futile attempt to escape bot trigger loops */
+	flood = !strcmp(buf, sent) ? flood+1 : 0;
+	if (flood > 2) {
+		log_err("flood detected, not sending till different message\n");
+		return;
+	}
+
 	pthread_mutex_lock(&ssllock);
 	int wolfSSL_ret;
 	if ((wolfSSL_ret = wolfSSL_write(conn->sock, buf, strlen(buf))) < 0 && !silent) {
@@ -172,4 +181,5 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 		log_send("%s", buf);
 	}
 	pthread_mutex_unlock(&ssllock);
+	strcpy(sent, buf);
 }

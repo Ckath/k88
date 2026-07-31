@@ -157,12 +157,16 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 		strrplc(buf, "", "");
 	}
 
+	/* TODO: think of a good way to do this, this also ruins ping response */
+	/* could probably do this with defining system messages (ping response)
+	 * and have those reset the counter as well */
+	
 	/* some futile attempt to escape bot trigger loops */
-	flood = !strcmp(buf, sent) ? flood+1 : 0;
-	if (flood > 2) {
-		log_err("flood detected, not sending till different message\n");
-		return;
-	}
+	/* flood = !strcmp(buf, sent) ? flood+1 : 0; */
+	/* if (flood > 2) { */
+	/* 	log_err("flood detected, not sending till different message\n"); */
+	/* 	return; */
+	/* } */
 
 	pthread_mutex_lock(&ssllock);
 	int wolfSSL_ret;
@@ -181,5 +185,5 @@ send_raw(irc_conn *conn, char silent, char *msgformat, ...)
 		log_send("%s", buf);
 	}
 	pthread_mutex_unlock(&ssllock);
-	strcpy(sent, buf);
+	/* strcpy(sent, buf); */
 }

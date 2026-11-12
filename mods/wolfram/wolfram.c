@@ -31,6 +31,7 @@ handle_cmdmsg(msg_info *mi, char *msg)
 
 	/* configure curl request */
 	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "fuck/off");
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_wrcb);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res);
 
